@@ -10,7 +10,7 @@ import {
 import { ScriptProvider } from '@/context/script-context';
 import { Header } from '@/components/app/header';
 import { SidebarNav } from '@/components/app/sidebar-nav';
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider } from '@/components/app/theme-provider';
 import type { ReactNode } from 'react';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {

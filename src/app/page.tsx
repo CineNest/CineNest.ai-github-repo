@@ -7,50 +7,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppLogo } from '@/components/icons';
 import { Loader2, Upload } from 'lucide-react';
+import { useScript } from '@/context/script-context';
 
 export default function Home() {
-  const [script, setScript] = useState('');
-  const [output, setOutput] = useState('');
+  const { script, setScript } = useScript();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleGetStarted = async () => {
     setIsLoading(true);
-    setOutput('');
     try {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('cineflow-script', script);
-      }
-
-      const response = await fetch('https://decomposable-margurite-transparently.ngrok-free.dev/webhook/http://localhost:5678/webhook/test/my-webhook', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ script }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Webhook failed with status: ${response.status}`);
-      }
-
-      const responseText = await response.text();
-      
-      try {
-        const result = JSON.parse(responseText);
-        const responseOutput = result.message || JSON.stringify(result, null, 2);
-        setOutput(responseOutput);
-      } catch (e) {
-        // If it's not JSON, just show the raw text.
-        setOutput(responseText);
-      }
-
+      // The script is already managed by the context, which handles localStorage
+      // No need to call the webhook here to navigate
     } catch (error) {
       console.error("Could not process script:", error);
-      setOutput(`An error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      setIsLoading(false);
+      router.push('/dashboard');
     }
   };
 
@@ -71,13 +44,6 @@ export default function Home() {
   };
 
   const handleDashboardNav = () => {
-    if (typeof window !== 'undefined') {
-        try {
-            localStorage.setItem('cineflow-script', script);
-        } catch (error) {
-            console.error("Could not save script to local storage:", error);
-        }
-    }
     router.push('/dashboard');
   }
 
@@ -117,12 +83,6 @@ export default function Home() {
                   Upload File
                 </Button>
               </div>
-              {output && (
-                <div className="mt-4">
-                  <h3 className="font-semibold mb-2">Workflow Output:</h3>
-                  <Textarea readOnly value={output} className="min-h-[100px] bg-muted font-mono text-sm" />
-                </div>
-              )}
                <Button variant="link" onClick={handleDashboardNav} className="mt-4">
                   Go to Dashboard
                 </Button>
