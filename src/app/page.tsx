@@ -19,10 +19,10 @@ export default function Home() {
     setIsLoading(true);
     try {
       // The script is already managed by the context, which handles localStorage
-      // No need to call the webhook here to navigate
     } catch (error) {
       console.error("Could not process script:", error);
     } finally {
+      // Navigate to the dashboard after handling the script
       router.push('/dashboard');
     }
   };
@@ -43,10 +43,6 @@ export default function Home() {
     fileInputRef.current?.click();
   };
 
-  const handleDashboardNav = () => {
-    router.push('/dashboard');
-  }
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-24 bg-background">
       <div className="w-full max-w-2xl">
@@ -55,7 +51,7 @@ export default function Home() {
             <AppLogo className="h-16 w-16 mb-2 text-primary" />
             <CardTitle className="text-3xl font-headline tracking-tight">CineFlow AI</CardTitle>
             <CardDescription className="max-w-md">
-              From script to screen, faster. Paste your script below to begin, or start fresh on the dashboard.
+              From script to screen, faster. Paste your script below to begin, or upload a file.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -83,9 +79,6 @@ export default function Home() {
                   Upload File
                 </Button>
               </div>
-               <Button variant="link" onClick={handleDashboardNav} className="mt-4">
-                  Go to Dashboard
-                </Button>
             </div>
           </CardContent>
         </Card>
