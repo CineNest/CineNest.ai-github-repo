@@ -1,12 +1,32 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useScript } from '@/context/script-context';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { Save } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { script, isLoading, setScript } = useScript();
+  const { script: contextScript, isLoading, setScript: setContextScript } = useScript();
+  const [localScript, setLocalScript] = useState(contextScript);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setLocalScript(contextScript);
+  }, [contextScript]);
+
+  const handleSave = () => {
+    setContextScript(localScript);
+    toast({
+      title: 'Script Saved',
+      description: 'Your script has been successfully saved.',
+    });
+  };
+
+  const isScriptChanged = localScript !== contextScript;
 
   return (
     <div className="container mx-auto">
@@ -32,12 +52,18 @@ export default function DashboardPage() {
               <Skeleton className="h-4 w-3/4" />
             </div>
           ) : (
-            <Textarea
-              className="min-h-[400px] font-mono text-sm"
-              value={script}
-              onChange={(e) => setScript(e.target.value)}
-              placeholder="No script loaded. Go to the landing page to enter one, or start typing here."
-            />
+            <div className="space-y-4">
+              <Textarea
+                className="min-h-[400px] font-mono text-sm"
+                value={localScript}
+                onChange={(e) => setLocalScript(e.target.value)}
+                placeholder="No script loaded. Go to the landing page to enter one, or start typing here."
+              />
+              <Button onClick={handleSave} disabled={!isScriptChanged}>
+                <Save className="mr-2 h-4 w-4" />
+                Save Script
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
