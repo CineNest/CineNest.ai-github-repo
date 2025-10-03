@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "urban-loft",
+      "description": "A spacious urban loft with large windows and brick walls.",
+      "imageUrl": "https://images.unsplash.com/photo-1740416249095-2380ee85a75d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dXJiYW4lMjBsb2Z0fGVufDB8fHx8MTc1OTQ1MDg4MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "urban loft"
+    },
+    {
+      "id": "forest-clearing",
+      "description": "A serene clearing in a dense, sun-dappled forest.",
+      "imageUrl": "https://images.unsplash.com/photo-1547155592-43460d72a8c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb3Jlc3QlMjBjbGVhcmluZ3xlbnwwfHx8fDE3NTk0ODQyNDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "forest clearing"
+    },
+    {
+      "id": "downtown-cafe",
+      "description": "A cozy, modern cafe on a bustling city street.",
+      "imageUrl": "https://images.unsplash.com/photo-1630939516404-00c674e30700?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxkb3dudG93biUyMGNhZmV8ZW58MHx8fHwxNzU5NDg0MjQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "downtown cafe"
+    },
+    {
+      "id": "suburban-house",
+      "description": "A classic two-story suburban house with a green lawn.",
+      "imageUrl": "https://images.unsplash.com/photo-1625603736199-775425d2890a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzdWJ1cmJhbiUyMGhvdXNlfGVufDB8fHx8MTc1OTM4NjMzOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "suburban house"
+    },
+    {
+      "id": "abandoned-warehouse",
+      "description": "A large, empty warehouse with high ceilings and industrial feel.",
+      "imageUrl": "https://images.unsplash.com/photo-1689752931322-bb383fbb63e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhYmFuZG9uZWQlMjB3YXJlaG91c2V8ZW58MHx8fHwxNzU5NDg0MjQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abandoned warehouse"
+    }
+  ]
 }
