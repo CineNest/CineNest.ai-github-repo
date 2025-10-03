@@ -35,16 +35,16 @@ export default function Home() {
         throw new Error(`Webhook failed with status: ${response.status}`);
       }
 
-      const result = await response.json();
+      const responseText = await response.text();
       
-      // Assuming the webhook returns a JSON with a 'message' or similar key.
-      // Adjust if the response format is different.
-      const responseOutput = result.message || JSON.stringify(result, null, 2);
-      setOutput(responseOutput);
-
-      // We can still navigate, or we can stay to show the output.
-      // I will keep it on this page to show the output.
-      // router.push('/dashboard');
+      try {
+        const result = JSON.parse(responseText);
+        const responseOutput = result.message || JSON.stringify(result, null, 2);
+        setOutput(responseOutput);
+      } catch (e) {
+        // If it's not JSON, just show the raw text.
+        setOutput(responseText);
+      }
 
     } catch (error) {
       console.error("Could not process script:", error);
