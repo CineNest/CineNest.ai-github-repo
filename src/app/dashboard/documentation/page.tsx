@@ -43,18 +43,6 @@ const documentationSections = [
     fields: ['Date', 'Tickets_Sold', 'OTT_Views', 'Total_Revenue'],
     sheetGid: '1188727933',
   },
-  {
-    title: 'AI_Analysis',
-    description: 'AI-generated script and production analysis.',
-    fields: ['Timestamp', 'Days', 'Locations', 'Crew_Count', 'Equipment_Count', 'Weather', 'Shot_Count', 'Camera_Movement_Count', 'Lighting', 'VFX_Count'],
-    sheetGid: '1979313886',
-  },
-  {
-    title: 'Logs',
-    description: 'System and production logs.',
-    fields: ['Timestamp', 'Type', 'Days', 'Locations', 'Crew_Count', 'Equipment_Count', 'VFX_Count', 'Status'],
-    sheetGid: '969966147',
-  },
 ];
 
 export default function DocumentationPage() {

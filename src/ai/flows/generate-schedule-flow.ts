@@ -42,7 +42,7 @@ const prompt = ai.definePrompt({
 
   Analyze the provided script and generate a logical shooting schedule based on the given number of shooting days.
 
-  Your goal is to group scenes logically by location and actors to minimize company moves and maximize efficiency.
+  Your goal is to group scenes logically by location and actors to minimize company moves and maximize efficiency. Schedule scenes at the same location on the same day or on consecutive days.
 
   Script:
   {{{script}}}
