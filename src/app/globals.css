@@ -152,3 +152,9 @@
 html, body {
   height: 100%;
 }
+
+.bg-hero-pattern {
+  background-image: url('https://storage.googleapis.com/project-spark-308117-21959.appspot.com/b0a8fb9a-3a25-455b-8625-a10c73206413.png');
+  background-size: cover;
+  background-position: center;
+}

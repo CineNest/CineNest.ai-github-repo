@@ -103,10 +103,7 @@ export default function Home() {
   const isInputPresent = localScript.trim() !== '' || fileName !== '';
 
   return (
-    <div 
-      className="relative min-h-screen w-full bg-cover bg-center" 
-      style={{ backgroundImage: 'url(https://storage.googleapis.com/project-spark-308117-21959.appspot.com/b0a8fb9a-3a25-455b-8625-a10c73206413.png)' }}
-    >
+    <div className="relative min-h-screen w-full bg-hero-pattern">
       <div className="absolute inset-0 bg-background/60 backdrop-blur-sm -z-0" />
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
