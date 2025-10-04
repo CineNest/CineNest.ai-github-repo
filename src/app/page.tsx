@@ -50,7 +50,7 @@ make it happen?
         )}
       </main>
        <footer className="w-full text-center p-4 text-white/60 text-sm">
-          CineFlow AI &copy; {new Date().getFullYear()}
+          CineNest.ai &copy; {new Date().getFullYear()}
       </footer>
     </div>
   );

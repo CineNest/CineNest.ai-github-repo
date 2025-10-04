@@ -5,7 +5,7 @@ import { ScriptProvider } from '@/context/script-context';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
-  title: 'CineFlow AI',
+  title: 'CineNest.ai',
   description: 'Streamline your filmmaking process with AI',
 };
 

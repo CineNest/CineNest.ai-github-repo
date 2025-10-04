@@ -33,7 +33,7 @@ export default function DashboardPage() {
       <div className="space-y-4 mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
-          Welcome to CineFlow AI. Here's an overview of your project.
+          Welcome to CineNest.ai. Here's an overview of your project.
         </p>
       </div>
 

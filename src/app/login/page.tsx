@@ -71,7 +71,7 @@ export default function LoginPage() {
           <CardHeader className="items-center text-center">
             <AppLogo className="h-16 w-16 mb-2 text-primary" />
             <CardTitle className="text-3xl font-headline tracking-tight">Welcome Back</CardTitle>
-            <CardDescription>Sign in to your CineFlow AI account.</CardDescription>
+            <CardDescription>Sign in to your CineNest.ai account.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>

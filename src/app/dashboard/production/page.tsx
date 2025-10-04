@@ -22,11 +22,11 @@ import { Loader2 } from 'lucide-react';
 import { GenerateContractForm } from '../legal/page';
 
 const crewMembers = [
-  { name: 'Alex Ray', role: 'Director', contact: 'alex.ray@cineflow.ai' },
-  { name: 'Sam Jones', role: 'Director of Photography', contact: 'sam.jones@cineflow.ai' },
-  { name: 'Casey Smith', role: 'Production Designer', contact: 'casey.smith@cineflow.ai' },
-  { name: 'Jordan Lee', role: 'Sound Mixer', contact: 'jordan.lee@cineflow.ai' },
-  { name: 'Taylor Kim', role: 'Editor', contact: 'taylor.kim@cineflow.ai' },
+  { name: 'Alex Ray', role: 'Director', contact: 'alex.ray@cinenest.ai' },
+  { name: 'Sam Jones', role: 'Director of Photography', contact: 'sam.jones@cinenest.ai' },
+  { name: 'Casey Smith', role: 'Production Designer', contact: 'casey.smith@cinenest.ai' },
+  { name: 'Jordan Lee', role: 'Sound Mixer', contact: 'jordan.lee@cinenest.ai' },
+  { name: 'Taylor Kim', role: 'Editor', contact: 'taylor.kim@cinenest.ai' },
 ];
 
 const automateTaskSchema = z.object({

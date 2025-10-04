@@ -92,7 +92,7 @@ export default function SignupPage() {
           <CardHeader className="items-center text-center">
             <AppLogo className="h-16 w-16 mb-2 text-primary" />
             <CardTitle className="text-3xl font-headline tracking-tight">Create an Account</CardTitle>
-            <CardDescription>Join CineFlow AI to streamline your production.</CardDescription>
+            <CardDescription>Join CineNest.ai to streamline your production.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>

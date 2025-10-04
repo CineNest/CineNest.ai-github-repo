@@ -22,7 +22,7 @@ export default function CrewPage() {
           </CardHeader>
           <CardContent className="text-center">
             <p className="mb-4 text-card-foreground/80">
-              Use the following Google Sheet to input and track your project's details. The information you provide will be used to power the CineFlow AI dashboard.
+              Use the following Google Sheet to input and track your project's details. The information you provide will be used to power the CineNest.ai dashboard.
             </p>
             <a href={googleSheetUrl} target="_blank" rel="noopener noreferrer">
               <Button size="lg">

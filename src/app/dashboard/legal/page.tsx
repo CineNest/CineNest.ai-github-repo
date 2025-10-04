@@ -36,7 +36,7 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
       locationAddress: '',
       ownerName: '',
       ownerContact: '',
-      filmCompanyName: 'CineFlow Productions',
+      filmCompanyName: 'CineNest Productions',
       productionDates: '',
       specificTerms: '',
     },

@@ -4,7 +4,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
-      "description": "Represents a user account within the CineFlow AI application.",
+      "description": "Represents a user account within the CineNest.ai application.",
       "properties": {
         "id": {
           "type": "string",
