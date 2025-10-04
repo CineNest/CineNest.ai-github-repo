@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, CalendarDays, MapPin, Users } from 'lucide-react';
+import Link from 'next/link';
 
 export default function PreProductionPage() {
   return (
@@ -24,7 +25,9 @@ export default function PreProductionPage() {
             <p className="text-xs text-muted-foreground mb-4">
               Analyze your script for scenes, characters, props, and locations.
             </p>
-            <Button>Breakdown Script</Button>
+            <Link href="/dashboard/pre-production/script-breakdown">
+              <Button>Breakdown Script</Button>
+            </Link>
           </CardContent>
         </Card>
         <Card>
@@ -36,7 +39,9 @@ export default function PreProductionPage() {
             <p className="text-xs text-muted-foreground mb-4">
               Create and manage your shooting schedule based on your breakdown.
             </p>
-            <Button>Create Schedule</Button>
+            <Link href="/dashboard/pre-production/scheduling">
+              <Button>Create Schedule</Button>
+            </Link>
           </CardContent>
         </Card>
         <Card>
@@ -48,7 +53,9 @@ export default function PreProductionPage() {
             <p className="text-xs text-muted-foreground mb-4">
               Manage potential filming locations and permits.
             </p>
-            <Button>Manage Locations</Button>
+            <Link href="/dashboard/pre-production/location-scouting">
+              <Button>Manage Locations</Button>
+            </Link>
           </CardContent>
         </Card>
         <Card>
@@ -60,7 +67,9 @@ export default function PreProductionPage() {
             <p className="text-xs text-muted-foreground mb-4">
               Assign roles and manage your production crew.
             </p>
-            <Button>Assign Crew</Button>
+            <Link href="/dashboard/pre-production/crew-assignment">
+             <Button>Assign Crew</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
