@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AppLogo } from '@/components/icons';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
@@ -90,7 +89,6 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         <Card className="shadow-2xl bg-card/80 backdrop-blur-sm border-white/20">
           <CardHeader className="items-center text-center">
-            <AppLogo className="h-16 w-16 mb-2 text-primary" />
             <CardTitle className="text-3xl font-headline tracking-tight">Create an Account</CardTitle>
             <CardDescription>Join CineNest.ai to streamline your production.</CardDescription>
           </CardHeader>

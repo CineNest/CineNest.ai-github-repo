@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { AppLogo } from '../icons';
 import Link from 'next/link';
 import { LogOut, Moon, Sun, User as UserIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -37,7 +36,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-white/10 bg-transparent px-4 md:px-6">
       <Link href="/" className="flex items-center gap-2 font-semibold">
-          <AppLogo className="h-6 w-6 text-white" />
+          <span className="font-bold">CineNest.ai</span>
       </Link>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <div className="ml-auto flex-1 sm:flex-initial" />

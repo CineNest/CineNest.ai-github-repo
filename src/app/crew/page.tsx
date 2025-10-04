@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AppLogo } from '@/components/icons';
 import { ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
@@ -14,7 +13,6 @@ export default function CrewPage() {
       <div className="w-full max-w-2xl">
         <Card className="shadow-2xl bg-card/80 backdrop-blur-sm border-white/20">
           <CardHeader className="items-center text-center">
-            <AppLogo className="h-16 w-16 mb-2 text-primary" />
             <CardTitle className="text-3xl font-headline tracking-tight">Production Planning</CardTitle>
             <CardDescription className="max-w-md">
               Access the central planning document to manage all aspects of your production, from budget to distribution.
