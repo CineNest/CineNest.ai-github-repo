@@ -129,6 +129,9 @@ export default function ProductionPlanPage() {
                               selected={date}
                               onSelect={handleDateChange}
                               numberOfMonths={2}
+                              captionLayout="dropdown-nav"
+                              fromYear={new Date().getFullYear()}
+                              toYear={new Date().getFullYear() + 10}
                             />
                           </PopoverContent>
                         </Popover>
