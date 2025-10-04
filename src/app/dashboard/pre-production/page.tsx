@@ -73,18 +73,6 @@ export default function PreProductionPage() {
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Pre-Production Checklist</CardTitle>
-          <CardDescription>
-            A high-level overview of key pre-production tasks. (This is a placeholder for future functionality).
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-           <p className="text-muted-foreground">Feature coming soon...</p>
-        </CardContent>
-      </Card>
     </div>
   );
 }

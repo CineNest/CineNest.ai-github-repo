@@ -64,18 +64,6 @@ export default function PostProductionPage() {
           </CardContent>
         </Card>
       </div>
-
-       <Card>
-        <CardHeader>
-          <CardTitle>Post-Production Timeline</CardTitle>
-          <CardDescription>
-            Visualize your post-production schedule from editing to final delivery. (This is a placeholder for future functionality).
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-           <p className="text-muted-foreground">Feature coming soon...</p>
-        </CardContent>
-      </Card>
     </div>
   );
 }
