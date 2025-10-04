@@ -180,7 +180,10 @@ export default function BudgetTrackingPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹4,50,000</div>
-            <p className="text-xs text-muted-foreground">Total for all personnel</p>
+            <p className="text-xs text-muted-foreground mb-2">Total for all personnel</p>
+            <Link href="/dashboard/production/crew-salary">
+                <Button size="sm" variant="outline">Manage Salaries</Button>
+            </Link>
           </CardContent>
         </Card>
         <Card>
