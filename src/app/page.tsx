@@ -156,18 +156,18 @@ export default function Home() {
 
   return (
     <div className="relative flex flex-col min-h-screen">
-      <div className="absolute inset-0 bg-black -z-10" />
+      <div 
+        className="absolute inset-0 bg-cover bg-center -z-10" 
+        style={{ backgroundImage: 'url(https://storage.googleapis.com/project-spark-308117-21959.appspot.com/3911bb5c-1178-4363-951d-28564f1345c2.png)' }}
+      />
        <Header />
        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
         <div className="relative mb-8 flex items-center justify-center">
-            <Image 
-                src="https://storage.googleapis.com/project-spark-308117-21959.appspot.com/c63955a5-e633-4b45-8123-28f090b83075.png"
-                alt="Glowing Ellipse"
-                width={600}
-                height={400}
-                className="object-contain"
+            <div 
+                className="absolute w-[600px] h-[400px] bg-contain bg-no-repeat bg-center"
+                style={{ backgroundImage: 'url(https://storage.googleapis.com/project-spark-308117-21959.appspot.com/c63955a5-e633-4b45-8123-28f090b83075.png)' }}
             />
-            <h1 className="absolute text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-yellow-300 via-primary to-white">
+            <h1 className="relative text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-yellow-300 via-primary to-white">
                 CineNest.ai
             </h1>
         </div>
