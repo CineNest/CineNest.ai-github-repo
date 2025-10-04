@@ -32,6 +32,10 @@ import {
   estimateEquipmentCost,
   type EstimateEquipmentCostInput,
 } from '@/ai/flows/estimate-equipment-cost-flow';
+import {
+  analyzeBudgetFromScript,
+  type AnalyzeBudgetFromScriptInput,
+} from '@/ai/flows/analyze-budget-from-script-flow';
 
 export async function generateContractAction(input: GenerateLocationContractInput) {
   try {
@@ -109,6 +113,16 @@ export async function estimateEquipmentCostAction(input: EstimateEquipmentCostIn
     return { success: true, data: result };
   } catch (error: any) {
     console.error('Error in estimateEquipmentCostAction:', error);
+    return { success: false, error: error.message || 'An unknown error occurred.' };
+  }
+}
+
+export async function analyzeBudgetFromScriptAction(input: AnalyzeBudgetFromScriptInput) {
+  try {
+    const result = await analyzeBudgetFromScript(input);
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error('Error in analyzeBudgetFromScriptAction:', error);
     return { success: false, error: error.message || 'An unknown error occurred.' };
   }
 }

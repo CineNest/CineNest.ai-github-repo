@@ -1,20 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { estimateEquipmentCostAction } from '@/app/actions';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { analyzeBudgetFromScriptAction } from '@/app/actions';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useScript } from '@/context/script-context';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, ToyBrick, Users, Wrench, Loader2 } from 'lucide-react';
+import { DollarSign, ToyBrick, Users, Wrench, Loader2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 const budgetData = [
@@ -33,38 +28,44 @@ const transactions = [
     {id: 'TXN004', date: '2024-07-26', description: 'Catering: Day 1', amount: -8000, category: 'Misc'},
 ];
 
-const estimateEquipmentCostSchema = z.object({
-  equipmentList: z
-    .string()
-    .min(10, 'Please enter a list of equipment.'),
-});
+interface BudgetItem {
+    item: string;
+    estimatedCost: string;
+    reasoning: string;
+}
 
-function EstimateEquipmentCostForm() {
+function AIBudgetAnalyzer() {
     const { toast } = useToast();
-    const [isEstimating, setIsEstimating] = useState(false);
-    const [estimationResult, setEstimationResult] = useState<{item: string, estimatedCost: string}[] | null>(null);
-    const [totalCost, setTotalCost] = useState<string | null>(null);
+    const { script } = useScript();
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState<{items: BudgetItem[], summary: string} | null>(null);
 
-    const form = useForm<z.infer<typeof estimateEquipmentCostSchema>>({
-        resolver: zodResolver(estimateEquipmentCostSchema),
-        defaultValues: { equipmentList: '' },
-    });
+    const handleAnalysis = async () => {
+        if (!script || script.trim().length === 0) {
+            toast({
+                variant: "destructive",
+                title: "Script not found",
+                description: "Please add a script on the main dashboard page before analyzing.",
+            });
+            return;
+        }
 
-    async function onSubmit(values: z.infer<typeof estimateEquipmentCostSchema>) {
-        setIsEstimating(true);
-        setEstimationResult(null);
-        setTotalCost(null);
+        setIsAnalyzing(true);
+        setAnalysisResult(null);
 
-        const result = await estimateEquipmentCostAction(values);
-        setIsEstimating(false);
+        const result = await analyzeBudgetFromScriptAction({ script });
+        setIsAnalyzing(false);
 
         if (result.success && result.data) {
-            setEstimationResult(result.data.costs);
-            setTotalCost(result.data.totalEstimatedCost);
+            setAnalysisResult({ items: result.data.budgetItems, summary: result.data.summary });
+             toast({
+                title: "Analysis Complete",
+                description: "AI has identified and estimated key budget items from your script.",
+            });
         } else {
             toast({
                 variant: 'destructive',
-                title: 'Error Estimating Cost',
+                title: 'Error Analyzing Budget',
                 description: result.error || 'An unexpected error occurred.',
             });
         }
@@ -73,83 +74,50 @@ function EstimateEquipmentCostForm() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>AI Equipment Cost Estimator</CardTitle>
-                <CardDescription>Get AI-powered rental cost estimates for your equipment list in Indian Rupees (INR).</CardDescription>
+                <CardTitle>AI Budget Analyzer</CardTitle>
+                <CardDescription>Automatically analyze your script to identify and estimate costs for high-impact props and equipment in INR.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="equipmentList"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Equipment List (comma-separated)</FormLabel>
-                                    <FormControl>
-                                        <Textarea placeholder="e.g., Arri Alexa Mini, set of Zeiss Supreme Primes..." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="submit" disabled={isEstimating}>
-                            {isEstimating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Estimate Costs
-                        </Button>
-                    </form>
-                </Form>
-                {estimationResult && (
+                <Button onClick={handleAnalysis} disabled={isAnalyzing || !script}>
+                    {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                    Analyze Script for Costs
+                </Button>
+
+                {analysisResult && (
                     <div className="mt-6">
-                        <h3 className="font-semibold mb-2">Estimated Rental Costs:</h3>
+                        <h3 className="font-semibold mb-2">Analysis Results:</h3>
+                         <p className="text-sm text-muted-foreground mb-4 italic">{analysisResult.summary}</p>
                         <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Item</TableHead>
-                                    <TableHead className="text-right">Estimated Cost</TableHead>
+                                    <TableHead>Reasoning</TableHead>
+                                    <TableHead className="text-right">Estimated Cost (INR)</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {estimationResult.map((item, index) => (
+                                {analysisResult.items.map((item, index) => (
                                     <TableRow key={index}>
-                                        <TableCell>{item.item}</TableCell>
-                                        <TableCell className="text-right">{item.estimatedCost}</TableCell>
+                                        <TableCell className="font-medium">{item.item}</TableCell>
+                                        <TableCell className="text-sm text-muted-foreground">{item.reasoning}</TableCell>
+                                        <TableCell className="text-right font-mono">{item.estimatedCost}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
-                        {totalCost && <p className="text-right font-bold mt-4">{totalCost}</p>}
                     </div>
                 )}
-            </CardContent>
-        </Card>
-    );
-}
-
-function PropsList() {
-    const { breakdown } = useScript();
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Props from Script Breakdown</CardTitle>
-                <CardDescription>List of props identified by the AI script analysis.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {breakdown?.props && breakdown.props.length > 0 ? (
-                    <ul className="space-y-2 text-sm list-disc pl-5 max-h-60 overflow-y-auto">
-                        {breakdown.props.map((prop, i) => <li key={i}>{prop}</li>)}
-                    </ul>
-                ) : (
-                    <div className="text-center text-muted-foreground py-4">
-                        <p>No props identified yet.</p>
-                        <Link href="/dashboard/pre-production/script-breakdown">
-                           <Button variant="link">Analyze your script</Button>
+                 {!script && (
+                    <div className="text-center text-muted-foreground py-4 mt-4">
+                        <p>No script loaded. Go to the dashboard to add one.</p>
+                        <Link href="/dashboard">
+                           <Button variant="link">Go to Dashboard</Button>
                         </Link>
                     </div>
                 )}
             </CardContent>
         </Card>
-    )
+    );
 }
 
 export default function BudgetTrackingPage() {
@@ -224,8 +192,7 @@ export default function BudgetTrackingPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3 space-y-8">
-            <EstimateEquipmentCostForm />
-            <PropsList />
+            <AIBudgetAnalyzer />
           </div>
 
           <div className="lg:col-span-2">
