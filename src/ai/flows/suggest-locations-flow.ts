@@ -20,7 +20,7 @@ export type SuggestLocationsInput = z.infer<typeof SuggestLocationsInputSchema>;
 
 const LocationSuggestionSchema = z.object({
   name: z.string().describe('The name of the suggested location (e.g., "Griffith Observatory", "Jane\'s Coffee Corner").'),
-  description: z.string().describe('A brief explanation of why this location is a good fit for the scene.'),
+  description: z.string().describe('A brief, concise explanation of why this location is a good fit for the scene.'),
   imageUrl: z.string().url().describe('A URL for a representative photo of the location.'),
   googleMapsUrl: z.string().url().describe('A direct URL to the location on Google Maps.'),
   rating: z.number().optional().describe('The average star rating from Google reviews (e.g., 4.5).'),
@@ -41,15 +41,17 @@ const prompt = ai.definePrompt({
   name: 'suggestLocationsPrompt',
   input: { schema: SuggestLocationsInputSchema },
   output: { schema: SuggestLocationsOutputSchema },
-  prompt: `You are an expert location scout for the film industry. Your task is to find and suggest potential filming locations based on a scene description and optional geographical constraints.
+  prompt: `You are an expert location scout for the film industry. Your task is to find and suggest potential filming locations based on a scene description, as if you are analyzing photos from Google Reviews and Google Ads.
 
-For each suggestion, you must provide a name, a brief description of why it's a good fit, a publicly accessible image URL, a Google Maps link, and its Google review rating and a summary of reviews. The location can be a public landmark or a generic type of place (like "a suburban two-story house"). If country and state are not provided, suggest interesting locations from around the world that fit the description.
+For each suggestion, provide a name, a **brief and concise** description of why it fits, a publicly accessible image URL, a Google Maps link, its Google review rating, and a review summary.
+
+Include a mix of location types like resorts, private properties, and public landmarks that fit the scene. If country and state are not provided, suggest interesting locations from around the world.
 
 Scene Description: {{{sceneDescription}}}
 Country: {{{country}}}
 State/Province: {{{state}}}
 
-Based on this, generate a list of 3 diverse and interesting locations. For the image URL, use a realistic photo from a service like Unsplash. For the Google Maps link, create a search-based URL. For ratings and reviews, find the information on Google and provide a rating and a brief summary.`,
+Based on this, generate a list of 3 diverse and interesting locations. For the image URL, use a realistic photo from a service like Unsplash. For the Google Maps link, create a search-based URL.`,
 });
 
 const suggestLocationsFlow = ai.defineFlow(
