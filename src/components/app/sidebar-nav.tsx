@@ -35,7 +35,6 @@ const menuItems = [
   { href: '/dashboard/status', label: 'Status Logs', icon: Rss },
   { href: '/dashboard/documentation', label: 'Documentation', icon: DocumentationIcon },
   { href: '/dashboard/legal', label: 'Legal & Contracts', icon: Scale },
-  { href: '/dashboard/business', label: 'Business', icon: AreaChart },
   { href: '/dashboard/investors', label: 'Investors', icon: Landmark },
 ];
 
