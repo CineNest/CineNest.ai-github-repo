@@ -24,7 +24,7 @@ export default function PreProductionPage() {
             <p className="text-xs text-muted-foreground mb-4">
               Analyze your script for scenes, characters, props, and locations.
             </p>
-            <Button disabled>Breakdown Script</Button>
+            <Button>Breakdown Script</Button>
           </CardContent>
         </Card>
         <Card>
@@ -36,7 +36,7 @@ export default function PreProductionPage() {
             <p className="text-xs text-muted-foreground mb-4">
               Create and manage your shooting schedule based on your breakdown.
             </p>
-            <Button disabled>Create Schedule</Button>
+            <Button>Create Schedule</Button>
           </CardContent>
         </Card>
         <Card>
@@ -48,7 +48,7 @@ export default function PreProductionPage() {
             <p className="text-xs text-muted-foreground mb-4">
               Manage potential filming locations and permits.
             </p>
-            <Button disabled>Manage Locations</Button>
+            <Button>Manage Locations</Button>
           </CardContent>
         </Card>
         <Card>
@@ -60,7 +60,7 @@ export default function PreProductionPage() {
             <p className="text-xs text-muted-foreground mb-4">
               Assign roles and manage your production crew.
             </p>
-            <Button disabled>Assign Crew</Button>
+            <Button>Assign Crew</Button>
           </CardContent>
         </Card>
       </div>
