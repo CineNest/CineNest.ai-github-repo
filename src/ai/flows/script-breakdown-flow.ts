@@ -33,7 +33,7 @@ const prompt = ai.definePrompt({
   output: { schema: ScriptBreakdownOutputSchema },
   prompt: `You are an expert script reader and production assistant. Analyze the following film script and extract the key production elements.
 
-  Your task is to identify and list all the characters, all the distinct locations or settings, and all the important props mentioned in the script.
+  Your task is to identify and list all the characters, all the distinct locations or settings, and all the important props mentioned in the script. Ensure all output uses standard UTF-8 characters and avoids any special or non-standard characters. For example, use a standard apostrophe (') instead of a curly one.
 
   Script:
   {{{script}}}
