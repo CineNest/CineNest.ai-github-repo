@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useScript } from '@/context/script-context';
-import { Loader2, ArrowRight, Upload, FileCheck, Sparkle } from 'lucide-react';
+import { Loader2, ArrowRight, Upload, FileCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -35,6 +35,29 @@ function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
       <line x1="5" y1="12" x2="19" y2="12"></line>
     </svg>
   );
+}
+
+function SparkleIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            {...props}
+        >
+            <path d="M12 3L9.5 8.5L4 11L9.5 13.5L12 19L14.5 13.5L20 11L14.5 8.5L12 3Z"/>
+            <path d="M5 3v4"/>
+            <path d="M19 17v4"/>
+            <path d="M3 5h4"/>
+            <path d="M17 19h4"/>
+        </svg>
+    )
 }
 
 
@@ -133,13 +156,7 @@ export default function Home() {
 
   return (
     <div className="relative flex flex-col min-h-screen">
-      <Image
-        src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop"
-        alt="Background"
-        fill
-        className="object-cover -z-10"
-      />
-      <div className="absolute inset-0 bg-black/70 -z-10" />
+      <div className="absolute inset-0 bg-black -z-10" />
        <Header />
        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
         <div className="relative mb-8 flex items-center justify-center">
@@ -192,9 +209,9 @@ export default function Home() {
                 >
                   {isInputPresent && (
                     <>
-                      <Sparkle className="sparkle sparkle-1" />
+                      <SparkleIcon className="sparkle sparkle-1" />
                       <PlusIcon className="sparkle sparkle-2" />
-                      <Sparkle className="sparkle sparkle-3" />
+                      <SparkleIcon className="sparkle sparkle-3" />
                       <PlusIcon className="sparkle sparkle-4" />
                     </>
                   )}
