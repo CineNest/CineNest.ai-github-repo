@@ -9,18 +9,14 @@ import { Loader2, ArrowRight, Upload, FileCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import mammoth from 'mammoth';
-import { automateTaskAction } from './actions';
 
 export default function Home() {
   const { setScript } = useScript();
   const [localScript, setLocalScript] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isAiProcessing, setIsAiProcessing] = useState(false);
   const [fileName, setFileName] = useState('');
-  const [aiResult, setAiResult] = useState('');
   const router = useRouter();
   const { toast } = useToast();
 
@@ -28,7 +24,6 @@ export default function Home() {
     const file = event.target.files?.[0];
     if (file) {
       setFileName(file.name);
-      setAiResult('');
       if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
         const text = await file.text();
         setLocalScript(text);
@@ -81,23 +76,23 @@ export default function Home() {
   const isInputPresent = localScript.trim() !== '';
 
   return (
-    <div className="relative min-h-screen w-full bg-hero-pattern">
-      <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" />
+    <div className="relative min-h-screen w-full bg-[#0a001a]">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
       <div className="relative z-10 flex flex-col min-h-screen">
-        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
+        <main className="flex-1 flex flex-col items-center justify-center text-center px-4 pt-20 pb-10">
           <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-pink-400 via-primary to-cyan-400 mb-8">
               CineNest.ai
           </h1>
 
-          <Card className="w-full max-w-2xl shadow-2xl bg-card/80 backdrop-blur-sm border-white/10">
+          <Card className="w-full max-w-2xl shadow-2xl bg-[#140c26] border-[#2a1a49]">
               <CardHeader>
-                <CardTitle className="text-3xl font-headline tracking-tight">Enter Your Script</CardTitle>
+                <CardTitle className="text-3xl font-headline tracking-tight text-white">Enter Your Script</CardTitle>
                 <CardDescription>Paste your script below or upload a file to get started.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Textarea
                   placeholder="TITLE: My Awesome Film..."
-                  className="min-h-[150px] bg-background/50 text-base"
+                  className="min-h-[150px] bg-[#0a001a] border-[#2a1a49] text-base text-gray-300"
                   value={localScript}
                   onChange={(e) => {
                     setLocalScript(e.target.value);
@@ -106,15 +101,13 @@ export default function Home() {
                 />
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
-                        <Label htmlFor="script-file" className="cursor-pointer">
-                            <Button asChild variant="outline" className="cursor-pointer bg-transparent hover:bg-white/10 text-white">
-                            <span>
-                                <Upload className="mr-2 h-4 w-4" />
-                                Upload File
-                            </span>
-                            </Button>
-                            <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-                        </Label>
+                        <Input id="script-file" type="file" className="hidden" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                        <Button asChild variant="outline" className="cursor-pointer bg-[#21143a] border-[#3a295f] text-white hover:bg-[#2a1a49]">
+                          <label htmlFor="script-file">
+                              <Upload className="mr-2 h-4 w-4" />
+                              Upload File
+                          </label>
+                        </Button>
                         {fileName && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <FileCheck className="h-5 w-5 text-green-400" />
@@ -147,7 +140,7 @@ export default function Home() {
 
         </main>
         <footer className="w-full text-center p-4 text-white/60 text-sm">
-            CineNest.ai &copy; {new Date().getFullYear()}
+            CineNest.ai © 2025
         </footer>
       </div>
     </div>
