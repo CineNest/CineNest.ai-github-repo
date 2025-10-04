@@ -19,8 +19,8 @@ import { ArrowLeft, ExternalLink, Loader2, Search } from 'lucide-react';
 import { useScript } from '@/context/script-context';
 
 const locationScoutSchema = z.object({
-  country: z.string().min(1, 'Country is required.'),
-  state: z.string().min(1, 'State or Province is required.'),
+  country: z.string().optional(),
+  state: z.string().optional(),
   sceneDescription: z.string().min(10, 'Please provide a more detailed scene description.'),
 });
 
@@ -33,8 +33,8 @@ export default function LocationScoutingPage() {
   const form = useForm<z.infer<typeof locationScoutSchema>>({
     resolver: zodResolver(locationScoutSchema),
     defaultValues: {
-      country: 'USA',
-      state: 'California',
+      country: '',
+      state: '',
       sceneDescription: script ? `A key scene from the script: ${script.substring(0, 200)}...` : '',
     },
   });
@@ -81,10 +81,10 @@ export default function LocationScoutingPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField control={form.control} name="country" render={({ field }) => (
-                  <FormItem><FormLabel>Country</FormLabel><FormControl><Input placeholder="e.g., USA" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>Country (Optional)</FormLabel><FormControl><Input placeholder="e.g., USA" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="state" render={({ field }) => (
-                  <FormItem><FormLabel>State / Province</FormLabel><FormControl><Input placeholder="e.g., California" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>State / Province (Optional)</FormLabel><FormControl><Input placeholder="e.g., California" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
               </div>
               <FormField control={form.control} name="sceneDescription" render={({ field }) => (

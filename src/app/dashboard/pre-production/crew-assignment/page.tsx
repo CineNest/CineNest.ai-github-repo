@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { suggestCrewAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { ExternalLink, Loader2, PlusCircle } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
@@ -34,6 +34,7 @@ export default function CrewAssignmentPage() {
   const [crewMembers, setCrewMembers] = useState<CrewMember[]>(initialCrewMembers);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const { toast } = useToast();
+  const crewFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSc14Mw1q1LThn5HAP1JUMiuJ89wrFpeVNp-v55Sklwe0cDr6w/viewform?usp=header';
 
   const form = useForm<z.infer<typeof suggestCrewSchema>>({
     resolver: zodResolver(suggestCrewSchema),
@@ -68,14 +69,14 @@ export default function CrewAssignmentPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Crew Assignment</h1>
         <p className="text-muted-foreground">
-          Build and manage your production crew with AI assistance.
+          Build and manage your production crew. Get AI suggestions or add artists manually.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>AI Crew Suggestion</CardTitle>
-          <CardDescription>Get AI-powered suggestions for your crew based on roles you need to fill.</CardDescription>
+          <CardDescription>Need inspiration? Get AI-powered suggestions for roles you need to fill.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -108,10 +109,16 @@ export default function CrewAssignmentPage() {
                 <div>
                     <CardTitle>Crew Roster</CardTitle>
                     <CardDescription>
-                        Track the status of all crew members for your project.
+                        Track the status of all artists and crew members for your project.
                     </CardDescription>
                 </div>
-                <Button>Add Crew Member</Button>
+                <a href={crewFormUrl} target="_blank" rel="noopener noreferrer">
+                  <Button>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Crew via Form
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </Button>
+                </a>
             </div>
         </CardHeader>
         <CardContent>

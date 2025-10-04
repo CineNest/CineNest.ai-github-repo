@@ -12,8 +12,8 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const SuggestLocationsInputSchema = z.object({
-  country: z.string().describe('The country to search for locations in.'),
-  state: z.string().describe('The state, province, or region to search for locations in.'),
+  country: z.string().optional().describe('The country to search for locations in. (Optional)'),
+  state: z.string().optional().describe('The state, province, or region to search for locations in. (Optional)'),
   sceneDescription: z.string().describe('A description of the scene or the type of location needed (e.g., "a modern, bustling coffee shop" or "a quiet, secluded beach at sunset").'),
 });
 export type SuggestLocationsInput = z.infer<typeof SuggestLocationsInputSchema>;
@@ -39,9 +39,9 @@ const prompt = ai.definePrompt({
   name: 'suggestLocationsPrompt',
   input: { schema: SuggestLocationsInputSchema },
   output: { schema: SuggestLocationsOutputSchema },
-  prompt: `You are an expert location scout for the film industry. Your task is to find and suggest potential filming locations based on a scene description and geographical constraints.
+  prompt: `You are an expert location scout for the film industry. Your task is to find and suggest potential filming locations based on a scene description and optional geographical constraints.
 
-For each suggestion, you must provide a name, a brief description of why it's a good fit, a publicly accessible image URL, and a Google Maps link. The location can be a public landmark or a generic type of place (like "a suburban two-story house").
+For each suggestion, you must provide a name, a brief description of why it's a good fit, a publicly accessible image URL, and a Google Maps link. The location can be a public landmark or a generic type of place (like "a suburban two-story house"). If country and state are not provided, suggest interesting locations from around the world that fit the description.
 
 Scene Description: {{{sceneDescription}}}
 Country: {{{country}}}
