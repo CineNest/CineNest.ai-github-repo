@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { analyzeBudgetFromScriptAction } from '@/app/actions';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { useScript } from '@/context/script-context';
+import { useScript, type Transaction } from '@/context/script-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -26,13 +26,6 @@ const budgetData = [
   { name: 'Contingency', value: 150000, fill: 'var(--color-contingency)' },
 ];
 
-const initialTransactions = [
-    {id: 'TXN001', date: '2024-07-28', description: 'Camera Package Rental', amount: -25000, category: 'Equipment'},
-    {id: 'TXN002', date: '2024-07-28', description: 'Art Department Supplies', amount: -4500, category: 'Props'},
-    {id: 'TXN003', date: '2024-07-27', description: 'Location Fee: Downtown Loft', amount: -12000, category: 'Locations'},
-    {id: 'TXN004', date: '2024-07-26', description: 'Catering: Day 1', amount: -8000, category: 'Misc'},
-];
-
 interface BudgetItem {
     item: string;
     estimatedCost: string;
@@ -44,8 +37,6 @@ const transactionSchema = z.object({
   category: z.string().min(1, { message: 'Category is required' }),
   amount: z.coerce.number().refine(val => val !== 0, { message: 'Amount cannot be zero' }),
 });
-
-type Transaction = z.infer<typeof transactionSchema> & { id: string };
 
 function AIBudgetAnalyzer() {
     const { toast } = useToast();
@@ -98,7 +89,6 @@ function AIBudgetAnalyzer() {
 
                 {analysisResult && (
                     <div className="mt-6">
-                        <h3 className="font-semibold mb-2">Analysis Results:</h3>
                          <p className="text-sm text-muted-foreground mb-4 italic">{analysisResult.summary}</p>
                         <Table>
                             <TableHeader>
@@ -205,22 +195,13 @@ function AddTransactionForm({ onAddTransaction }: { onAddTransaction: (data: Omi
 }
 
 export default function BudgetTrackingPage() {
-  const { crewSalaries } = useScript();
+  const { crewSalaries, transactions, addTransaction } = useScript();
   const [totalCrewCost, setTotalCrewCost] = useState(0);
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
 
   useEffect(() => {
     const total = crewSalaries.reduce((acc, member) => acc + (member.dailyRate * member.days), 0);
     setTotalCrewCost(total);
   }, [crewSalaries]);
-  
-  const handleAddTransaction = (data: Omit<Transaction, 'id'>) => {
-    const newTransaction: Transaction = {
-        ...data,
-        id: `TXN${(Date.now() + Math.random()).toString(36)}`,
-    };
-    setTransactions(prev => [newTransaction, ...prev]);
-  };
 
   return (
     <div className="space-y-8">
@@ -314,7 +295,7 @@ export default function BudgetTrackingPage() {
             </CardContent>
         </Card>
         
-        <AddTransactionForm onAddTransaction={handleAddTransaction} />
+        <AddTransactionForm onAddTransaction={addTransaction} />
 
         <Card>
             <CardHeader>
@@ -344,4 +325,3 @@ export default function BudgetTrackingPage() {
     </div>
   );
 }
-    

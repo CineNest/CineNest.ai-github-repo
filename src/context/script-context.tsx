@@ -10,6 +10,14 @@ export interface CrewMemberSalary {
   days: number;
 }
 
+export interface Transaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  category: string;
+}
+
 const initialCrewAndCast: CrewMemberSalary[] = [
   { name: 'Priya Sharma', role: 'Lead Actor (Veera)', dailyRate: 50000, days: 25 },
   { name: 'Rohan Mehra', role: 'Lead Actor (Kabir)', dailyRate: 45000, days: 28 },
@@ -21,6 +29,12 @@ const initialCrewAndCast: CrewMemberSalary[] = [
   { name: 'Taylor Kim', role: 'Editor', dailyRate: 12000, days: 45 },
 ];
 
+const initialTransactions: Transaction[] = [
+    {id: 'TXN001', date: '2024-07-28', description: 'Camera Package Rental', amount: -25000, category: 'Equipment'},
+    {id: 'TXN002', date: '2024-07-28', description: 'Art Department Supplies', amount: -4500, category: 'Props'},
+    {id: 'TXN003', date: '2024-07-27', description: 'Location Fee: Downtown Loft', amount: -12000, category: 'Locations'},
+    {id: 'TXN004', date: '2024-07-26', description: 'Catering: Day 1', amount: -8000, category: 'Misc'},
+];
 
 interface ScriptContextType {
   script: string;
@@ -29,6 +43,9 @@ interface ScriptContextType {
   setBreakdown: (breakdown: ScriptBreakdownOutput | null) => void;
   crewSalaries: CrewMemberSalary[];
   setCrewSalaries: (salaries: CrewMemberSalary[]) => void;
+  transactions: Transaction[];
+  setTransactions: (transactions: Transaction[]) => void;
+  addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
   isLoading: boolean;
 }
 
@@ -39,6 +56,9 @@ const ScriptContext = createContext<ScriptContextType>({
   setBreakdown: () => {},
   crewSalaries: [],
   setCrewSalaries: () => {},
+  transactions: [],
+  setTransactions: () => {},
+  addTransaction: () => {},
   isLoading: true,
 });
 
@@ -50,6 +70,7 @@ export function ScriptProvider({ children }: { children: ReactNode }) {
   const [script, setScriptState] = useState('');
   const [breakdown, setBreakdownState] = useState<ScriptBreakdownOutput | null>(null);
   const [crewSalaries, setCrewSalariesState] = useState<CrewMemberSalary[]>([]);
+  const [transactions, setTransactionsState] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -66,9 +87,18 @@ export function ScriptProvider({ children }: { children: ReactNode }) {
       } else {
         setCrewSalariesState(initialCrewAndCast);
       }
+
+      const savedTransactions = localStorage.getItem('cineflow-transactions');
+       if (savedTransactions) {
+        setTransactionsState(JSON.parse(savedTransactions));
+      } else {
+        setTransactionsState(initialTransactions);
+      }
+
     } catch (error) {
       console.error('Failed to read from localStorage', error);
       setCrewSalariesState(initialCrewAndCast);
+      setTransactionsState(initialTransactions);
     } finally {
       setIsLoading(false);
     }
@@ -106,8 +136,33 @@ export function ScriptProvider({ children }: { children: ReactNode }) {
       console.error('Failed to save salaries to localStorage', error);
     }
   }, []);
+  
+  const setTransactions = useCallback((newTransactions: Transaction[]) => {
+    setTransactionsState(newTransactions);
+    try {
+        localStorage.setItem('cineflow-transactions', JSON.stringify(newTransactions));
+    } catch (error) {
+        console.error('Failed to save transactions to localStorage', error);
+    }
+  }, []);
 
-  const value = { script, setScript, breakdown, setBreakdown, crewSalaries, setCrewSalaries, isLoading };
+  const addTransaction = useCallback((newTransactionData: Omit<Transaction, 'id'>) => {
+    setTransactionsState(prev => {
+        const newTransaction: Transaction = {
+            ...newTransactionData,
+            id: `TXN${(Date.now() + Math.random()).toString(36)}`,
+        };
+        const updatedTransactions = [newTransaction, ...prev];
+        try {
+            localStorage.setItem('cineflow-transactions', JSON.stringify(updatedTransactions));
+        } catch (error) {
+            console.error('Failed to save transactions to localStorage', error);
+        }
+        return updatedTransactions;
+    });
+  }, []);
+
+  const value = { script, setScript, breakdown, setBreakdown, crewSalaries, setCrewSalaries, transactions, setTransactions, addTransaction, isLoading };
 
   return (
     <ScriptContext.Provider value={value}>

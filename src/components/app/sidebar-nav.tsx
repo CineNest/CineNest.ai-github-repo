@@ -4,14 +4,10 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import {
   LayoutDashboard,
   ClipboardList,
-  Clapperboard,
   Presentation,
   AreaChart,
   Scale,
@@ -19,7 +15,7 @@ import {
   FileText as DocumentationIcon,
   Rss,
   DollarSign,
-  Users as UsersIcon,
+  PieChart,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -33,6 +29,7 @@ const menuItems = [
     label: 'Budget Tracking', 
     icon: DollarSign,
   },
+   { href: '/dashboard/production/budget-analysis', label: 'Budget Analysis', icon: PieChart },
   { href: '/dashboard/post-production', label: 'Post-Production', icon: Presentation },
   { href: '/dashboard/status', label: 'Status Logs', icon: Rss },
   { href: '/dashboard/documentation', label: 'Documentation', icon: DocumentationIcon },
@@ -48,13 +45,20 @@ export function SidebarNav() {
 
   const allMenuItems = user ? [...menuItems, profileMenuItem] : menuItems;
 
+  const isLinkActive = (href: string) => {
+    if (href === '/dashboard') {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
+
   return (
     <SidebarMenu>
       {allMenuItems.map((item) => (
         <SidebarMenuItem key={item.href}>
           <Link href={item.href}>
             <SidebarMenuButton
-              isActive={pathname.startsWith(item.href) && (item.href === '/dashboard/production' ? pathname.startsWith('/dashboard/production') : pathname === item.href)}
+              isActive={isLinkActive(item.href)}
               tooltip={item.label}
             >
               <item.icon />

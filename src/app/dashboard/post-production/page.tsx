@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DollarSign, BarChart, Users, Video } from 'lucide-react';
+import { DollarSign, BarChart } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PostProductionPage() {
@@ -23,9 +23,9 @@ export default function PostProductionPage() {
           </CardHeader>
           <CardContent>
             <p className="text-xs text-muted-foreground mb-4">
-              Monitor post-production expenses against your budget.
+              Analyze your spending against your budget goals.
             </p>
-            <Link href="/dashboard/production">
+            <Link href="/dashboard/production/budget-analysis">
               <Button>View Budget</Button>
             </Link>
           </CardContent>
