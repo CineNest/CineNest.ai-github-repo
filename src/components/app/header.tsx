@@ -15,17 +15,27 @@ import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { AppLogo } from '../icons';
 import Link from 'next/link';
-import { Moon, Sun } from 'lucide-react';
+import { LogOut, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { useAuth, useUser } from '@/firebase';
+import { useRouter } from 'next/navigation';
 
 export function Header() {
   const [mounted, setMounted] = useState(false)
   const { setTheme, resolvedTheme } = useTheme()
+  const { user } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const handleLogout = async () => {
+    await auth.signOut();
+    router.push('/login');
+  };
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
@@ -48,24 +58,33 @@ export function Header() {
             <span className="sr-only">Toggle theme</span>
           </Button>
         )}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Avatar>
-                <AvatarImage src="https://picsum.photos/seed/avatar/32/32" />
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Avatar>
+                  <AvatarImage src={user.photoURL || "https://picsum.photos/seed/avatar/32/32"} />
+                  <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem disabled>Settings</DropdownMenuItem>
+              <DropdownMenuItem disabled>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+           <Link href="/login">
+            <Button>Login</Button>
+          </Link>
+        )}
       </div>
     </header>
   );

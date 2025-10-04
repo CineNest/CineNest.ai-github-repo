@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { ScriptProvider } from '@/context/script-context';
 import { ThemeProvider } from '@/components/app/theme-provider';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: 'CineFlow AI',
@@ -23,10 +24,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ScriptProvider>
-            {children}
-          </ScriptProvider>
-          <Toaster />
+          <FirebaseClientProvider>
+            <ScriptProvider>
+              {children}
+            </ScriptProvider>
+            <Toaster />
+          </FirebaseClientProvider>
         </ThemeProvider>
       </body>
     </html>

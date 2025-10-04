@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,17 +9,24 @@ import { AppLogo } from '@/components/icons';
 import { Loader2, Upload, Users } from 'lucide-react';
 import { useScript } from '@/context/script-context';
 import Link from 'next/link';
+import { useUser } from '@/firebase';
 
 export default function Home() {
   const { script, setScript } = useScript();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user, isUserLoading } = useUser();
+  const [webhookResult, setWebhookResult] = useState('');
 
   const handleGetStarted = () => {
     setIsLoading(true);
     // The script is already managed by the context, which handles localStorage
-    router.push('/dashboard');
+    if (user) {
+      router.push('/dashboard');
+    } else {
+      router.push('/signup');
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +44,14 @@ export default function Home() {
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
+
+  if (isUserLoading) {
+    return (
+       <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-24 bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
+        <Loader2 className="h-16 w-16 animate-spin text-white" />
+      </main>
+    )
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-24 bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
@@ -58,8 +73,8 @@ export default function Home() {
                 onChange={(e) => setScript(e.target.value)}
               />
               <div className="flex flex-col sm:flex-row gap-2">
-                <Button size="lg" onClick={handleGetStarted} className="flex-1" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button size="lg" onClick={handleGetStarted} className="flex-1" disabled={isLoading || isUserLoading}>
+                  {(isLoading || isUserLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Get Started
                 </Button>
                  <input
@@ -80,6 +95,12 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
+               {webhookResult && (
+                <div className="mt-4 p-4 bg-muted rounded-lg">
+                  <h4 className="font-semibold mb-2">Webhook Response:</h4>
+                  <pre className="text-sm whitespace-pre-wrap">{webhookResult}</pre>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
