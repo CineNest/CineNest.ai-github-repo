@@ -17,50 +17,6 @@ import { Header } from '@/components/app/header';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
-function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="1em"
-      height="1em"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <line x1="12" y1="5" x2="12" y2="19"></line>
-      <line x1="5" y1="12" x2="19" y2="12"></line>
-    </svg>
-  );
-}
-
-function SparkleIcon(props: React.SVGProps<SVGSVGElement>) {
-    return (
-        <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="24" 
-            height="24" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-            {...props}
-        >
-            <path d="M12 3L9.5 8.5L4 11L9.5 13.5L12 19L14.5 13.5L20 11L14.5 8.5L12 3Z"/>
-            <path d="M5 3v4"/>
-            <path d="M19 17v4"/>
-            <path d="M3 5h4"/>
-            <path d="M17 19h4"/>
-        </svg>
-    )
-}
-
-
 export default function Home() {
   const { setScript } = useScript();
   const [localScript, setLocalScript] = useState('');
@@ -164,18 +120,9 @@ export default function Home() {
       />
        <Header />
        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
-        <div className="relative mb-8 flex items-center justify-center">
-            <Image
-                src="https://storage.googleapis.com/project-spark-308117-21959.appspot.com/c63955a5-e633-4b45-8123-28f090b83075.png"
-                alt="ellipse"
-                width={600}
-                height={400}
-                className="absolute inset-0 z-0 object-contain"
-            />
-            <h1 className="relative z-10 text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-yellow-300 via-primary to-white">
-                CineNest.ai
-            </h1>
-        </div>
+        <h1 className="relative z-10 text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-pink-400 via-primary to-cyan-400 mb-8">
+            CineNest.ai
+        </h1>
 
         <Card className="w-full max-w-2xl shadow-2xl bg-card/80 backdrop-blur-sm border-white/10">
             <CardHeader>
@@ -185,7 +132,7 @@ export default function Home() {
             <CardContent className="space-y-4">
               <Textarea
                 placeholder="TITLE: My Awesome Film..."
-                className="min-h-[90px] bg-background/50 text-base"
+                className="min-h-[150px] bg-background/50 text-base"
                 value={localScript}
                 onChange={(e) => {
                   setLocalScript(e.target.value);
@@ -193,7 +140,7 @@ export default function Home() {
                   setAiResult('');
                 }}
               />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                 <div className='flex items-center space-x-2'>
                   <Label htmlFor="script-file" className="flex-1">
                     <Button asChild variant="outline" className="w-full cursor-pointer rounded-full">
@@ -210,16 +157,8 @@ export default function Home() {
                   size="lg" 
                   onClick={handleGetStarted} 
                   disabled={!isInputPresent || isLoading || isAiProcessing} 
-                  className={cn("w-full rounded-full", isInputPresent && "animated-button")}
+                  className="w-full rounded-full"
                 >
-                  {isInputPresent && (
-                    <>
-                      <SparkleIcon className="sparkle sparkle-1" />
-                      <PlusIcon className="sparkle sparkle-2" />
-                      <SparkleIcon className="sparkle sparkle-3" />
-                      <PlusIcon className="sparkle sparkle-4" />
-                    </>
-                  )}
                   {isAiProcessing || isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -233,7 +172,7 @@ export default function Home() {
                   )}
                 </Button>
               </div>
-              {fileName && <p className="text-sm text-muted-foreground truncate">Uploaded: {fileName}</p>}
+              {fileName && <p className="text-sm text-muted-foreground truncate pt-2">Uploaded: {fileName}</p>}
 
               {aiResult && (
                 <div className="mt-6 text-left">
