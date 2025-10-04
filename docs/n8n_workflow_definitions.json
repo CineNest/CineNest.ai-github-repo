@@ -1,0 +1,121 @@
+{
+  "workflows": [
+    {
+      "name": "automatePrePostProductionTasks",
+      "description": "Automates pre and post-production tasks using AI, based on a script summary and film genre.",
+      "inputSchema": {
+        "task": {
+          "type": "string",
+          "description": "The pre or post-production task to automate (e.g., 'Generate a shot list', 'Create a call sheet')."
+        },
+        "scriptSummary": {
+          "type": "string",
+          "description": "A summary of the film script."
+        },
+        "filmGenre": {
+          "type": "string",
+          "description": "The genre of the film (e.g., 'Sci-Fi', 'Drama')."
+        }
+      },
+      "outputSchema": {
+        "details": {
+          "type": "string",
+          "description": "Generated details for the specified pre or post-production task."
+        }
+      },
+      "prompt": "You are an AI assistant specialized in filmmaking. Your role is to assist filmmakers in automating pre and post production tasks.\n\nGiven the task, script summary, and film genre, generate detailed guidance, suggestions, or plans to help automate the specified task.\n\nTask: {{task}}\nScript Summary: {{scriptSummary}}\nFilm Genre: {{filmGenre}}\n\nProvide details that can be directly implemented by the filmmaker to streamline their workflow."
+    },
+    {
+      "name": "analyzeTicketSalesData",
+      "description": "Analyzes ticket sales data to predict movie collection trends and suggest distribution strategies.",
+      "inputSchema": {
+        "ticketSalesData": {
+          "type": "string",
+          "description": "Ticket sales data from BookMyShow. Should be in CSV format with headers: 'Date', 'Region', 'ScreenCount', and 'Sales'."
+        }
+      },
+      "outputSchema": {
+        "predictedTrends": {
+          "type": "string",
+          "description": "A detailed analysis of the ticket sales data, including predicted movie collection trends and actionable insights for distribution strategies."
+        }
+      },
+      "prompt": "You are an expert data analyst specializing in the film industry.\n\nYou will analyze the ticket sales data to predict movie collection trends and provide actionable insights for distribution strategies.\n\nAnalyze the following ticket sales data and provide a detailed report:\n\nTicket Sales Data:\n{{ticketSalesData}}\n\nBased on this data, predict the movie collection trends and suggest optimal distribution strategies. Identify key patterns, potential risks, and opportunities.\n\nYour analysis should be clear, concise, and actionable for a film distributor."
+    },
+    {
+      "name": "ensureLegalCompliance",
+      "description": "Analyzes a contract for legal compliance and uses a placeholder for DocuSign integration.",
+      "inputSchema": {
+        "contractText": {
+          "type": "string",
+          "description": "The text content of the contract."
+        },
+        "docusignTemplateId": {
+          "type": "string",
+          "description": "The ID of the DocuSign template to use."
+        },
+        "signerName": {
+          "type": "string",
+          "description": "The name of the contract signer."
+        },
+        "signerEmail": {
+          "type": "string",
+          "description": "The email of the contract signer."
+        }
+      },
+      "outputSchema": {
+        "legalComplianceCheck": {
+          "type": "string",
+          "description": "Summary of legal compliance check."
+        },
+        "docusignEnvelopeId": {
+          "type": "string",
+          "description": "The ID of the DocuSign envelope created (placeholder)."
+        }
+      },
+      "prompt": "You are a legal expert specializing in contract law.\n\nYou will review the contract text and provide a summary of any potential legal issues, risks, or areas of concern.\n\nContract Text: {{contractText}}\n\nYou will then use DocuSign to send the contract for digital signature.\n\nDocuSign Template ID: {{docusignTemplateId}}\nSigner Name: {{signerName}}\nSigner Email: {{signerEmail}}"
+    },
+    {
+      "name": "generateLocationContract",
+      "description": "Generates a location contract for film productions based on provided details.",
+      "inputSchema": {
+        "locationName": {
+          "type": "string",
+          "description": "The name of the location."
+        },
+        "locationAddress": {
+          "type": "string",
+          "description": "The full address of the location."
+        },
+        "ownerName": {
+          "type": "string",
+          "description": "The name of the location owner."
+        },
+        "ownerContact": {
+          "type": "string",
+          "description": "The contact information of the location owner (phone/email)."
+        },
+        "filmCompanyName": {
+          "type": "string",
+          "description": "The name of the film production company."
+        },
+        "productionDates": {
+          "type": "string",
+          "description": "The start and end dates of the filming production."
+        },
+        "specificTerms": {
+          "type": "string",
+          "optional": true,
+          "description": "Any specific terms or conditions for the location usage."
+        }
+      },
+      "outputSchema": {
+        "contractText": {
+          "type": "string",
+          "description": "The generated location contract text."
+        }
+      },
+      "prompt": "You are an AI assistant specialized in generating legal contracts for film productions.\n  Based on the provided location details, owner information, and production terms, create a comprehensive location contract.\n  Include standard legal clauses and ensure the contract is tailored to the specific details provided.\n  Make sure that both parties, the location owner, and the film company are protected.\n\n  Location Name: {{locationName}}\n  Location Address: {{locationAddress}}\n  Owner Name: {{ownerName}}\n  Owner Contact: {{ownerContact}}\n  Film Company Name: {{filmCompanyName}}\n  Production Dates: {{productionDates}}\n  Specific Terms: {{specificTerms}}\n\n  Contract:\n"
+    }
+  ]
+}
