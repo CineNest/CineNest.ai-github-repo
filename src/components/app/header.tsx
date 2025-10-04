@@ -34,7 +34,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-white/10 bg-transparent px-4 md:px-6">
+    <header className="z-40 flex h-16 items-center gap-4 border-b border-white/10 bg-transparent px-4 md:px-6">
       <Link href="/" className="flex items-center gap-2 font-semibold">
           <span className="font-bold">CineNest.ai</span>
       </Link>
