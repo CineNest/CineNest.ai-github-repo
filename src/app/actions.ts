@@ -21,10 +21,6 @@ import {
   type ScriptBreakdownInput,
 } from '@/ai/flows/script-breakdown-flow';
 import {
-  generateSchedule,
-  type GenerateScheduleInput,
-} from '@/ai/flows/generate-schedule-flow';
-import {
   suggestCrew,
   type SuggestCrewInput,
 } from '@/ai/flows/suggest-crew-flow';
@@ -83,16 +79,6 @@ export async function scriptBreakdownAction(input: ScriptBreakdownInput) {
     return { success: true, data: result };
   } catch (error: any) {
     console.error('Error in scriptBreakdownAction:', error);
-    return { success: false, error: error.message || 'An unknown error occurred.' };
-  }
-}
-
-export async function generateScheduleAction(input: GenerateScheduleInput) {
-  try {
-    const result = await generateSchedule(input);
-    return { success: true, data: result };
-  } catch (error: any) {
-    console.error('Error in generateScheduleAction:', error);
     return { success: false, error: error.message || 'An unknown error occurred.' };
   }
 }

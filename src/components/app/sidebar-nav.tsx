@@ -24,7 +24,6 @@ import { useUser } from '@/firebase';
 const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/dashboard/pre-production', label: 'Pre-Production', icon: ClipboardList },
-  { href: '/dashboard/production-plan', label: 'Production Plan', icon: NotebookPen },
   { href: '/dashboard/production', label: 'Production', icon: Clapperboard },
   { href: '/dashboard/post-production', label: 'Post-Production', icon: Presentation },
   { href: '/dashboard/status', label: 'Status Logs', icon: Rss },

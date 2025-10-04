@@ -67,7 +67,7 @@ export default function DocumentationPage() {
                     <li key={field}>{field.replace(/_/g, ' ')}</li>
                   ))}
                 </ul>
-                <Link href="/dashboard/production-plan" className="w-full">
+                <Link href="/dashboard/pre-production/scheduling" className="w-full">
                   <Button className="w-full">
                     Enter Data
                   </Button>
