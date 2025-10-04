@@ -79,10 +79,8 @@ export default function Home() {
     setScript(localScript);
     setIsLoading(true);
 
-    if (aiResult) {
-      router.push('/dashboard');
-      return;
-    }
+    // Always redirect, AI processing is a bonus
+    router.push('/dashboard');
 
     setIsAiProcessing(true);
     setAiResult('');
@@ -95,30 +93,22 @@ export default function Home() {
 
     if (result.success && result.data) {
       setAiResult(result.data.details);
-      toast({
-        title: 'AI Analysis Complete',
-        description: 'Redirecting to dashboard...',
-      });
-      router.push('/dashboard');
+      // No need for a toast here as we've already redirected.
     } else {
-      toast({
-        variant: 'destructive',
-        title: 'AI Analysis Failed',
-        description: result.error || 'Could not process the script.',
-      });
-      setIsLoading(false);
+      // Silently fail or log, to not interrupt user flow.
+      console.error("AI Analysis failed:", result.error);
     }
   };
   
   const isInputPresent = localScript.trim() !== '' || fileName !== '';
 
   return (
-    <>
-      <div 
-        className="fixed inset-0 bg-cover bg-center -z-10" 
-        style={{ backgroundImage: 'url(https://storage.googleapis.com/project-spark-308117-21959.appspot.com/e5f2b842-8822-4f36-a36c-9426689d13c7.png)' }}
-      />
-      <div className="relative flex flex-col min-h-screen">
+    <div 
+      className="relative min-h-screen w-full bg-cover bg-center" 
+      style={{ backgroundImage: 'url(https://storage.googleapis.com/project-spark-308117-21959.appspot.com/e5f2b842-8822-4f36-a36c-9426689d13c7.png)' }}
+    >
+      <div className="absolute inset-0 bg-background/60 backdrop-blur-sm -z-0" />
+      <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
           <h1 className="relative z-10 text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-pink-400 via-primary to-cyan-400 mb-8">
@@ -142,7 +132,7 @@ export default function Home() {
                   }}
                 />
                 <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-start">
+                  <div className="flex items-center">
                       <Label htmlFor="script-file" className="cursor-pointer">
                         <Button asChild variant="outline" className="cursor-pointer">
                           <span>
@@ -153,7 +143,7 @@ export default function Home() {
                         <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
                       </Label>
                       {fileName && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground pl-4 mt-2">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground pl-4">
                           <FileCheck className="h-5 w-5 text-green-400" />
                           <span className="truncate">{fileName}</span>
                         </div>
@@ -164,11 +154,12 @@ export default function Home() {
                     size="lg" 
                     onClick={handleGetStarted} 
                     disabled={!isInputPresent || isLoading || isAiProcessing}
+                    className="animated-button"
                   >
                     {isAiProcessing || isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        <span>{isAiProcessing ? 'Generating...' : 'Redirecting...'}</span>
+                        <span>{isAiProcessing ? 'Analyzing...' : 'Loading...'}</span>
                       </>
                     ) : (
                       <>
@@ -193,6 +184,6 @@ export default function Home() {
             CineNest.ai &copy; {new Date().getFullYear()}
         </footer>
       </div>
-    </>
+    </div>
   );
 }
