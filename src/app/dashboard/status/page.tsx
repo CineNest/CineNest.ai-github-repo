@@ -17,6 +17,17 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const statusSchema = z.object({
   phase: z.string().min(1, 'Please select a production phase.'),
@@ -55,7 +66,8 @@ export default function StatusPage() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof statusSchema>) {
+  async function handleConfirmSubmit() {
+    const values = form.getValues();
     if (!user) {
       toast({
         variant: 'destructive',
@@ -107,7 +119,7 @@ export default function StatusPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(() => {})} className="space-y-4">
               <FormField
                 control={form.control}
                 name="phase"
@@ -149,10 +161,28 @@ export default function StatusPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isSubmitting || isUserLoading}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Log Status
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" disabled={isSubmitting || isUserLoading || !form.formState.isValid}>
+                    Log Status
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action will save the current status report to the project log.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleConfirmSubmit} disabled={isSubmitting}>
+                      {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Confirm & Log Status
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </form>
           </Form>
         </CardContent>
