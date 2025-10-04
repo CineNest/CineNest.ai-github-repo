@@ -16,6 +16,10 @@ import {
   generateLocationContract,
   type GenerateLocationContractInput,
 } from '@/ai/flows/generate-location-contract';
+import {
+  scriptBreakdown,
+  type ScriptBreakdownInput,
+} from '@/ai/flows/script-breakdown-flow';
 
 export async function generateContractAction(input: GenerateLocationContractInput) {
   try {
@@ -53,6 +57,16 @@ export async function checkComplianceAction(input: EnsureLegalComplianceInput) {
     return { success: true, data: result };
   } catch (error: any) {
     console.error('Error in checkComplianceAction:', error);
+    return { success: false, error: error.message || 'An unknown error occurred.' };
+  }
+}
+
+export async function scriptBreakdownAction(input: ScriptBreakdownInput) {
+  try {
+    const result = await scriptBreakdown(input);
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error('Error in scriptBreakdownAction:', error);
     return { success: false, error: error.message || 'An unknown error occurred.' };
   }
 }
