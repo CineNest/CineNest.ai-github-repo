@@ -1,0 +1,51 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user account within the CineFlow AI application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "username": {
+          "type": "string",
+          "description": "The unique username for the user's account."
+        }
+      },
+      "required": [
+        "id",
+        "username"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile data.  Access is restricted to the user identified by {userId}. No denormalized authorization fields are required as access is path-based.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user, matching the Firebase Authentication UID."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "Given the application's focus on user-generated content and the need for secure access to user-specific data, a path-based ownership model is ideal. The `/users/{userId}` collection will store user profiles. This structure ensures that only the authenticated user (identified by `request.auth.uid`) can access their own data, simplifying security rules and maintaining data privacy.  This design achieves Authorization Independence because each user's data is self-contained under their own user ID, eliminating the need for `get()` calls to parent documents for authorization. The single `users` collection ensures a homogeneous security posture, simplifying rules. The QAP (Rules are not Filters) requirement is satisfied as the rules will be path-based, filtering by `request.auth.uid`, thus preventing listing unauthorized data."
+  }
+}
