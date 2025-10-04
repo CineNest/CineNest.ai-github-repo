@@ -1,15 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { analyzeBudgetFromScriptAction } from '@/app/actions';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useScript } from '@/context/script-context';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, ToyBrick, Users, Wrench, Loader2, Sparkles } from 'lucide-react';
+import { DollarSign, ToyBrick, Users, Wrench, Loader2, Sparkles, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const budgetData = [
@@ -21,7 +26,7 @@ const budgetData = [
   { name: 'Contingency', value: 150000, fill: 'var(--color-contingency)' },
 ];
 
-const transactions = [
+const initialTransactions = [
     {id: 'TXN001', date: '2024-07-28', description: 'Camera Package Rental', amount: -25000, category: 'Equipment'},
     {id: 'TXN002', date: '2024-07-28', description: 'Art Department Supplies', amount: -4500, category: 'Props'},
     {id: 'TXN003', date: '2024-07-27', description: 'Location Fee: Downtown Loft', amount: -12000, category: 'Locations'},
@@ -33,6 +38,15 @@ interface BudgetItem {
     estimatedCost: string;
     reasoning: string;
 }
+
+const transactionSchema = z.object({
+  date: z.string().min(1, { message: 'Date is required' }),
+  description: z.string().min(3, { message: 'Description is required' }),
+  category: z.string().min(1, { message: 'Category is required' }),
+  amount: z.coerce.number().refine(val => val !== 0, { message: 'Amount cannot be zero' }),
+});
+
+type Transaction = z.infer<typeof transactionSchema> & { id: string };
 
 function AIBudgetAnalyzer() {
     const { toast } = useToast();
@@ -120,14 +134,96 @@ function AIBudgetAnalyzer() {
     );
 }
 
+function AddTransactionForm({ onAddTransaction }: { onAddTransaction: (data: Omit<Transaction, 'id'>) => void }) {
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof transactionSchema>>({
+    resolver: zodResolver(transactionSchema),
+    defaultValues: {
+      date: new Date().toISOString().split('T')[0],
+      description: '',
+      category: '',
+      amount: 0,
+    },
+  });
+
+  const onSubmit: SubmitHandler<z.infer<typeof transactionSchema>> = (data) => {
+    onAddTransaction(data);
+    toast({
+        title: "Transaction Added",
+        description: `Logged ${data.amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })} for ${data.description}.`
+    });
+    form.reset({
+        date: new Date().toISOString().split('T')[0],
+        description: '',
+        category: '',
+        amount: 0,
+    });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Add New Transaction</CardTitle>
+        <CardDescription>Log a new expense to keep your budget updated.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField control={form.control} name="date" render={({ field }) => (
+                <FormItem><FormLabel>Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="amount" render={({ field }) => (
+                <FormItem><FormLabel>Amount (INR)</FormLabel><FormControl><Input type="number" placeholder="e.g., -5000" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+            </div>
+            <FormField control={form.control} name="description" render={({ field }) => (
+              <FormItem><FormLabel>Description</FormLabel><FormControl><Input placeholder="e.g., Prop rental" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="category" render={({ field }) => (
+              <FormItem><FormLabel>Category</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl><SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    <SelectItem value="Equipment">Equipment</SelectItem>
+                    <SelectItem value="Crew">Crew</SelectItem>
+                    <SelectItem value="Props">Props</SelectItem>
+                    <SelectItem value="Locations">Locations</SelectItem>
+                    <SelectItem value="VFX">VFX</SelectItem>
+                    <SelectItem value="Catering">Catering</SelectItem>
+                    <SelectItem value="Misc">Misc</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <Button type="submit">
+              <PlusCircle className="mr-2 h-4 w-4" /> Add Expense
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  )
+}
+
 export default function BudgetTrackingPage() {
   const { crewSalaries } = useScript();
   const [totalCrewCost, setTotalCrewCost] = useState(0);
+  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
 
   useEffect(() => {
     const total = crewSalaries.reduce((acc, member) => acc + (member.dailyRate * member.days), 0);
     setTotalCrewCost(total);
   }, [crewSalaries]);
+  
+  const handleAddTransaction = (data: Omit<Transaction, 'id'>) => {
+    const newTransaction: Transaction = {
+        ...data,
+        id: `TXN${(Date.now() + Math.random()).toString(36)}`,
+    };
+    setTransactions(prev => [newTransaction, ...prev]);
+  };
 
   return (
     <div className="space-y-8">
@@ -193,6 +289,7 @@ export default function BudgetTrackingPage() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3 space-y-8">
             <AIBudgetAnalyzer />
+            <AddTransactionForm onAddTransaction={handleAddTransaction} />
           </div>
 
           <div className="lg:col-span-2">
@@ -255,3 +352,4 @@ export default function BudgetTrackingPage() {
     </div>
   );
 }
+    
