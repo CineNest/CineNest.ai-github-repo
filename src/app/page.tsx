@@ -121,9 +121,9 @@ export default function Home() {
     }
     
     setScript(localScript);
+    setIsLoading(true);
 
     if (aiResult) {
-      setIsLoading(true);
       router.push('/dashboard');
       return;
     }
@@ -141,14 +141,16 @@ export default function Home() {
       setAiResult(result.data.details);
       toast({
         title: 'AI Analysis Complete',
-        description: 'A shot list has been generated from your script.',
+        description: 'Redirecting to dashboard...',
       });
+      router.push('/dashboard');
     } else {
       toast({
         variant: 'destructive',
         title: 'AI Analysis Failed',
         description: result.error || 'Could not process the script.',
       });
+      setIsLoading(false);
     }
   };
   
@@ -158,7 +160,7 @@ export default function Home() {
     <div className="relative flex flex-col min-h-screen">
       <div 
         className="absolute inset-0 bg-cover bg-center -z-10" 
-        style={{ backgroundImage: 'url(https://storage.googleapis.com/project-spark-308117-21959.appspot.com/3911bb5c-1178-4363-951d-28564f1345c2.png)' }}
+        style={{ backgroundImage: 'url(https://storage.googleapis.com/project-spark-308117-21959.appspot.com/e5f2b842-8822-4f36-a36c-9426689d13c7.png)' }}
       />
        <Header />
        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
@@ -218,15 +220,15 @@ export default function Home() {
                       <PlusIcon className="sparkle sparkle-4" />
                     </>
                   )}
-                  {isAiProcessing ? (
+                  {isAiProcessing || isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      <span>Generating...</span>
+                      <span>{isAiProcessing ? 'Generating...' : 'Redirecting...'}</span>
                     </>
                   ) : (
                     <>
-                      <span>{aiResult ? 'Go to Dashboard' : 'Get Started'}</span>
-                      {!isAiProcessing && <ArrowRight className="ml-2 h-4 w-4" />}
+                      <span>Get Started</span>
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </>
                   )}
                 </Button>
