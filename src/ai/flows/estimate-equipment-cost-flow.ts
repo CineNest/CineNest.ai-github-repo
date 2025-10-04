@@ -35,9 +35,9 @@ const prompt = ai.definePrompt({
   name: 'estimateEquipmentCostPrompt',
   input: { schema: EstimateEquipmentCostInputSchema },
   output: { schema: EstimateEquipmentCostOutputSchema },
-  prompt: `You are a film production budget expert specializing in the Indian market. Your task is to provide an estimated average rental cost in Indian Rupees (INR) for a list of film equipment.
+  prompt: `You are a film production budget expert specializing in the Indian market. Your task is to provide an estimated average rental cost in Indian Rupees (INR) for a list of film equipment, using Google Shopping as your primary price reference.
 
-  Analyze the following list and provide a plausible, estimated rental price in INR for each item. The price can be per day or a general note. Also provide a total summary.
+  For each item in the list below, search for its typical rental price on Google Shopping in India and provide a plausible, estimated rental price in INR. The price can be per day or a general note if prices vary widely. Also provide a total summary of all estimated costs.
 
   Equipment List:
   {{{equipmentList}}}
