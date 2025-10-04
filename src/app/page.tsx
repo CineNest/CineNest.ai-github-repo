@@ -17,6 +17,7 @@ export default function Home() {
   const { setScript } = useScript();
   const [localScript, setLocalScript] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [fileName, setFileName] = useState('');
   const router = useRouter();
   const { toast } = useToast();
@@ -24,38 +25,46 @@ export default function Home() {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setIsProcessingFile(true);
       setFileName(file.name);
-      if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
-        const text = await file.text();
-        setLocalScript(text);
-      } else if (file.name.endsWith('.docx')) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          const arrayBuffer = e.target?.result;
-          if (arrayBuffer) {
-            try {
-              const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer as ArrayBuffer });
-              setLocalScript(result.value);
-            } catch (error) {
-              console.error('Error parsing .docx file:', error);
-              setFileName('');
-              toast({
-                variant: 'destructive',
-                title: 'Error Reading File',
-                description: 'Could not extract text from the Word document.',
-              });
+      
+      // Use a timeout to allow the UI to update before heavy processing
+      setTimeout(async () => {
+        if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+          const text = await file.text();
+          setLocalScript(text);
+        } else if (file.name.endsWith('.docx')) {
+          const reader = new FileReader();
+          reader.onload = async (e) => {
+            const arrayBuffer = e.target?.result;
+            if (arrayBuffer) {
+              try {
+                const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer as ArrayBuffer });
+                setLocalScript(result.value);
+              } catch (error) {
+                console.error('Error parsing .docx file:', error);
+                setFileName('');
+                toast({
+                  variant: 'destructive',
+                  title: 'Error Reading File',
+                  description: 'Could not extract text from the Word document.',
+                });
+              }
             }
-          }
-        };
-        reader.readAsArrayBuffer(file);
-      } else {
-        setFileName('');
-        toast({
-          variant: 'destructive',
-          title: 'Invalid File Type',
-          description: 'Please upload a .txt, .md, or .docx file.',
-        });
-      }
+            setIsProcessingFile(false);
+          };
+          reader.readAsArrayBuffer(file);
+          return; // Prevent setIsProcessingFile from being called too early
+        } else {
+          setFileName('');
+          toast({
+            variant: 'destructive',
+            title: 'Invalid File Type',
+            description: 'Please upload a .txt, .md, or .docx file.',
+          });
+        }
+        setIsProcessingFile(false);
+      }, 50); // Small delay to show "Processing..."
     }
   };
   
@@ -111,12 +120,21 @@ export default function Home() {
                 />
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
-                        <Input id="script-file" type="file" className="hidden" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-                        <label htmlFor="script-file" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 cursor-pointer bg-[#21143a] border-[#3a295f] text-white hover:bg-[#2a1a49]">
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload File
+                        <Input id="script-file" type="file" className="hidden" onChange={handleFileChange} disabled={isProcessingFile} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                        <label htmlFor="script-file" className={`inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${isProcessingFile ? 'cursor-not-allowed' : 'cursor-pointer'} bg-[#21143a] border-[#3a295f] text-white hover:bg-[#2a1a49]`}>
+                            {isProcessingFile ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Processing...
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload File
+                              </>
+                            )}
                         </label>
-                        {fileName && (
+                        {fileName && !isProcessingFile && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <FileCheck className="h-5 w-5 text-green-400" />
                             <span className="truncate">{fileName}</span>
@@ -127,7 +145,7 @@ export default function Home() {
                   <Button 
                     size="lg" 
                     onClick={handleGetStarted} 
-                    disabled={!isInputPresent || isLoading}
+                    disabled={!isInputPresent || isLoading || isProcessingFile}
                     className="animated-button"
                   >
                     {isLoading ? (
