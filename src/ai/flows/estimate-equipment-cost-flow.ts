@@ -18,12 +18,12 @@ export type EstimateEquipmentCostInput = z.infer<typeof EstimateEquipmentCostInp
 
 const EquipmentCostSchema = z.object({
   item: z.string().describe('The name of the equipment item.'),
-  estimatedCost: z.string().describe('The estimated average rental price for the item (e.g., "$500/day", "Varies").'),
+  estimatedCost: z.string().describe('The estimated average rental price for the item in Indian Rupees (e.g., "₹40,000/day", "Varies").'),
 });
 
 const EstimateEquipmentCostOutputSchema = z.object({
   costs: z.array(EquipmentCostSchema).describe('An array of equipment items and their estimated costs.'),
-  totalEstimatedCost: z.string().describe('A summary of the total estimated cost for all items.'),
+  totalEstimatedCost: z.string().describe('A summary of the total estimated cost for all items in Indian Rupees (INR).'),
 });
 export type EstimateEquipmentCostOutput = z.infer<typeof EstimateEquipmentCostOutputSchema>;
 
@@ -35,14 +35,14 @@ const prompt = ai.definePrompt({
   name: 'estimateEquipmentCostPrompt',
   input: { schema: EstimateEquipmentCostInputSchema },
   output: { schema: EstimateEquipmentCostOutputSchema },
-  prompt: `You are a film production budget expert. Your task is to provide an estimated average rental cost for a list of film equipment.
+  prompt: `You are a film production budget expert specializing in the Indian market. Your task is to provide an estimated average rental cost in Indian Rupees (INR) for a list of film equipment.
 
-  Analyze the following list and provide a plausible, estimated rental price for each item. The price can be per day or a general note. Also provide a total summary.
+  Analyze the following list and provide a plausible, estimated rental price in INR for each item. The price can be per day or a general note. Also provide a total summary.
 
   Equipment List:
   {{{equipmentList}}}
 
-  Provide the output as a JSON object with 'costs' and 'totalEstimatedCost'.`,
+  Provide the output as a JSON object with 'costs' and 'totalEstimatedCost'. Ensure all currency is in INR.`,
 });
 
 const estimateEquipmentCostFlow = ai.defineFlow(

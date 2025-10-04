@@ -18,19 +18,19 @@ import { DollarSign, ToyBrick, Users, Wrench, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const budgetData = [
-  { name: 'Equipment', value: 25000, fill: 'var(--color-equipment)' },
-  { name: 'Crew', value: 45000, fill: 'var(--color-crew)' },
-  { name: 'Props', value: 8000, fill: 'var(--color-props)' },
-  { name: 'Locations', value: 12000, fill: 'var(--color-locations)' },
-  { name: 'VFX', value: 30000, fill: 'var(--color-vfx)' },
-  { name: 'Contingency', value: 15000, fill: 'var(--color-contingency)' },
+  { name: 'Equipment', value: 250000, fill: 'var(--color-equipment)' },
+  { name: 'Crew', value: 450000, fill: 'var(--color-crew)' },
+  { name: 'Props', value: 80000, fill: 'var(--color-props)' },
+  { name: 'Locations', value: 120000, fill: 'var(--color-locations)' },
+  { name: 'VFX', value: 300000, fill: 'var(--color-vfx)' },
+  { name: 'Contingency', value: 150000, fill: 'var(--color-contingency)' },
 ];
 
 const transactions = [
-    {id: 'TXN001', date: '2024-07-28', description: 'Camera Package Rental', amount: -2500, category: 'Equipment'},
-    {id: 'TXN002', date: '2024-07-28', description: 'Art Department Supplies', amount: -450, category: 'Props'},
-    {id: 'TXN003', date: '2024-07-27', description: 'Location Fee: Downtown Loft', amount: -1200, category: 'Locations'},
-    {id: 'TXN004', date: '2024-07-26', description: 'Catering: Day 1', amount: -800, category: 'Misc'},
+    {id: 'TXN001', date: '2024-07-28', description: 'Camera Package Rental', amount: -25000, category: 'Equipment'},
+    {id: 'TXN002', date: '2024-07-28', description: 'Art Department Supplies', amount: -4500, category: 'Props'},
+    {id: 'TXN003', date: '2024-07-27', description: 'Location Fee: Downtown Loft', amount: -12000, category: 'Locations'},
+    {id: 'TXN004', date: '2024-07-26', description: 'Catering: Day 1', amount: -8000, category: 'Misc'},
 ];
 
 const estimateEquipmentCostSchema = z.object({
@@ -74,7 +74,7 @@ function EstimateEquipmentCostForm() {
         <Card>
             <CardHeader>
                 <CardTitle>AI Equipment Cost Estimator</CardTitle>
-                <CardDescription>Get AI-powered rental cost estimates for your equipment list.</CardDescription>
+                <CardDescription>Get AI-powered rental cost estimates for your equipment list in Indian Rupees (INR).</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -158,7 +158,7 @@ export default function BudgetTrackingPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Budget Tracking</h1>
         <p className="text-muted-foreground">
-          Monitor your production's financial health in real-time.
+          Monitor your production's financial health in real-time. All figures in INR.
         </p>
       </div>
 
@@ -169,7 +169,7 @@ export default function BudgetTrackingPage() {
             <Wrench className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$25,000</div>
+            <div className="text-2xl font-bold">₹2,50,000</div>
             <p className="text-xs text-muted-foreground">Allocated for gear</p>
           </CardContent>
         </Card>
@@ -179,7 +179,7 @@ export default function BudgetTrackingPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,000</div>
+            <div className="text-2xl font-bold">₹4,50,000</div>
             <p className="text-xs text-muted-foreground">Total for all personnel</p>
           </CardContent>
         </Card>
@@ -189,7 +189,7 @@ export default function BudgetTrackingPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$4,750</div>
+            <div className="text-2xl font-bold">₹45,000</div>
             <p className="text-xs text-muted-foreground">Average per shooting day</p>
           </CardContent>
         </Card>
@@ -199,7 +199,7 @@ export default function BudgetTrackingPage() {
             <ToyBrick className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$8,000</div>
+            <div className="text-2xl font-bold">₹80,000</div>
             <p className="text-xs text-muted-foreground">For art department & set dressing</p>
           </CardContent>
         </Card>
@@ -221,7 +221,7 @@ export default function BudgetTrackingPage() {
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={budgetData} layout="vertical" margin={{ left: 10, right: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                            <XAxis type="number" hide />
+                            <XAxis type="number" hide tickFormatter={(value) => `₹${Number(value) / 100000}L`} />
                             <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} width={80} />
                             <Tooltip
                                 cursor={{ fill: 'hsl(var(--muted))' }}
@@ -229,6 +229,7 @@ export default function BudgetTrackingPage() {
                                 background: 'hsl(var(--background))',
                                 borderColor: 'hsl(var(--border))',
                                 }}
+                                formatter={(value: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)}
                             />
                             <Bar dataKey="value" background={{ fill: 'hsl(var(--muted))' }} />
                         </BarChart>
@@ -259,7 +260,7 @@ export default function BudgetTrackingPage() {
                                 <TableCell>{t.date}</TableCell>
                                 <TableCell className="font-medium">{t.description}</TableCell>
                                 <TableCell>{t.category}</TableCell>
-                                <TableCell className="text-right font-mono">{t.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                                <TableCell className="text-right font-mono">{t.amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
