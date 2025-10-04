@@ -32,12 +32,6 @@ const documentationSections = [
     sheetGid: '1426488219',
   },
   {
-    title: 'Status',
-    description: 'Daily production status logs.',
-    fields: ['Date', 'Status', 'Phase'],
-    sheetGid: '998493108',
-  },
-  {
     title: 'Distribution',
     description: 'Distribution metrics and revenue.',
     fields: ['Date', 'Tickets_Sold', 'OTT_Views', 'Total_Revenue'],

@@ -19,6 +19,37 @@
         "id",
         "username"
       ]
+    },
+    "ProductionStatus": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Production Status",
+      "type": "object",
+      "description": "Represents a daily status log for the film production.",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "The date of the status report."
+        },
+        "phase": {
+          "type": "string",
+          "description": "The current phase of production (e.g., Pre-production, Shooting, Post-production)."
+        },
+        "summary": {
+          "type": "string",
+          "description": "A summary of the day's activities and progress."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the status was created."
+        }
+      },
+      "required": [
+        "date",
+        "phase",
+        "summary"
+      ]
     }
   },
   "auth": {
@@ -43,6 +74,16 @@
               "description": "The unique identifier for the user, matching the Firebase Authentication UID."
             }
           ]
+        }
+      },
+      {
+        "path": "/statuses",
+        "definition": {
+          "entityName": "ProductionStatus",
+          "schema": {
+            "$ref": "#/backend/entities/ProductionStatus"
+          },
+          "description": "Stores daily production status logs. All authenticated users can read and write to this collection."
         }
       }
     ],
