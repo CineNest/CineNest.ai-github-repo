@@ -15,7 +15,7 @@ import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { AppLogo } from '../icons';
 import Link from 'next/link';
-import { LogOut, Moon, Sun } from 'lucide-react';
+import { LogOut, Moon, Sun, User as UserIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useAuth, useUser } from '@/firebase';
@@ -71,7 +71,12 @@ export function Header() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem disabled>Settings</DropdownMenuItem>
+              <Link href="/dashboard/profile">
+                <DropdownMenuItem>
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  Profile
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem disabled>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>

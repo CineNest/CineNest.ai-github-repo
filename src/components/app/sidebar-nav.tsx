@@ -12,6 +12,7 @@ import {
   Presentation,
   AreaChart,
   Scale,
+  User,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -23,6 +24,7 @@ const menuItems = [
   { href: '/dashboard/post-production', label: 'Post-Production', icon: Presentation },
   { href: '/dashboard/legal', label: 'Legal & Contracts', icon: Scale },
   { href: '/dashboard/business', label: 'Business', icon: AreaChart },
+  { href: '/dashboard/profile', label: 'Profile', icon: User },
 ];
 
 export function SidebarNav() {
@@ -34,7 +36,7 @@ export function SidebarNav() {
         <SidebarMenuItem key={item.href}>
           <Link href={item.href}>
             <SidebarMenuButton
-              isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
+              isActive={pathname === item.href}
               tooltip={item.label}
             >
               <item.icon />
