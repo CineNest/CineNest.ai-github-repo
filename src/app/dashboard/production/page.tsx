@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -153,6 +153,14 @@ function PropsList() {
 }
 
 export default function BudgetTrackingPage() {
+  const { crewSalaries } = useScript();
+  const [totalCrewCost, setTotalCrewCost] = useState(0);
+
+  useEffect(() => {
+    const total = crewSalaries.reduce((acc, member) => acc + (member.dailyRate * member.days), 0);
+    setTotalCrewCost(total);
+  }, [crewSalaries]);
+
   return (
     <div className="space-y-8">
       <div>
@@ -179,7 +187,13 @@ export default function BudgetTrackingPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">₹4,50,000</div>
+            <div className="text-2xl font-bold">
+                {totalCrewCost.toLocaleString('en-IN', {
+                    style: 'currency',
+                    currency: 'INR',
+                    maximumFractionDigits: 0,
+                })}
+            </div>
             <p className="text-xs text-muted-foreground mb-2">Total for all personnel</p>
             <Link href="/dashboard/production/crew-salary">
                 <Button size="sm" variant="outline">Manage Salaries</Button>

@@ -1,47 +1,39 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-
-interface CrewMemberSalary {
-  name: string;
-  role: string;
-  dailyRate: number;
-  days: number;
-}
-
-const initialCrewAndCast: CrewMemberSalary[] = [
-  { name: 'Priya Sharma', role: 'Lead Actor (Veera)', dailyRate: 50000, days: 25 },
-  { name: 'Rohan Mehra', role: 'Lead Actor (Kabir)', dailyRate: 45000, days: 28 },
-  { name: 'Anjali Patil', role: 'Supporting Actor', dailyRate: 18000, days: 20 },
-  { name: 'Alex Ray', role: 'Director', dailyRate: 25000, days: 30 },
-  { name: 'Sam Jones', role: 'Director of Photography', dailyRate: 20000, days: 30 },
-  { name: 'Casey Smith', role: 'Production Designer', dailyRate: 15000, days: 35 },
-  { name: 'Jordan Lee', role: 'Sound Mixer', dailyRate: 10000, days: 30 },
-  { name: 'Taylor Kim', role: 'Editor', dailyRate: 12000, days: 45 },
-];
+import { useScript, type CrewMemberSalary } from '@/context/script-context';
 
 export default function CrewSalaryPage() {
-  const [crewSalaries, setCrewSalaries] = useState<CrewMemberSalary[]>(initialCrewAndCast);
+  const { crewSalaries, setCrewSalaries } = useScript();
+  const [localSalaries, setLocalSalaries] = useState<CrewMemberSalary[]>(crewSalaries);
+
+  useEffect(() => {
+    setLocalSalaries(crewSalaries);
+  }, [crewSalaries]);
 
   const handleInputChange = (index: number, field: keyof CrewMemberSalary, value: string) => {
-    const newSalaries = [...crewSalaries];
+    const newSalaries = [...localSalaries];
     const numericValue = parseInt(value, 10);
     if (!isNaN(numericValue)) {
       (newSalaries[index] as any)[field] = numericValue;
+      setLocalSalaries(newSalaries);
+      setCrewSalaries(newSalaries); // Update the context
+    } else if (value === '') {
+      (newSalaries[index] as any)[field] = 0;
+      setLocalSalaries(newSalaries);
       setCrewSalaries(newSalaries);
     }
   };
   
   const calculateTotal = (rate: number, days: number) => rate * days;
 
-  const totalCrewCost = crewSalaries.reduce((acc, member) => acc + calculateTotal(member.dailyRate, member.days), 0);
+  const totalCrewCost = localSalaries.reduce((acc, member) => acc + calculateTotal(member.dailyRate, member.days), 0);
 
   return (
     <div className="space-y-8">
@@ -72,7 +64,7 @@ export default function CrewSalaryPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {crewSalaries.map((member, index) => (
+                {localSalaries.map((member, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{member.name}</TableCell>
                     <TableCell>{member.role}</TableCell>
