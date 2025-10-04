@@ -7,7 +7,7 @@ import { ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CrewPage() {
-  const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/1-a_b_c_d_e_f_g_h_i_j_k_l_m_n_o_p_q_r_s_t_u_v_w_x_y_z/edit?usp=sharing'; // Replace with a real link if you have one.
+  const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/11EqidisBCYvDv1hMolIZTJWOTiXs-jbfZAAfw0mSVx4/edit?usp=sharing';
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-24 bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
