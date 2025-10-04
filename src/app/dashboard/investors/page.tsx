@@ -2,9 +2,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { DollarSign, Film, Milestone, CheckCircle, Clock } from 'lucide-react';
+import { DollarSign, Film, Milestone, CheckCircle, Clock, Mail, PlusCircle, Trash2 } from 'lucide-react';
 import { useScript } from '@/context/script-context';
 import { useState, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
 
 const projectDetails = {
   title: 'CineNest Project',
@@ -23,7 +27,10 @@ const keyMilestones = [
 
 export default function InvestorsPage() {
   const { transactions } = useScript();
+  const { toast } = useToast();
   const [goalBudget, setGoalBudget] = useState(2000000);
+  const [newSubscriberEmail, setNewSubscriberEmail] = useState('');
+  const [subscribers, setSubscribers] = useState(['investor1@example.com', 'investor2@example.com']);
 
   useEffect(() => {
     const savedBudget = localStorage.getItem('goalBudget');
@@ -31,6 +38,31 @@ export default function InvestorsPage() {
       setGoalBudget(Number(savedBudget));
     }
   }, []);
+  
+  const handleAddSubscriber = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newSubscriberEmail && !subscribers.includes(newSubscriberEmail)) {
+        if (/^\S+@\S+\.\S+$/.test(newSubscriberEmail)) {
+            setSubscribers([...subscribers, newSubscriberEmail]);
+            setNewSubscriberEmail('');
+            toast({
+                title: 'Subscriber Added',
+                description: `${newSubscriberEmail} will now receive weekly reports.`,
+            });
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Invalid Email',
+                description: 'Please enter a valid email address.',
+            });
+        }
+    }
+  };
+
+  const handleRemoveSubscriber = (emailToRemove: string) => {
+    setSubscribers(subscribers.filter(email => email !== emailToRemove));
+  };
+
 
   const totalSpent = transactions.reduce((acc, t) => acc + Math.abs(t.amount), 0);
   const projectedROI = (goalBudget * 1.5 - totalSpent) / totalSpent * 100;
@@ -129,6 +161,54 @@ export default function InvestorsPage() {
             </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+            <CardTitle>Investor Communication</CardTitle>
+            <CardDescription>Manage automated weekly reports for investors.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="space-y-6">
+                <div>
+                    <h3 className="font-medium mb-2 flex items-center gap-2"><Mail className="h-4 w-4" /> Weekly Spending Reports</h3>
+                    <p className="text-sm text-muted-foreground">Automatically send a summary of weekly expenses to subscribed investors for transparency. The backend for email sending is not yet implemented.</p>
+                </div>
+                <form onSubmit={handleAddSubscriber} className="flex items-end gap-2">
+                    <div className="flex-1">
+                        <Label htmlFor="subscriber-email">Investor Email</Label>
+                        <Input 
+                            id="subscriber-email"
+                            type="email"
+                            placeholder="investor@email.com"
+                            value={newSubscriberEmail}
+                            onChange={(e) => setNewSubscriberEmail(e.target.value)}
+                        />
+                    </div>
+                    <Button type="submit">
+                        <PlusCircle className="mr-2 h-4 w-4" /> Subscribe
+                    </Button>
+                </form>
+
+                <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-muted-foreground">Current Subscribers</h4>
+                    <div className="max-h-40 overflow-y-auto rounded-md border p-2 space-y-2">
+                         {subscribers.map(email => (
+                            <div key={email} className="flex items-center justify-between bg-muted/50 p-2 rounded-md">
+                                <span className="text-sm font-mono">{email}</span>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => handleRemoveSubscriber(email)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+                        {subscribers.length === 0 && (
+                            <p className="text-center text-sm text-muted-foreground py-4">No subscribers yet.</p>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </CardContent>
+      </Card>
+
     </div>
   );
 }
