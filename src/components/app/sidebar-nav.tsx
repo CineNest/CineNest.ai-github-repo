@@ -32,9 +32,6 @@ const menuItems = [
     href: '/dashboard/production', 
     label: 'Budget Tracking', 
     icon: DollarSign,
-    subItems: [
-        { href: '/dashboard/production/crew-salary', label: 'Crew Salary', icon: UsersIcon },
-    ]
   },
   { href: '/dashboard/post-production', label: 'Post-Production', icon: Presentation },
   { href: '/dashboard/status', label: 'Status Logs', icon: Rss },
@@ -57,27 +54,13 @@ export function SidebarNav() {
         <SidebarMenuItem key={item.href}>
           <Link href={item.href}>
             <SidebarMenuButton
-              isActive={pathname.startsWith(item.href) && (item.subItems ? pathname === item.href : true)}
+              isActive={pathname.startsWith(item.href) && (item.href === '/dashboard/production' ? pathname.startsWith('/dashboard/production') : pathname === item.href)}
               tooltip={item.label}
             >
               <item.icon />
               <span>{item.label}</span>
             </SidebarMenuButton>
           </Link>
-          {item.subItems && (
-            <SidebarMenuSub>
-              {item.subItems.map((subItem) => (
-                <SidebarMenuSubItem key={subItem.href}>
-                  <Link href={subItem.href}>
-                    <SidebarMenuSubButton isActive={pathname === subItem.href}>
-                      <subItem.icon/>
-                      <span>{subItem.label}</span>
-                    </SidebarMenuSubButton>
-                  </Link>
-                </SidebarMenuSubItem>
-              ))}
-            </SidebarMenuSub>
-          )}
         </SidebarMenuItem>
       ))}
     </SidebarMenu>
