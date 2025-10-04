@@ -36,7 +36,6 @@ const initialTransactions = [
 interface BudgetItem {
     item: string;
     estimatedCost: string;
-    reasoning: string;
 }
 
 const transactionSchema = z.object({
@@ -88,8 +87,8 @@ function AIBudgetAnalyzer() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>AI Budget Analyzer</CardTitle>
-                <CardDescription>Automatically analyze your script to identify and estimate costs for high-impact props and equipment in INR.</CardDescription>
+                <CardTitle>AI Prop Budget Analyzer</CardTitle>
+                <CardDescription>Automatically analyze your script to estimate costs for props and equipment in INR.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Button onClick={handleAnalysis} disabled={isAnalyzing || !script}>
@@ -105,7 +104,6 @@ function AIBudgetAnalyzer() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Item</TableHead>
-                                    <TableHead>Reasoning</TableHead>
                                     <TableHead className="text-right">Estimated Cost (INR)</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -113,7 +111,6 @@ function AIBudgetAnalyzer() {
                                 {analysisResult.items.map((item, index) => (
                                     <TableRow key={index}>
                                         <TableCell className="font-medium">{item.item}</TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">{item.reasoning}</TableCell>
                                         <TableCell className="text-right font-mono">{item.estimatedCost}</TableCell>
                                     </TableRow>
                                 ))}
@@ -286,40 +283,8 @@ export default function BudgetTrackingPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-3 space-y-8">
-            <AIBudgetAnalyzer />
-            <AddTransactionForm onAddTransaction={handleAddTransaction} />
-          </div>
+        <AIBudgetAnalyzer />
 
-          <div className="lg:col-span-2">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Budget Breakdown</CardTitle>
-                    <CardDescription>Visual overview of your budget allocation.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={budgetData} layout="vertical" margin={{ left: 10, right: 10 }}>
-                            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                            <XAxis type="number" hide tickFormatter={(value) => `₹${Number(value) / 100000}L`} />
-                            <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} width={80} />
-                            <Tooltip
-                                cursor={{ fill: 'hsl(var(--muted))' }}
-                                contentStyle={{
-                                background: 'hsl(var(--background))',
-                                borderColor: 'hsl(var(--border))',
-                                }}
-                                formatter={(value: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)}
-                            />
-                            <Bar dataKey="value" background={{ fill: 'hsl(var(--muted))' }} />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </CardContent>
-            </Card>
-          </div>
-      </div>
-      
         <Card>
             <CardHeader>
                 <CardTitle>Recent Transactions</CardTitle>
@@ -346,6 +311,33 @@ export default function BudgetTrackingPage() {
                         ))}
                     </TableBody>
                 </Table>
+            </CardContent>
+        </Card>
+        
+        <AddTransactionForm onAddTransaction={handleAddTransaction} />
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Budget Breakdown</CardTitle>
+                <CardDescription>Visual overview of your budget allocation.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={budgetData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                        <XAxis type="number" hide tickFormatter={(value) => `₹${Number(value) / 100000}L`} />
+                        <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} width={80} />
+                        <Tooltip
+                            cursor={{ fill: 'hsl(var(--muted))' }}
+                            contentStyle={{
+                            background: 'hsl(var(--background))',
+                            borderColor: 'hsl(var(--border))',
+                            }}
+                            formatter={(value: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)}
+                        />
+                        <Bar dataKey="value" background={{ fill: 'hsl(var(--muted))' }} />
+                    </BarChart>
+                </ResponsiveContainer>
             </CardContent>
         </Card>
 

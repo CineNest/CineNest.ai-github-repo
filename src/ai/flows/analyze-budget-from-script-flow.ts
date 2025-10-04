@@ -20,7 +20,6 @@ export type AnalyzeBudgetFromScriptInput = z.infer<typeof AnalyzeBudgetFromScrip
 const BudgetItemSchema = z.object({
   item: z.string().describe('The name of the prop or equipment item.'),
   estimatedCost: z.string().describe('The estimated average rental or purchase price for the item in Indian Rupees (e.g., "₹40,000/day", "₹1,20,000 purchase", "Varies").'),
-  reasoning: z.string().describe('A brief explanation for why this item was identified as a key budget item.'),
 });
 
 const AnalyzeBudgetFromScriptOutputSchema = z.object({
@@ -42,10 +41,11 @@ const prompt = ai.definePrompt({
   Read the script below and identify items that would represent a notable cost. Do not list every single item, only the ones that are expensive or crucial for the production (e.g., specialized vehicles, period-specific furniture, high-end cameras, stunt equipment).
 
   For each item you identify:
-  1.  Provide a brief reasoning for why it's a key budget item.
-  2.  Search for its typical rental or purchase price on Google Shopping in India.
-  3.  Provide a plausible, estimated price in INR. Specify if it's a rental (e.g., per day) or purchase price.
-  4.  Provide a final summary of your findings.
+  1.  Search for its typical rental or purchase price on Google Shopping in India.
+  2.  Provide a plausible, estimated price in INR. Specify if it's a rental (e.g., per day) or purchase price.
+  3.  Provide a final summary of your findings.
+
+  Do not include a 'reasoning' field.
 
   Script:
   {{{script}}}
