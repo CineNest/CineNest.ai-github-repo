@@ -32,6 +32,10 @@ import {
   suggestLocations,
   type SuggestLocationsInput,
 } from '@/ai/flows/suggest-locations-flow';
+import {
+  estimateEquipmentCost,
+  type EstimateEquipmentCostInput,
+} from '@/ai/flows/estimate-equipment-cost-flow';
 
 export async function generateContractAction(input: GenerateLocationContractInput) {
   try {
@@ -109,6 +113,16 @@ export async function suggestLocationsAction(input: SuggestLocationsInput) {
     return { success: true, data: result };
   } catch (error: any) {
     console.error('Error in suggestLocationsAction:', error);
+    return { success: false, error: error.message || 'An unknown error occurred.' };
+  }
+}
+
+export async function estimateEquipmentCostAction(input: EstimateEquipmentCostInput) {
+  try {
+    const result = await estimateEquipmentCost(input);
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error('Error in estimateEquipmentCostAction:', error);
     return { success: false, error: error.message || 'An unknown error occurred.' };
   }
 }

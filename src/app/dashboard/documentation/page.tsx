@@ -5,6 +5,7 @@ import { DocumentationDialog } from '@/components/app/doc-link-button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 
 const documentationSections = [
   {
@@ -12,6 +13,7 @@ const documentationSections = [
     description: 'Production plan and schedule.',
     fields: ['Shooting_Days', 'Locations', 'Weather', 'Equipment_List'],
     sheetGid: '0',
+    isPlan: true,
   },
   {
     title: 'Crew',
@@ -53,9 +55,9 @@ export default function DocumentationPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {documentationSections.map((section) => (
-          <Dialog key={section.title}>
-            <Card>
-              <CardHeader>
+          section.isPlan ? (
+             <Card key={section.title}>
+               <CardHeader>
                 <CardTitle>{section.title}</CardTitle>
                 <CardDescription>{section.description}</CardDescription>
               </CardHeader>
@@ -65,27 +67,48 @@ export default function DocumentationPage() {
                     <li key={field}>{field.replace(/_/g, ' ')}</li>
                   ))}
                 </ul>
-                <DocumentationDialog />
-              </CardContent>
-            </Card>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Generate {section.title} Document</DialogTitle>
-                <DialogDescription>
-                  This is where a Google Form for '{section.title}' would be embedded. Once submitted, the data would populate the Google Sheet.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-4 text-center text-muted-foreground">
-                <p className="mb-4">(Your Google Form would appear here)</p>
-                <a href={`${googleSheetUrl}/edit#gid=${section.sheetGid}`} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline">
-                    Go to Google Sheet Tab
-                    <ExternalLink className="ml-2 h-4 w-4" />
+                <Link href="/dashboard/production-plan" className="w-full">
+                  <Button className="w-full">
+                    Enter Data
                   </Button>
-                </a>
-              </div>
-            </DialogContent>
-          </Dialog>
+                </Link>
+              </CardContent>
+             </Card>
+          ) : (
+            <Dialog key={section.title}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>{section.title}</CardTitle>
+                  <CardDescription>{section.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1 h-32 overflow-y-auto">
+                    {section.fields.map((field) => (
+                      <li key={field}>{field.replace(/_/g, ' ')}</li>
+                    ))}
+                  </ul>
+                  <DocumentationDialog />
+                </CardContent>
+              </Card>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Generate {section.title} Document</DialogTitle>
+                  <DialogDescription>
+                    This is where a Google Form for '{section.title}' would be embedded. Once submitted, the data would populate the Google Sheet.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4 text-center text-muted-foreground">
+                  <p className="mb-4">(Your Google Form would appear here)</p>
+                  <a href={`${googleSheetUrl}/edit#gid=${section.sheetGid}`} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline">
+                      Go to Google Sheet Tab
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )
         ))}
       </div>
     </div>
