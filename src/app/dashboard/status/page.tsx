@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -38,8 +39,11 @@ export default function StatusPage() {
   const firestore = useFirestore();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const statusesRef = collection(firestore, 'statuses');
-  const statusesQuery = useMemoFirebase(() => query(statusesRef, orderBy('createdAt', 'desc')), [statusesRef]);
+  const statusesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'statuses'), orderBy('createdAt', 'desc'));
+  }, [firestore]);
+  
   const { data: statuses, isLoading: areStatusesLoading } = useCollection<ProductionStatus>(statusesQuery);
   
   const form = useForm<z.infer<typeof statusSchema>>({
@@ -53,6 +57,7 @@ export default function StatusPage() {
   async function onSubmit(values: z.infer<typeof statusSchema>) {
     setIsSubmitting(true);
     try {
+      const statusesRef = collection(firestore, 'statuses');
       await addDocumentNonBlocking(statusesRef, {
         ...values,
         date: new Date().toISOString().split('T')[0], // YYYY-MM-DD
