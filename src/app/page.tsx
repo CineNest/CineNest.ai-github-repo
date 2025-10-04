@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import mammoth from 'mammoth';
 import { automateTaskAction } from './actions';
 import { Header } from '@/components/app/header';
+import Image from 'next/image';
 
 export default function Home() {
   const { setScript } = useScript();
@@ -74,23 +75,20 @@ export default function Home() {
       return;
     }
     
-    // First, save the script and go to dashboard
     setScript(localScript);
 
-    // If we already have a result, just navigate
     if (aiResult) {
       setIsLoading(true);
       router.push('/dashboard');
       return;
     }
 
-    // Otherwise, run the AI task
     setIsAiProcessing(true);
     setAiResult('');
     const result = await automateTaskAction({
       task: 'Generate a shot list',
       scriptSummary: localScript.slice(0, 5000) + (localScript.length > 5000 ? '...' : ''),
-      filmGenre: 'Drama', // Using a default genre for now
+      filmGenre: 'Drama',
     });
     setIsAiProcessing(false);
 
@@ -110,15 +108,22 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
+    <div className="relative flex flex-col min-h-screen">
+      <Image
+        src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop"
+        alt="Background"
+        fill
+        className="object-cover -z-10"
+      />
+      <div className="absolute inset-0 bg-black/70 -z-10" />
        <Header />
        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
         
-        <h1 className="text-5xl md:text-7xl font-bold mb-8 text-center bg-gradient-to-r from-yellow-300 via-white to-yellow-400 text-transparent bg-clip-text">
+        <h1 className="text-5xl md:text-7xl font-bold mb-8 text-center text-primary">
             CineNest.ai
         </h1>
 
-        <Card className="w-full max-w-2xl shadow-2xl bg-card/80 backdrop-blur-sm border-white/20">
+        <Card className="w-full max-w-2xl shadow-2xl bg-card/80 backdrop-blur-sm border-white/10">
             <CardHeader>
               <CardTitle className="text-3xl font-headline tracking-tight">Enter Your Script</CardTitle>
               <CardDescription>Paste your script below or upload a file to get started.</CardDescription>
