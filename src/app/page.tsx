@@ -140,10 +140,10 @@ export default function Home() {
                   setAiResult('');
                 }}
               />
-              <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div className='flex-1 flex md:flex-col items-start gap-2'>
-                  <Label htmlFor="script-file" className="w-full md:w-auto">
-                    <Button asChild variant="outline" className="w-full md:w-auto cursor-pointer rounded-full">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col items-start gap-2">
+                  <Label htmlFor="script-file" className="cursor-pointer">
+                    <Button asChild variant="outline" className="w-full cursor-pointer rounded-full">
                       <span>
                         <Upload className="mr-2 h-4 w-4" />
                         Upload File
@@ -152,7 +152,7 @@ export default function Home() {
                     <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
                   </Label>
                   {fileName && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground pl-2">
                       <FileCheck className="h-5 w-5 text-green-400" />
                       <span className="truncate">{fileName}</span>
                     </div>
@@ -162,7 +162,7 @@ export default function Home() {
                   size="lg" 
                   onClick={handleGetStarted} 
                   disabled={!isInputPresent || isLoading || isAiProcessing} 
-                  className="w-full md:w-auto rounded-full"
+                  className="rounded-full self-start"
                 >
                   {isAiProcessing || isLoading ? (
                     <>
