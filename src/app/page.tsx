@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -12,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import mammoth from 'mammoth';
 import { automateTaskAction } from './actions';
+import { Header } from '@/components/app/header';
 
 export default function Home() {
   const { setScript } = useScript();
@@ -109,58 +111,63 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
+       <Header />
        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
         
-      <Card className="w-full max-w-2xl shadow-2xl bg-card/80 backdrop-blur-sm border-white/20">
-          <CardHeader>
-            <CardTitle className="text-3xl font-headline tracking-tight">Enter Your Script</CardTitle>
-            <CardDescription>Paste your script below or upload a file to get started.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Textarea
-              placeholder="TITLE: My Awesome Film..."
-              className="min-h-[300px] bg-background/50 text-base"
-              value={localScript}
-              onChange={(e) => {
-                setLocalScript(e.target.value);
-                setFileName('');
-                setAiResult('');
-              }}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className='flex items-center space-x-2'>
-                <Label htmlFor="script-file" className="flex-1">
-                  <Button asChild variant="outline" className="w-full cursor-pointer">
-                    <span>
-                      <Upload className="mr-2 h-4 w-4" />
-                      Upload File
-                    </span>
-                  </Button>
-                  <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-                </Label>
-                {fileName && <FileCheck className="h-5 w-5 text-green-400" />}
-              </div>
-              <Button size="lg" onClick={handleGetStarted} disabled={isLoading || isAiProcessing} className="w-full">
-                {isAiProcessing ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    {aiResult ? 'Go to Dashboard' : 'Get Started'}
-                    {!isAiProcessing && <ArrowRight className="ml-2 h-4 w-4" />}
-                  </>
-                )}
-              </Button>
-            </div>
-             {fileName && <p className="text-sm text-muted-foreground truncate">Uploaded: {fileName}</p>}
+        <h1 className="text-5xl md:text-7xl font-bold mb-8 text-center bg-gradient-to-r from-yellow-300 via-white to-yellow-400 text-transparent bg-clip-text">
+            CineNest.ai
+        </h1>
 
-             {aiResult && (
-              <div className="mt-6 text-left">
-                <h3 className="font-semibold mb-2 text-foreground">AI Generated Shot List:</h3>
-                <Textarea readOnly value={aiResult} className="min-h-[200px] bg-muted/50 font-mono text-sm" />
+        <Card className="w-full max-w-2xl shadow-2xl bg-card/80 backdrop-blur-sm border-white/20">
+            <CardHeader>
+              <CardTitle className="text-3xl font-headline tracking-tight">Enter Your Script</CardTitle>
+              <CardDescription>Paste your script below or upload a file to get started.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Textarea
+                placeholder="TITLE: My Awesome Film..."
+                className="min-h-[300px] bg-background/50 text-base"
+                value={localScript}
+                onChange={(e) => {
+                  setLocalScript(e.target.value);
+                  setFileName('');
+                  setAiResult('');
+                }}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className='flex items-center space-x-2'>
+                  <Label htmlFor="script-file" className="flex-1">
+                    <Button asChild variant="outline" className="w-full cursor-pointer">
+                      <span>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload File
+                      </span>
+                    </Button>
+                    <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                  </Label>
+                  {fileName && <FileCheck className="h-5 w-5 text-green-400" />}
+                </div>
+                <Button size="lg" onClick={handleGetStarted} disabled={isLoading || isAiProcessing} className="w-full">
+                  {isAiProcessing ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      {aiResult ? 'Go to Dashboard' : 'Get Started'}
+                      {!isAiProcessing && <ArrowRight className="ml-2 h-4 w-4" />}
+                    </>
+                  )}
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              {fileName && <p className="text-sm text-muted-foreground truncate">Uploaded: {fileName}</p>}
+
+              {aiResult && (
+                <div className="mt-6 text-left">
+                  <h3 className="font-semibold mb-2 text-foreground">AI Generated Shot List:</h3>
+                  <Textarea readOnly value={aiResult} className="min-h-[200px] bg-muted/50 font-mono text-sm" />
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
       </main>
        <footer className="w-full text-center p-4 text-white/60 text-sm">
