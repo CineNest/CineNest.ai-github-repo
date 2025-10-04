@@ -13,6 +13,7 @@ import {
   AreaChart,
   Scale,
   User,
+  FileText as DocumentationIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -23,6 +24,7 @@ const menuItems = [
   { href: '/dashboard/pre-production', label: 'Pre-Production', icon: ClipboardList },
   { href: '/dashboard/production', label: 'Production', icon: Clapperboard },
   { href: '/dashboard/post-production', label: 'Post-Production', icon: Presentation },
+  { href: '/dashboard/documentation', label: 'Documentation', icon: DocumentationIcon },
   { href: '/dashboard/legal', label: 'Legal & Contracts', icon: Scale },
   { href: '/dashboard/business', label: 'Business', icon: AreaChart },
 ];
