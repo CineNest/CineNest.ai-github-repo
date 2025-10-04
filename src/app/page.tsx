@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppLogo } from '@/components/icons';
-import { Loader2, Upload } from 'lucide-react';
+import { Loader2, Upload, Users } from 'lucide-react';
 import { useScript } from '@/context/script-context';
+import Link from 'next/link';
 
 export default function Home() {
   const { script, setScript } = useScript();
@@ -15,7 +16,7 @@ export default function Home() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleGetStarted = async () => {
+  const handleGetStarted = () => {
     setIsLoading(true);
     // The script is already managed by the context, which handles localStorage
     router.push('/dashboard');
@@ -61,7 +62,7 @@ export default function Home() {
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Get Started
                 </Button>
-                <input
+                 <input
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileChange}
@@ -70,8 +71,14 @@ export default function Home() {
                 />
                 <Button variant="outline" size="lg" onClick={handleUploadClick} className="bg-transparent hover:bg-white/10 text-white border-white/50 hover:text-white">
                   <Upload className="mr-2 h-4 w-4" />
-                  Upload File
+                  Upload Script
                 </Button>
+                <Link href="/crew" passHref>
+                  <Button variant="outline" size="lg" className="bg-transparent hover:bg-white/10 text-white border-white/50 hover:text-white w-full">
+                    <Users className="mr-2 h-4 w-4" />
+                    Crew
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>

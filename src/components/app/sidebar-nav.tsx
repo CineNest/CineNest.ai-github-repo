@@ -7,16 +7,20 @@ import {
 } from '@/components/ui/sidebar';
 import {
   LayoutDashboard,
+  ClipboardList,
   Clapperboard,
-  Scale,
+  Presentation,
   AreaChart,
+  Scale,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard/pre-production', label: 'Pre-Production', icon: ClipboardList },
   { href: '/dashboard/production', label: 'Production', icon: Clapperboard },
+  { href: '/dashboard/post-production', label: 'Post-Production', icon: Presentation },
   { href: '/dashboard/legal', label: 'Legal & Contracts', icon: Scale },
   { href: '/dashboard/business', label: 'Business', icon: AreaChart },
 ];
@@ -28,10 +32,9 @@ export function SidebarNav() {
     <SidebarMenu>
       {menuItems.map((item) => (
         <SidebarMenuItem key={item.href}>
-          <Link href={item.href} passHref>
+          <Link href={item.href}>
             <SidebarMenuButton
-              as="a"
-              isActive={pathname === item.href}
+              isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
               tooltip={item.label}
             >
               <item.icon />
