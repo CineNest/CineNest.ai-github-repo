@@ -16,7 +16,10 @@ interface CrewMemberSalary {
   days: number;
 }
 
-const initialCrewMembers: CrewMemberSalary[] = [
+const initialCrewAndCast: CrewMemberSalary[] = [
+  { name: 'Priya Sharma', role: 'Lead Actor (Veera)', dailyRate: 50000, days: 25 },
+  { name: 'Rohan Mehra', role: 'Lead Actor (Kabir)', dailyRate: 45000, days: 28 },
+  { name: 'Anjali Patil', role: 'Supporting Actor', dailyRate: 18000, days: 20 },
   { name: 'Alex Ray', role: 'Director', dailyRate: 25000, days: 30 },
   { name: 'Sam Jones', role: 'Director of Photography', dailyRate: 20000, days: 30 },
   { name: 'Casey Smith', role: 'Production Designer', dailyRate: 15000, days: 35 },
@@ -25,7 +28,7 @@ const initialCrewMembers: CrewMemberSalary[] = [
 ];
 
 export default function CrewSalaryPage() {
-  const [crewSalaries, setCrewSalaries] = useState<CrewMemberSalary[]>(initialCrewMembers);
+  const [crewSalaries, setCrewSalaries] = useState<CrewMemberSalary[]>(initialCrewAndCast);
 
   const handleInputChange = (index: number, field: keyof CrewMemberSalary, value: string) => {
     const newSalaries = [...crewSalaries];
@@ -43,65 +46,67 @@ export default function CrewSalaryPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Crew Salary Management</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Cast & Crew Salary Management</h1>
         <p className="text-muted-foreground">
-          Enter and track the payment details for each crew member.
+          Enter and track the payment details for each cast and crew member.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Crew Payment Details</CardTitle>
+          <CardTitle>Personnel Payment Details</CardTitle>
           <CardDescription>
             Input the daily rate and number of work days for each person. All figures in INR.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="w-[150px]">Daily Rate (₹)</TableHead>
-                <TableHead className="w-[100px]">Days</TableHead>
-                <TableHead className="text-right w-[180px]">Total Payment (₹)</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {crewSalaries.map((member, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{member.name}</TableCell>
-                  <TableCell>{member.role}</TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      value={member.dailyRate}
-                      onChange={(e) => handleInputChange(index, 'dailyRate', e.target.value)}
-                      className="font-mono"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      value={member.days}
-                      onChange={(e) => handleInputChange(index, 'days', e.target.value)}
-                      className="font-mono"
-                    />
-                  </TableCell>
-                  <TableCell className="text-right font-mono font-medium">
-                    {calculateTotal(member.dailyRate, member.days).toLocaleString('en-IN', {
-                      style: 'currency',
-                      currency: 'INR',
-                      maximumFractionDigits: 0,
-                    })}
-                  </TableCell>
+          <div className="max-h-[60vh] overflow-y-auto">
+            <Table>
+              <TableHeader className="sticky top-0 bg-card">
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead className="w-[150px]">Daily Rate (₹)</TableHead>
+                  <TableHead className="w-[100px]">Days</TableHead>
+                  <TableHead className="text-right w-[180px]">Total Payment (₹)</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="mt-4 text-right">
+              </TableHeader>
+              <TableBody>
+                {crewSalaries.map((member, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{member.name}</TableCell>
+                    <TableCell>{member.role}</TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        value={member.dailyRate}
+                        onChange={(e) => handleInputChange(index, 'dailyRate', e.target.value)}
+                        className="font-mono"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        value={member.days}
+                        onChange={(e) => handleInputChange(index, 'days', e.target.value)}
+                        className="font-mono"
+                      />
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-medium">
+                      {calculateTotal(member.dailyRate, member.days).toLocaleString('en-IN', {
+                        style: 'currency',
+                        currency: 'INR',
+                        maximumFractionDigits: 0,
+                      })}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="mt-4 pt-4 border-t text-right">
             <h3 className="text-lg font-bold">
-              Total Crew Cost: {totalCrewCost.toLocaleString('en-IN', {
+              Total Personnel Cost: {totalCrewCost.toLocaleString('en-IN', {
                 style: 'currency',
                 currency: 'INR',
                 maximumFractionDigits: 0,
