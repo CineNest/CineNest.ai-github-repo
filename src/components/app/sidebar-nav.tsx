@@ -16,6 +16,7 @@ import {
   Rss,
   DollarSign,
   PieChart,
+  Landmark,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -35,6 +36,7 @@ const menuItems = [
   { href: '/dashboard/documentation', label: 'Documentation', icon: DocumentationIcon },
   { href: '/dashboard/legal', label: 'Legal & Contracts', icon: Scale },
   { href: '/dashboard/business', label: 'Business', icon: AreaChart },
+  { href: '/dashboard/investors', label: 'Investors', icon: Landmark },
 ];
 
 const profileMenuItem = { href: '/dashboard/profile', label: 'Profile', icon: User };
