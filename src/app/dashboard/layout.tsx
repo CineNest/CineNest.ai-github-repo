@@ -12,7 +12,7 @@ import { Header } from '@/components/app/header';
 import { SidebarNav } from '@/components/app/sidebar-nav';
 import { ThemeProvider } from '@/components/app/theme-provider';
 import type { ReactNode } from 'react';
-import { useUser }s from '@/firebase';
+import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
