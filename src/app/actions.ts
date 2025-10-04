@@ -28,6 +28,10 @@ import {
   suggestCrew,
   type SuggestCrewInput,
 } from '@/ai/flows/suggest-crew-flow';
+import {
+  suggestLocations,
+  type SuggestLocationsInput,
+} from '@/ai/flows/suggest-locations-flow';
 
 export async function generateContractAction(input: GenerateLocationContractInput) {
   try {
@@ -95,6 +99,16 @@ export async function suggestCrewAction(input: SuggestCrewInput) {
     return { success: true, data: result };
   } catch (error: any) {
     console.error('Error in suggestCrewAction:', error);
+    return { success: false, error: error.message || 'An unknown error occurred.' };
+  }
+}
+
+export async function suggestLocationsAction(input: SuggestLocationsInput) {
+  try {
+    const result = await suggestLocations(input);
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error('Error in suggestLocationsAction:', error);
     return { success: false, error: error.message || 'An unknown error occurred.' };
   }
 }

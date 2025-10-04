@@ -1,105 +1,157 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import { suggestLocationsAction } from '@/app/actions';
+import type { SuggestLocationsOutput } from '@/ai/flows/suggest-locations-flow';
+import { ArrowLeft, ExternalLink, Loader2, Search } from 'lucide-react';
+import { useScript } from '@/context/script-context';
 
-const containerStyle = {
-  width: '100%',
-  height: '100%'
-};
-
-const sampleLocations = [
-  { id: '1', name: 'Urban Loft', position: { lat: 40.748817, lng: -73.985428 } },
-  { id: '2', name: 'Forest Clearing', position: { lat: 34.052235, lng: -118.243683 } },
-  { id: '3', name: 'Downtown Cafe', position: { lat: 41.878113, lng: -87.629799 } },
-  { id: '4', name: 'Suburban House', position: { lat: 34.1288, lng: -118.4451 } },
-  { id: '5', name: 'Abandoned Warehouse', position: { lat: 40.7128, lng: -74.0060 } },
-];
+const locationScoutSchema = z.object({
+  country: z.string().min(1, 'Country is required.'),
+  state: z.string().min(1, 'State or Province is required.'),
+  sceneDescription: z.string().min(10, 'Please provide a more detailed scene description.'),
+});
 
 export default function LocationScoutingPage() {
-  const [selectedLocation, setSelectedLocation] = useState<typeof sampleLocations[0] | null>(null);
+  const { toast } = useToast();
+  const { script } = useScript();
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResult, setSearchResult] = useState<SuggestLocationsOutput | null>(null);
 
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""
+  const form = useForm<z.infer<typeof locationScoutSchema>>({
+    resolver: zodResolver(locationScoutSchema),
+    defaultValues: {
+      country: 'USA',
+      state: 'California',
+      sceneDescription: script ? `A key scene from the script: ${script.substring(0, 200)}...` : '',
+    },
   });
 
-  const center = useMemo(() => ({
-    lat: 40.7128,
-    lng: -74.0060
-  }), []);
+  async function onSubmit(values: z.infer<typeof locationScoutSchema>) {
+    setIsSearching(true);
+    setSearchResult(null);
+    const result = await suggestLocationsAction(values);
+    setIsSearching(false);
 
-  const handleMarkerClick = (location: typeof sampleLocations[0]) => {
-    setSelectedLocation(location);
-  };
-  
-  const mapOptions = {
-    disableDefaultUI: true,
-    zoomControl: true,
-  };
+    if (result.success && result.data) {
+      setSearchResult(result.data);
+      toast({
+        title: 'Locations Found',
+        description: `The AI has suggested ${result.data.locations.length} potential locations.`,
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error Finding Locations',
+        description: result.error || 'An unexpected error occurred.',
+      });
+    }
+  }
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Location Scouting</h1>
+        <h1 className="text-3xl font-bold tracking-tight">AI Location Scout</h1>
         <p className="text-muted-foreground">
-          Manage and visualize potential filming locations.
+          Find the perfect filming location with AI-powered suggestions.
         </p>
       </div>
 
-      <Card className="h-[600px]">
-        <CardContent className="p-0 h-full">
-          {loadError && (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-destructive-foreground">Error loading maps. Please check your API key.</p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Search for a Location</CardTitle>
+          <CardDescription>
+            Describe the scene and specify the geographical area. The AI will analyze your request and suggest suitable public or private locations.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField control={form.control} name="country" render={({ field }) => (
+                  <FormItem><FormLabel>Country</FormLabel><FormControl><Input placeholder="e.g., USA" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="state" render={({ field }) => (
+                  <FormItem><FormLabel>State / Province</FormLabel><FormControl><Input placeholder="e.g., California" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
               </div>
-          )}
-          {!isLoaded && !loadError && (
-              <Skeleton className="w-full h-full" />
-          )}
-          {isLoaded && !loadError && (
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-              center={center}
-              zoom={10}
-              options={mapOptions}
-            >
-              {sampleLocations.map(location => (
-                <Marker
-                  key={location.id}
-                  position={location.position}
-                  onClick={() => handleMarkerClick(location)}
-                />
-              ))}
-
-              {selectedLocation && (
-                <InfoWindow
-                  position={selectedLocation.position}
-                  onCloseClick={() => setSelectedLocation(null)}
-                >
-                  <div>
-                    <h4 className="font-bold">{selectedLocation.name}</h4>
-                    <p>Lat: {selectedLocation.position.lat}, Lng: {selectedLocation.position.lng}</p>
-                    <Button variant="link" className="p-0 h-auto" asChild>
-                      <Link href="/dashboard/legal">Generate Contract</Link>
-                    </Button>
-                  </div>
-                </InfoWindow>
-              )}
-            </GoogleMap>
-          )}
+              <FormField control={form.control} name="sceneDescription" render={({ field }) => (
+                <FormItem><FormLabel>Scene Description</FormLabel><FormControl><Textarea placeholder="Describe the ideal location, e.g., 'A modern, bustling coffee shop with large windows' or 'A quiet, secluded beach at sunset'." className="min-h-[100px]" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <Button type="submit" disabled={isSearching}>
+                {isSearching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
+                Scout Locations
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
       
-       <div className="mt-8">
-          <Link href="/dashboard/pre-production">
-            <Button variant="outline">Back to Pre-Production Hub</Button>
-          </Link>
+      {isSearching && (
+         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map(i => (
+              <Card key={i} className="overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <CardHeader>
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full mt-2" />
+                    <Skeleton className="h-4 w-5/6 mt-1" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-9 w-32" />
+                </CardContent>
+              </Card>
+            ))}
         </div>
+      )}
+
+      {searchResult && (
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight mb-4">Suggested Locations</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {searchResult.locations.map((location) => (
+              <Card key={location.name} className="overflow-hidden flex flex-col">
+                <div className="relative h-48 w-full">
+                    <Image src={location.imageUrl} alt={location.name} layout="fill" objectFit="cover" className="bg-muted" />
+                </div>
+                <CardHeader>
+                  <CardTitle>{location.name}</CardTitle>
+                  <CardDescription>{location.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="mt-auto">
+                   <a href={location.googleMapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex">
+                    <Button variant="outline">
+                        View on Google Maps
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-8">
+        <Link href="/dashboard/pre-production">
+          <Button variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Pre-Production Hub
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }
