@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
@@ -37,12 +37,13 @@ interface ProductionStatus {
 export default function StatusPage() {
   const { toast } = useToast();
   const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const statusesQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
+    if (!firestore || !user) return null;
     return query(collection(firestore, 'statuses'), orderBy('createdAt', 'desc'));
-  }, [firestore]);
+  }, [firestore, user]);
   
   const { data: statuses, isLoading: areStatusesLoading } = useCollection<ProductionStatus>(statusesQuery);
   
@@ -55,6 +56,14 @@ export default function StatusPage() {
   });
 
   async function onSubmit(values: z.infer<typeof statusSchema>) {
+    if (!user) {
+      toast({
+        variant: 'destructive',
+        title: 'Not Authenticated',
+        description: 'You must be logged in to log a status.',
+      });
+      return;
+    }
     setIsSubmitting(true);
     try {
       const statusesRef = collection(firestore, 'statuses');
@@ -79,6 +88,8 @@ export default function StatusPage() {
       setIsSubmitting(false);
     }
   }
+
+  const isLoading = areStatusesLoading || isUserLoading;
 
   return (
     <div className="space-y-8">
@@ -138,7 +149,7 @@ export default function StatusPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || isUserLoading}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Log Status
               </Button>
@@ -162,7 +173,7 @@ export default function StatusPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {areStatusesLoading ? (
+              {isLoading ? (
                 Array.from({ length: 3 }).map((_, i) => (
                   <TableRow key={i}>
                     <TableCell><Skeleton className="h-4 w-24" /></TableCell>
