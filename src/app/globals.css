@@ -83,6 +83,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  html, body {
+    height: 100%;
+  }
 }
 
 @layer components {
@@ -130,6 +133,12 @@
     height: 0.4rem;
     width: 0.4rem;
   }
+
+  .bg-hero-pattern {
+    background-image: url('https://storage.googleapis.com/project-spark-308117-21959.appspot.com/b0a8fb9a-3a25-455b-8625-a10c73206413.png');
+    background-size: cover;
+    background-position: center;
+  }
 }
 
 @keyframes sparkle-1 {
@@ -147,14 +156,4 @@
 @keyframes sparkle-4 {
   0%, 100% { transform: scale(0.6) rotate(45deg); opacity: 1; }
   50% { transform: scale(1.3) rotate(-45deg); opacity: 0.6; }
-}
-
-html, body {
-  height: 100%;
-}
-
-.bg-hero-pattern {
-  background-image: url('https://storage.googleapis.com/project-spark-308117-21959.appspot.com/b0a8fb9a-3a25-455b-8625-a10c73206413.png');
-  background-size: cover;
-  background-position: center;
 }

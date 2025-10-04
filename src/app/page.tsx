@@ -13,9 +13,6 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import mammoth from 'mammoth';
 import { automateTaskAction } from './actions';
-import { Header } from '@/components/app/header';
-import Image from 'next/image';
-import { cn } from '@/lib/utils';
 
 export default function Home() {
   const { setScript } = useScript();
@@ -78,35 +75,15 @@ export default function Home() {
     
     setScript(localScript);
     setIsLoading(true);
-
-    // Always redirect, AI processing is a bonus
     router.push('/dashboard');
-
-    setIsAiProcessing(true);
-    setAiResult('');
-    const result = await automateTaskAction({
-      task: 'Generate a shot list',
-      scriptSummary: localScript.slice(0, 5000) + (localScript.length > 5000 ? '...' : ''),
-      filmGenre: 'Drama',
-    });
-    setIsAiProcessing(false);
-
-    if (result.success && result.data) {
-      setAiResult(result.data.details);
-      // No need for a toast here as we've already redirected.
-    } else {
-      // Silently fail or log, to not interrupt user flow.
-      console.error("AI Analysis failed:", result.error);
-    }
   };
   
-  const isInputPresent = localScript.trim() !== '' || fileName !== '';
+  const isInputPresent = localScript.trim() !== '';
 
   return (
     <div className="relative min-h-screen w-full bg-hero-pattern">
       <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" />
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header />
         <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
           <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-pink-400 via-primary to-cyan-400 mb-8">
               CineNest.ai
@@ -125,38 +102,37 @@ export default function Home() {
                   onChange={(e) => {
                     setLocalScript(e.target.value);
                     setFileName('');
-                    setAiResult('');
                   }}
                 />
                 <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center">
-                      <Label htmlFor="script-file" className="cursor-pointer">
-                        <Button asChild variant="outline" className="cursor-pointer">
-                          <span>
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload File
-                          </span>
-                        </Button>
-                        <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-                      </Label>
-                      {fileName && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground pl-4">
-                          <FileCheck className="h-5 w-5 text-green-400" />
-                          <span className="truncate">{fileName}</span>
-                        </div>
-                      )}
-                  </div>
+                    <div className="flex items-center gap-2">
+                        <Label htmlFor="script-file" className="cursor-pointer">
+                            <Button asChild variant="outline" className="cursor-pointer bg-transparent hover:bg-white/10 text-white">
+                            <span>
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload File
+                            </span>
+                            </Button>
+                            <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                        </Label>
+                        {fileName && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <FileCheck className="h-5 w-5 text-green-400" />
+                            <span className="truncate">{fileName}</span>
+                            </div>
+                        )}
+                    </div>
                   
                   <Button 
                     size="lg" 
                     onClick={handleGetStarted} 
-                    disabled={!isInputPresent || isLoading || isAiProcessing}
+                    disabled={!isInputPresent || isLoading}
                     className="animated-button"
                   >
-                    {isAiProcessing || isLoading ? (
+                    {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        <span>{isAiProcessing ? 'Analyzing...' : 'Loading...'}</span>
+                        <span>Loading...</span>
                       </>
                     ) : (
                       <>
@@ -166,13 +142,6 @@ export default function Home() {
                     )}
                   </Button>
                 </div>
-
-                {aiResult && (
-                  <div className="mt-6 text-left">
-                    <h3 className="font-semibold mb-2 text-foreground">AI Generated Shot List:</h3>
-                    <Textarea readOnly value={aiResult} className="min-h-[200px] bg-muted/50 font-mono text-sm" />
-                  </div>
-                )}
               </CardContent>
             </Card>
 
