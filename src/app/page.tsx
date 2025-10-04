@@ -15,6 +15,7 @@ import mammoth from 'mammoth';
 import { automateTaskAction } from './actions';
 import { Header } from '@/components/app/header';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const { setScript } = useScript();
@@ -106,6 +107,8 @@ export default function Home() {
       });
     }
   };
+  
+  const isInputPresent = localScript.trim() !== '' || fileName !== '';
 
   return (
     <div className="relative flex flex-col min-h-screen">
@@ -152,11 +155,20 @@ export default function Home() {
                   </Label>
                   {fileName && <FileCheck className="h-5 w-5 text-green-400" />}
                 </div>
-                <Button size="lg" onClick={handleGetStarted} disabled={isLoading || isAiProcessing} className="w-full animated-button">
-                    <Sparkle className="sparkle sparkle-1" />
-                    <Sparkle className="sparkle sparkle-2" />
-                    <Sparkle className="sparkle sparkle-3" />
-                    <Sparkle className="sparkle sparkle-4" />
+                <Button 
+                  size="lg" 
+                  onClick={handleGetStarted} 
+                  disabled={!isInputPresent || isLoading || isAiProcessing} 
+                  className={cn("w-full", isInputPresent && "animated-button")}
+                >
+                  {isInputPresent && (
+                    <>
+                      <Sparkle className="sparkle sparkle-1" />
+                      <Sparkle className="sparkle sparkle-2" />
+                      <Sparkle className="sparkle sparkle-3" />
+                      <Sparkle className="sparkle sparkle-4" />
+                    </>
+                  )}
                   {isAiProcessing ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
