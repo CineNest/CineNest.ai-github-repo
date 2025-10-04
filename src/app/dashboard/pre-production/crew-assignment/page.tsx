@@ -24,6 +24,9 @@ interface CrewMember {
 const initialCrewMembers: CrewMember[] = [
   { name: 'Alex Ray', role: 'Director', status: 'Confirmed', contact: 'alex.ray@cinenest.ai' },
   { name: 'Sam Jones', role: 'Director of Photography', status: 'Confirmed', contact: 'sam.jones@cinenest.ai' },
+  { name: 'Casey Smith', role: 'Production Designer', status: 'Pending', contact: 'casey.smith@cinenest.ai' },
+  { name: 'Jordan Lee', role: 'Sound Mixer', status: 'Offer Sent', contact: 'jordan.lee@cinenest.ai' },
+  { name: 'Taylor Kim', role: 'Editor', status: 'Confirmed', contact: 'taylor.kim@cinenest.ai' },
 ];
 
 const suggestCrewSchema = z.object({
@@ -39,7 +42,7 @@ export default function CrewAssignmentPage() {
   const form = useForm<z.infer<typeof suggestCrewSchema>>({
     resolver: zodResolver(suggestCrewSchema),
     defaultValues: {
-      roles: 'Production Designer, Sound Mixer, Gaffer, Editor',
+      roles: 'Gaffer, Best Boy, Key Grip',
     },
   });
 
@@ -67,7 +70,7 @@ export default function CrewAssignmentPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Crew Assignment</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Crew Assignment & Coordination</h1>
         <p className="text-muted-foreground">
           Build and manage your production crew. Get AI suggestions or add artists manually.
         </p>
