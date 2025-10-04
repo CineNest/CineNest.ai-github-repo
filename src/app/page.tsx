@@ -4,21 +4,48 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useScript } from '@/context/script-context';
-import { useUser } from '@/firebase';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight, Upload } from 'lucide-react';
 import { Header } from '@/components/app/header';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Home() {
   const { setScript } = useScript();
+  const [localScript, setLocalScript] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { isUserLoading } = useUser();
+  const { toast } = useToast();
 
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+        const text = await file.text();
+        setLocalScript(text);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Invalid File Type',
+          description: 'Please upload a plain text file (.txt, .md).',
+        });
+      }
+    }
+  };
+  
   const handleGetStarted = () => {
+    if (!localScript.trim()) {
+       toast({
+        variant: 'destructive',
+        title: 'Script is empty',
+        description: 'Please enter or upload a script to continue.',
+      });
+      return;
+    }
     setIsLoading(true);
-    // Let's assume you always want to start with some default script
-    // or that the user should go to the dashboard to create one.
-    setScript('TITLE: My Awesome Film\n\nSCENE 1\nINT. COFFEE SHOP - DAY\nA young programmer, JANE (20s), types furiously on her laptop.');
+    setScript(localScript);
     router.push('/dashboard');
   };
 
@@ -27,27 +54,41 @@ export default function Home() {
        <Header/>
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
         
-        {isUserLoading ? (
-          <Loader2 className="h-16 w-16 animate-spin text-white" />
-        ) : (
-          <div className="flex flex-col items-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary max-w-4xl">
-              Your Vision, Our Expertise <br/> &mdash; Let's Build Together
-            </h1>
-            <p className="mt-6 text-lg text-white/80 max-w-2xl">
-             Turn your idea into a thriving digital product. With our hands-on support in strategy, design, and
-development, we'll craft a platform that ensures your launch is nothing short of remarkable. Ready to
-make it happen?
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4">
-               <Button size="lg" onClick={handleGetStarted} disabled={isLoading} variant="secondary">
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Start today
-                <ArrowRight className="ml-2 h-4 w-4" />
+      <Card className="w-full max-w-2xl shadow-2xl bg-card/80 backdrop-blur-sm border-white/20">
+          <CardHeader>
+            <CardTitle className="text-3xl font-headline tracking-tight">Enter Your Script</CardTitle>
+            <CardDescription>Paste your script below or upload a file to get started.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Textarea
+              placeholder="TITLE: My Awesome Film..."
+              className="min-h-[300px] bg-background/50 text-base"
+              value={localScript}
+              onChange={(e) => setLocalScript(e.target.value)}
+            />
+            <div className="flex items-center justify-between gap-4">
+               <Label htmlFor="script-file" className="flex-1">
+                <Button asChild variant="outline" className="w-full cursor-pointer">
+                  <span>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload File
+                  </span>
+                </Button>
+                <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain" />
+              </Label>
+              <Button size="lg" onClick={handleGetStarted} disabled={isLoading} className="flex-1">
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </div>
-          </div>
-        )}
+          </CardContent>
+        </Card>
+
       </main>
        <footer className="w-full text-center p-4 text-white/60 text-sm">
           CineNest.ai &copy; {new Date().getFullYear()}
