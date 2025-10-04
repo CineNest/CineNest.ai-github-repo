@@ -141,28 +141,28 @@ export default function Home() {
                 }}
               />
               <div className="flex items-center justify-between gap-4">
-                <div className="flex flex-col items-start gap-2">
-                  <Label htmlFor="script-file" className="cursor-pointer">
-                    <Button asChild variant="outline" className="w-full cursor-pointer rounded-full">
-                      <span>
-                        <Upload className="mr-2 h-4 w-4" />
-                        Upload File
-                      </span>
-                    </Button>
-                    <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-                  </Label>
-                  {fileName && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground pl-2">
-                      <FileCheck className="h-5 w-5 text-green-400" />
-                      <span className="truncate">{fileName}</span>
-                    </div>
-                  )}
+                <div className="flex items-start">
+                    <Label htmlFor="script-file" className="cursor-pointer">
+                      <Button asChild variant="outline" className="cursor-pointer">
+                        <span>
+                          <Upload className="mr-2 h-4 w-4" />
+                          Upload File
+                        </span>
+                      </Button>
+                      <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                    </Label>
+                    {fileName && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground pl-4 mt-2">
+                        <FileCheck className="h-5 w-5 text-green-400" />
+                        <span className="truncate">{fileName}</span>
+                      </div>
+                    )}
                 </div>
+                
                 <Button 
                   size="lg" 
                   onClick={handleGetStarted} 
-                  disabled={!isInputPresent || isLoading || isAiProcessing} 
-                  className="rounded-full self-start"
+                  disabled={!isInputPresent || isLoading || isAiProcessing}
                 >
                   {isAiProcessing || isLoading ? (
                     <>
