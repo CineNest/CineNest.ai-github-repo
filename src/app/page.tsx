@@ -17,6 +17,27 @@ import { Header } from '@/components/app/header';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
+function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  );
+}
+
+
 export default function Home() {
   const { setScript } = useScript();
   const [localScript, setLocalScript] = useState('');
@@ -164,9 +185,9 @@ export default function Home() {
                   {isInputPresent && (
                     <>
                       <Sparkle className="sparkle sparkle-1" />
-                      <Sparkle className="sparkle sparkle-2" />
+                      <PlusIcon className="sparkle sparkle-2" />
                       <Sparkle className="sparkle sparkle-3" />
-                      <Sparkle className="sparkle sparkle-4" />
+                      <PlusIcon className="sparkle sparkle-4" />
                     </>
                   )}
                   {isAiProcessing ? (
