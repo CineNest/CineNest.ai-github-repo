@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import mammoth from 'mammoth';
+import Link from 'next/link';
 
 export default function Home() {
   const { setScript } = useScript();
@@ -78,13 +79,22 @@ export default function Home() {
   return (
     <div className="relative min-h-screen w-full bg-[#0a001a]">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+      
+      <header className="absolute top-0 left-0 right-0 z-20 flex justify-end p-4">
+          <Link href="/login">
+            <Button variant="outline" className="bg-transparent text-white hover:bg-white/10 border-white/20">
+              Login
+            </Button>
+          </Link>
+      </header>
+
       <div className="relative z-10 flex flex-col min-h-screen">
         <main className="flex-1 flex flex-col items-center justify-center text-center px-4 pt-20 pb-10">
           <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-pink-400 via-primary to-cyan-400 mb-8">
               CineNest.ai
           </h1>
 
-          <Card className="w-full max-w-2xl shadow-2xl bg-[#140c26] border-[#2a1a49]">
+          <Card className="w-full max-w-2xl shadow-2xl bg-[#140c26]/80 backdrop-blur-sm border-[#2a1a49]">
               <CardHeader>
                 <CardTitle className="text-3xl font-headline tracking-tight text-white">Enter Your Script</CardTitle>
                 <CardDescription>Paste your script below or upload a file to get started.</CardDescription>
@@ -102,12 +112,10 @@ export default function Home() {
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
                         <Input id="script-file" type="file" className="hidden" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-                        <Button asChild variant="outline" className="cursor-pointer bg-[#21143a] border-[#3a295f] text-white hover:bg-[#2a1a49]">
-                          <label htmlFor="script-file">
-                              <Upload className="mr-2 h-4 w-4" />
-                              Upload File
-                          </label>
-                        </Button>
+                        <label htmlFor="script-file" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 cursor-pointer bg-[#21143a] border-[#3a295f] text-white hover:bg-[#2a1a49]">
+                            <Upload className="mr-2 h-4 w-4" />
+                            Upload File
+                        </label>
                         {fileName && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <FileCheck className="h-5 w-5 text-green-400" />
