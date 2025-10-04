@@ -1,106 +1,70 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AppLogo } from '@/components/icons';
-import { Loader2, Upload, Users, LogIn } from 'lucide-react';
 import { useScript } from '@/context/script-context';
-import Link from 'next/link';
 import { useUser } from '@/firebase';
+import { Loader2, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import { AppLogo } from '@/components/icons';
 
 export default function Home() {
-  const { script, setScript } = useScript();
+  const { setScript } = useScript();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { isUserLoading } = useUser();
+  const { user, isUserLoading } = useUser();
 
   const handleGetStarted = () => {
     setIsLoading(true);
+    // Let's assume you always want to start with some default script
+    // or that the user should go to the dashboard to create one.
+    setScript('TITLE: My Awesome Film\n\nSCENE 1\nINT. COFFEE SHOP - DAY\nA young programmer, JANE (20s), types furiously on her laptop.');
     router.push('/dashboard');
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result as string;
-        setScript(text);
-      };
-      reader.readAsText(file);
-    }
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  if (isUserLoading) {
-    return (
-       <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-24 bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
-        <Loader2 className="h-16 w-16 animate-spin text-white" />
-      </main>
-    )
-  }
-
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-24 bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
-      <div className="w-full max-w-2xl">
-        <Card className="shadow-2xl bg-card/80 backdrop-blur-sm border-white/20">
-          <CardHeader className="items-center text-center">
-            <AppLogo className="h-16 w-16 mb-2 text-primary" />
-            <CardTitle className="text-3xl font-headline tracking-tight">CineFlow AI</CardTitle>
-            <CardDescription className="max-w-md">
-              From script to screen, faster. Paste your script below to begin, or upload a file.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid w-full gap-4">
-              <Textarea
-                placeholder="Paste your script here... The first line becomes the title, the rest is the body."
-                className="min-h-[120px] text-base bg-background/70"
-                value={script}
-                onChange={(e) => setScript(e.target.value)}
-              />
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button size="lg" onClick={handleGetStarted} className="flex-1" disabled={isLoading || isUserLoading}>
-                  {(isLoading || isUserLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Get Started
-                </Button>
-                 <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  className="hidden"
-                  accept=".txt,.md,.rtf"
-                />
-                <Button variant="outline" size="lg" onClick={handleUploadClick} className="bg-transparent hover:bg-white/10 text-white border-white/50 hover:text-white">
-                  <Upload className="mr-2 h-4 w-4" />
-                  Upload Script
-                </Button>
-                <Link href="/crew" passHref>
-                  <Button variant="outline" size="lg" className="bg-transparent hover:bg-white/10 text-white border-white/50 hover:text-white w-full">
-                    <Users className="mr-2 h-4 w-4" />
-                    Crew
-                  </Button>
-                </Link>
-              </div>
-               <div className="mt-4 text-center">
-                <Link href="/login" passHref>
-                  <Button variant="link" className="text-white/80 hover:text-white">
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Sign In or Sign Up
-                  </Button>
-                </Link>
-              </div>
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
+       <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-white/10 bg-transparent px-4 md:px-6">
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+            <AppLogo className="h-6 w-6 text-white" />
+        </Link>
+        <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+          <div className="ml-auto flex-1 sm:flex-initial" />
+          { !user && !isUserLoading && (
+             <Link href="/login">
+              <Button variant="outline" className="bg-white/90 text-black hover:bg-white">Login</Button>
+            </Link>
+          )}
+        </div>
+      </header>
+      <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
+        
+        {isUserLoading ? (
+          <Loader2 className="h-16 w-16 animate-spin text-white" />
+        ) : (
+          <div className="flex flex-col items-center">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white max-w-4xl">
+              Your Vision, Our Expertise <br/> &mdash; Let's Build Together
+            </h1>
+            <p className="mt-6 text-lg text-white/80 max-w-2xl">
+             Turn your idea into a thriving digital product. With our hands-on support in strategy, design, and
+development, we'll craft a platform that ensures your launch is nothing short of remarkable. Ready to
+make it happen?
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
+               <Button size="lg" onClick={handleGetStarted} disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Start today
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </main>
+          </div>
+        )}
+      </main>
+       <footer className="w-full text-center p-4 text-white/60 text-sm">
+          CineFlow AI &copy; {new Date().getFullYear()}
+      </footer>
+    </div>
   );
 }

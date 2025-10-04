@@ -34,18 +34,18 @@ export function Header() {
 
   const handleLogout = async () => {
     await auth.signOut();
-    router.push('/login');
+    router.push('/');
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <div className="flex items-center gap-2">
-        <SidebarTrigger className="md:hidden" />
-        <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
-          <AppLogo className="h-6 w-6 text-primary" />
-          <span className="font-headline text-lg">CineFlow AI</span>
-        </Link>
+    <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-white/10 bg-transparent px-4 md:px-6">
+      <div className="flex items-center gap-2 md:hidden">
+        <SidebarTrigger />
       </div>
+      <Link href="/" className="flex items-center gap-2 font-semibold">
+          <AppLogo className="h-6 w-6 text-white" />
+          <span className="font-headline text-lg text-white">CineFlow AI</span>
+      </Link>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <div className="ml-auto flex-1 sm:flex-initial" />
         {mounted && (
@@ -53,6 +53,7 @@ export function Header() {
             variant="ghost"
             size="icon"
             onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+            className="text-white hover:bg-white/10 hover:text-white"
           >
             {resolvedTheme === 'dark' ? <Sun /> : <Moon />}
             <span className="sr-only">Toggle theme</span>
@@ -87,7 +88,7 @@ export function Header() {
           </DropdownMenu>
         ) : (
            <Link href="/login">
-            <Button>Login</Button>
+            <Button variant="outline" className="bg-white/90 text-black hover:bg-white">Login</Button>
           </Link>
         )}
       </div>
