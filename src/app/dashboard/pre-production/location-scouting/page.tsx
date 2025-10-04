@@ -17,6 +17,7 @@ import { suggestLocationsAction } from '@/app/actions';
 import type { SuggestLocationsOutput } from '@/ai/flows/suggest-locations-flow';
 import { ArrowLeft, ExternalLink, Loader2, Search } from 'lucide-react';
 import { useScript } from '@/context/script-context';
+import { StarRating } from '@/components/app/star-rating';
 
 const locationScoutSchema = z.object({
   country: z.string().optional(),
@@ -121,16 +122,25 @@ export default function LocationScoutingPage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight mb-4">Suggested Locations</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {searchResult.locations.map((location) => (
-              <Card key={location.name} className="overflow-hidden flex flex-col">
+            {searchResult.locations.map((location, index) => (
+              <Card key={`${location.name}-${index}`} className="overflow-hidden flex flex-col">
                 <div className="relative h-48 w-full">
-                    <Image src={location.imageUrl} alt={location.name} layout="fill" objectFit="cover" className="bg-muted" />
+                    <Image src={location.imageUrl} alt={location.name} fill objectFit="cover" className="bg-muted" />
                 </div>
                 <CardHeader>
                   <CardTitle>{location.name}</CardTitle>
+                  {location.rating && (
+                    <div className="flex items-center gap-2">
+                        <StarRating rating={location.rating} />
+                        <span className="text-sm text-muted-foreground">{location.rating.toFixed(1)}</span>
+                    </div>
+                  )}
                   <CardDescription>{location.description}</CardDescription>
+                  {location.reviewsSummary && (
+                     <p className="text-xs text-muted-foreground pt-2 italic">"{location.reviewsSummary}"</p>
+                  )}
                 </CardHeader>
-                <CardContent className="mt-auto">
+                <CardContent className="mt-auto flex items-center justify-between">
                    <a href={location.googleMapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex">
                     <Button variant="outline">
                         View on Google Maps

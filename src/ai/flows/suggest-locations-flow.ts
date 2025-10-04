@@ -23,6 +23,8 @@ const LocationSuggestionSchema = z.object({
   description: z.string().describe('A brief explanation of why this location is a good fit for the scene.'),
   imageUrl: z.string().url().describe('A URL for a representative photo of the location.'),
   googleMapsUrl: z.string().url().describe('A direct URL to the location on Google Maps.'),
+  rating: z.number().optional().describe('The average star rating from Google reviews (e.g., 4.5).'),
+  reviewsSummary: z.string().optional().describe('A brief summary of what people are saying in reviews.'),
 });
 
 const SuggestLocationsOutputSchema = z.object({
@@ -41,13 +43,13 @@ const prompt = ai.definePrompt({
   output: { schema: SuggestLocationsOutputSchema },
   prompt: `You are an expert location scout for the film industry. Your task is to find and suggest potential filming locations based on a scene description and optional geographical constraints.
 
-For each suggestion, you must provide a name, a brief description of why it's a good fit, a publicly accessible image URL, and a Google Maps link. The location can be a public landmark or a generic type of place (like "a suburban two-story house"). If country and state are not provided, suggest interesting locations from around the world that fit the description.
+For each suggestion, you must provide a name, a brief description of why it's a good fit, a publicly accessible image URL, a Google Maps link, and its Google review rating and a summary of reviews. The location can be a public landmark or a generic type of place (like "a suburban two-story house"). If country and state are not provided, suggest interesting locations from around the world that fit the description.
 
 Scene Description: {{{sceneDescription}}}
 Country: {{{country}}}
 State/Province: {{{state}}}
 
-Based on this, generate a list of 3 diverse and interesting locations. For the image URL, use a realistic photo from a service like Unsplash. For the Google Maps link, create a search-based URL.`,
+Based on this, generate a list of 3 diverse and interesting locations. For the image URL, use a realistic photo from a service like Unsplash. For the Google Maps link, create a search-based URL. For ratings and reviews, find the information on Google and provide a rating and a brief summary.`,
 });
 
 const suggestLocationsFlow = ai.defineFlow(
