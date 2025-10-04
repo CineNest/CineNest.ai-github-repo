@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useScript } from '@/context/script-context';
-import { Loader2, ArrowRight, Upload, FileCheck } from 'lucide-react';
+import { Loader2, ArrowRight, Upload, FileCheck, Sparkle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -119,7 +119,7 @@ export default function Home() {
        <Header />
        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
         
-        <h1 className="text-5xl md:text-7xl font-bold mb-8 text-center text-primary">
+        <h1 className="text-5xl md:text-7xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-br from-yellow-300 via-primary to-white">
             CineNest.ai
         </h1>
 
@@ -152,12 +152,19 @@ export default function Home() {
                   </Label>
                   {fileName && <FileCheck className="h-5 w-5 text-green-400" />}
                 </div>
-                <Button size="lg" onClick={handleGetStarted} disabled={isLoading || isAiProcessing} className="w-full">
+                <Button size="lg" onClick={handleGetStarted} disabled={isLoading || isAiProcessing} className="w-full animated-button">
+                    <Sparkle className="sparkle sparkle-1" />
+                    <Sparkle className="sparkle sparkle-2" />
+                    <Sparkle className="sparkle sparkle-3" />
+                    <Sparkle className="sparkle sparkle-4" />
                   {isAiProcessing ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <span>Generating...</span>
+                    </>
                   ) : (
                     <>
-                      {aiResult ? 'Go to Dashboard' : 'Get Started'}
+                      <span>{aiResult ? 'Go to Dashboard' : 'Get Started'}</span>
                       {!isAiProcessing && <ArrowRight className="ml-2 h-4 w-4" />}
                     </>
                   )}

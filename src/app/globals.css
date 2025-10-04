@@ -83,3 +83,60 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .animated-button {
+    @apply relative inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground transition-all duration-300;
+    box-shadow: 0 0 20px 2px hsl(var(--primary) / 0.5), 0 0 5px 0px hsl(var(--primary) / 0.8);
+  }
+  .animated-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px 5px hsl(var(--primary) / 0.6), 0 0 10px 2px hsl(var(--primary) / 0.8);
+  }
+
+  .animated-button .sparkle {
+    @apply absolute block h-2 w-2 text-white;
+    animation-duration: 1.5s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+
+  .animated-button .sparkle-1 {
+    top: -20%;
+    left: 20%;
+    animation-name: sparkle-1;
+  }
+  .animated-button .sparkle-2 {
+    top: 20%;
+    left: 0%;
+    animation-name: sparkle-2;
+  }
+  .animated-button .sparkle-3 {
+    top: 100%;
+    left: 30%;
+    animation-name: sparkle-3;
+  }
+  .animated-button .sparkle-4 {
+    top: 70%;
+    left: 95%;
+    animation-name: sparkle-4;
+  }
+}
+
+@keyframes sparkle-1 {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes sparkle-2 {
+  0%, 100% { transform: translate(-5px, -5px) scale(0.8); opacity: 0.5; }
+  50% { transform: translate(5px, 5px) scale(1.2); opacity: 1; }
+  100% { transform: translate(-5px, -5px) scale(0.8); opacity: 0.5; }
+}
+@keyframes sparkle-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+  50% { transform: translate(10px, -10px) scale(0.5); opacity: 0; }
+}
+@keyframes sparkle-4 {
+  0%, 100% { transform: scale(0.8); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.5; }
+}
