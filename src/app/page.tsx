@@ -142,10 +142,18 @@ export default function Home() {
       <div className="absolute inset-0 bg-black/70 -z-10" />
        <Header />
        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
-        
-        <h1 className="text-5xl md:text-7xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-br from-yellow-300 via-primary to-white">
-            CineNest.ai
-        </h1>
+        <div className="relative mb-8 flex items-center justify-center">
+            <Image 
+                src="https://storage.googleapis.com/project-spark-308117-21959.appspot.com/c63955a5-e633-4b45-8123-28f090b83075.png"
+                alt="Glowing Ellipse"
+                width={600}
+                height={400}
+                className="object-contain"
+            />
+            <h1 className="absolute text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-yellow-300 via-primary to-white">
+                CineNest.ai
+            </h1>
+        </div>
 
         <Card className="w-full max-w-2xl shadow-2xl bg-card/80 backdrop-blur-sm border-white/10">
             <CardHeader>
@@ -155,7 +163,7 @@ export default function Home() {
             <CardContent className="space-y-4">
               <Textarea
                 placeholder="TITLE: My Awesome Film..."
-                className="min-h-[300px] bg-background/50 text-base"
+                className="min-h-[120px] bg-background/50 text-base"
                 value={localScript}
                 onChange={(e) => {
                   setLocalScript(e.target.value);
@@ -166,7 +174,7 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className='flex items-center space-x-2'>
                   <Label htmlFor="script-file" className="flex-1">
-                    <Button asChild variant="outline" className="w-full cursor-pointer">
+                    <Button asChild variant="outline" className="w-full cursor-pointer rounded-full">
                       <span>
                         <Upload className="mr-2 h-4 w-4" />
                         Upload File
@@ -180,7 +188,7 @@ export default function Home() {
                   size="lg" 
                   onClick={handleGetStarted} 
                   disabled={!isInputPresent || isLoading || isAiProcessing} 
-                  className={cn("w-full", isInputPresent && "animated-button")}
+                  className={cn("w-full rounded-full", isInputPresent && "animated-button")}
                 >
                   {isInputPresent && (
                     <>
