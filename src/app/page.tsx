@@ -163,11 +163,14 @@ export default function Home() {
        <Header />
        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
         <div className="relative mb-8 flex items-center justify-center">
-            <div 
-                className="absolute w-[600px] h-[400px] bg-contain bg-no-repeat bg-center"
-                style={{ backgroundImage: 'url(https://storage.googleapis.com/project-spark-308117-21959.appspot.com/c63955a5-e633-4b45-8123-28f090b83075.png)' }}
+            <Image
+                src="https://storage.googleapis.com/project-spark-308117-21959.appspot.com/c63955a5-e633-4b45-8123-28f090b83075.png"
+                alt="ellipse"
+                width={600}
+                height={400}
+                className="absolute inset-0 z-0 object-contain"
             />
-            <h1 className="relative text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-yellow-300 via-primary to-white">
+            <h1 className="relative z-10 text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-yellow-300 via-primary to-white">
                 CineNest.ai
             </h1>
         </div>
@@ -180,7 +183,7 @@ export default function Home() {
             <CardContent className="space-y-4">
               <Textarea
                 placeholder="TITLE: My Awesome Film..."
-                className="min-h-[120px] bg-background/50 text-base"
+                className="min-h-[90px] bg-background/50 text-base"
                 value={localScript}
                 onChange={(e) => {
                   setLocalScript(e.target.value);
