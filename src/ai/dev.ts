@@ -6,3 +6,5 @@ import '@/ai/flows/analyze-ticket-sales-data.ts';
 import '@/ai/flows/ensure-legal-compliance.ts';
 import '@/ai/flows/generate-location-contract.ts';
 import '@/ai/flows/script-breakdown-flow.ts';
+import '@/ai/flows/generate-schedule-flow.ts';
+import '@/ai/flows/suggest-crew-flow.ts';
