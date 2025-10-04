@@ -140,10 +140,10 @@ export default function Home() {
                   setAiResult('');
                 }}
               />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                <div className='flex items-center space-x-2'>
-                  <Label htmlFor="script-file" className="flex-1">
-                    <Button asChild variant="outline" className="w-full cursor-pointer rounded-full">
+              <div className="flex flex-col md:flex-row gap-4 items-center">
+                <div className='flex-1 flex md:flex-col items-start gap-2'>
+                  <Label htmlFor="script-file" className="w-full md:w-auto">
+                    <Button asChild variant="outline" className="w-full md:w-auto cursor-pointer rounded-full">
                       <span>
                         <Upload className="mr-2 h-4 w-4" />
                         Upload File
@@ -151,13 +151,18 @@ export default function Home() {
                     </Button>
                     <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
                   </Label>
-                  {fileName && <FileCheck className="h-5 w-5 text-green-400" />}
+                  {fileName && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <FileCheck className="h-5 w-5 text-green-400" />
+                      <span className="truncate">{fileName}</span>
+                    </div>
+                  )}
                 </div>
                 <Button 
                   size="lg" 
                   onClick={handleGetStarted} 
                   disabled={!isInputPresent || isLoading || isAiProcessing} 
-                  className="w-full rounded-full"
+                  className="w-full md:w-auto rounded-full"
                 >
                   {isAiProcessing || isLoading ? (
                     <>
@@ -172,7 +177,6 @@ export default function Home() {
                   )}
                 </Button>
               </div>
-              {fileName && <p className="text-sm text-muted-foreground truncate pt-2">Uploaded: {fileName}</p>}
 
               {aiResult && (
                 <div className="mt-6 text-left">
