@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import mammoth from 'mammoth';
 
 export default function Home() {
   const { setScript } = useScript();
@@ -25,11 +26,30 @@ export default function Home() {
       if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
         const text = await file.text();
         setLocalScript(text);
+      } else if (file.name.endsWith('.docx')) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const arrayBuffer = e.target?.result;
+          if (arrayBuffer) {
+            try {
+              const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer as ArrayBuffer });
+              setLocalScript(result.value);
+            } catch (error) {
+              console.error('Error parsing .docx file:', error);
+              toast({
+                variant: 'destructive',
+                title: 'Error Reading File',
+                description: 'Could not extract text from the Word document.',
+              });
+            }
+          }
+        };
+        reader.readAsArrayBuffer(file);
       } else {
         toast({
           variant: 'destructive',
           title: 'Invalid File Type',
-          description: 'Please upload a plain text file (.txt, .md).',
+          description: 'Please upload a .txt, .md, or .docx file.',
         });
       }
     }
@@ -74,7 +94,7 @@ export default function Home() {
                     Upload File
                   </span>
                 </Button>
-                <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain" />
+                <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
               </Label>
               <Button size="lg" onClick={handleGetStarted} disabled={isLoading} className="flex-1">
                 {isLoading ? (
