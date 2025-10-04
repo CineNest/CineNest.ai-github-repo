@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { estimateEquipmentCostAction } from '@/app/actions';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { useScript } from '@/context/script-context';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { DollarSign, ToyBrick, Users, Wrench, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 const budgetData = [
   { name: 'Equipment', value: 25000, fill: 'var(--color-equipment)' },
@@ -123,6 +125,33 @@ function EstimateEquipmentCostForm() {
     );
 }
 
+function PropsList() {
+    const { breakdown } = useScript();
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Props from Script Breakdown</CardTitle>
+                <CardDescription>List of props identified by the AI script analysis.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {breakdown?.props && breakdown.props.length > 0 ? (
+                    <ul className="space-y-2 text-sm list-disc pl-5 max-h-60 overflow-y-auto">
+                        {breakdown.props.map((prop, i) => <li key={i}>{prop}</li>)}
+                    </ul>
+                ) : (
+                    <div className="text-center text-muted-foreground py-4">
+                        <p>No props identified yet.</p>
+                        <Link href="/dashboard/pre-production/script-breakdown">
+                           <Button variant="link">Analyze your script</Button>
+                        </Link>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
+
 export default function BudgetTrackingPage() {
   return (
     <div className="space-y-8">
@@ -177,8 +206,9 @@ export default function BudgetTrackingPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 space-y-8">
             <EstimateEquipmentCostForm />
+            <PropsList />
           </div>
 
           <div className="lg:col-span-2">

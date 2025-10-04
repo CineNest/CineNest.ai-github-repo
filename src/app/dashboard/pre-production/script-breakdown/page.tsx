@@ -7,12 +7,12 @@ import Link from 'next/link';
 import { useScript } from '@/context/script-context';
 import { scriptBreakdownAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Film, MapPin, ToyBrick } from 'lucide-react';
+import { Loader2, Film, MapPin } from 'lucide-react';
 import type { ScriptBreakdownOutput } from '@/ai/flows/script-breakdown-flow';
 
 function AnalysisResults({ results }: { results: ScriptBreakdownOutput }) {
   return (
-    <div className="grid md:grid-cols-3 gap-6 mt-8">
+    <div className="grid md:grid-cols-2 gap-6 mt-8">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Film /> Characters</CardTitle>
@@ -33,25 +33,14 @@ function AnalysisResults({ results }: { results: ScriptBreakdownOutput }) {
           </ul>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><ToyBrick /> Props</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2 text-sm list-disc pl-5">
-            {results.props.map((prop, i) => <li key={i}>{prop}</li>)}
-          </ul>
-        </CardContent>
-      </Card>
     </div>
   )
 }
 
 export default function ScriptBreakdownPage() {
-  const { script, isLoading: isScriptLoading } = useScript();
+  const { script, breakdown, setBreakdown, isLoading: isScriptLoading } = useScript();
   const { toast } = useToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<ScriptBreakdownOutput | null>(null);
 
   const handleAnalysis = async () => {
     if (!script) {
@@ -63,12 +52,12 @@ export default function ScriptBreakdownPage() {
       return;
     }
     setIsAnalyzing(true);
-    setAnalysisResult(null);
+    setBreakdown(null); // Clear previous results
     const result = await scriptBreakdownAction({ script });
     setIsAnalyzing(false);
 
     if (result.success && result.data) {
-      setAnalysisResult(result.data);
+      setBreakdown(result.data);
       toast({
         title: 'Analysis Complete',
         description: 'Script elements have been identified.',
@@ -95,7 +84,7 @@ export default function ScriptBreakdownPage() {
         <CardHeader>
           <CardTitle>Automated Script Analysis</CardTitle>
           <CardDescription>
-            Use AI to automatically tag characters, locations, props, and other elements from your script.
+            Use AI to automatically tag characters and locations from your script. Props will be available on the Budget Tracking page after analysis.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -110,7 +99,14 @@ export default function ScriptBreakdownPage() {
         </CardContent>
       </Card>
 
-      {analysisResult && <AnalysisResults results={analysisResult} />}
+      {isAnalyzing && (
+        <div className="text-center p-8">
+            <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+            <p className="mt-4 text-muted-foreground">Analyzing your script...</p>
+        </div>
+      )}
+
+      {breakdown && <AnalysisResults results={breakdown} />}
 
        <div className="mt-8">
           <Link href="/dashboard/pre-production">
