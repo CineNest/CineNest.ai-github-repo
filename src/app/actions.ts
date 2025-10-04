@@ -16,10 +16,6 @@ import {
   generateLocationContract,
   type GenerateLocationContractInput,
 } from '@/ai/flows/generate-location-contract';
-import {
-  processUploadedScript,
-  type ProcessUploadedScriptInput,
-} from '@/ai/flows/process-uploaded-script';
 
 export async function generateContractAction(input: GenerateLocationContractInput) {
   try {
@@ -57,18 +53,6 @@ export async function checkComplianceAction(input: EnsureLegalComplianceInput) {
     return { success: true, data: result };
   } catch (error: any) {
     console.error('Error in checkComplianceAction:', error);
-    return { success: false, error: error.message || 'An unknown error occurred.' };
-  }
-}
-
-export async function processScriptAction(input: ProcessUploadedScriptInput) {
-  try {
-    const result = await processUploadedScript(input);
-    // Note: The prompt asks for a 'success' status, but the Genkit flow returns the summary directly.
-    // We will wrap it here to match the expected output structure.
-    return { success: true, data: { status: 'success', summary: result.summary } };
-  } catch (error: any) {
-    console.error('Error in processScriptAction:', error);
     return { success: false, error: error.message || 'An unknown error occurred.' };
   }
 }
