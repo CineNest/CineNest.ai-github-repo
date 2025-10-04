@@ -17,14 +17,8 @@ export default function Home() {
 
   const handleGetStarted = async () => {
     setIsLoading(true);
-    try {
-      // The script is already managed by the context, which handles localStorage
-    } catch (error) {
-      console.error("Could not process script:", error);
-    } finally {
-      // Navigate to the dashboard after handling the script
-      router.push('/dashboard');
-    }
+    // The script is already managed by the context, which handles localStorage
+    router.push('/dashboard');
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,9 +38,9 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-24 bg-background">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-24 bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
       <div className="w-full max-w-2xl">
-        <Card className="shadow-2xl">
+        <Card className="shadow-2xl bg-card/80 backdrop-blur-sm border-white/20">
           <CardHeader className="items-center text-center">
             <AppLogo className="h-16 w-16 mb-2 text-primary" />
             <CardTitle className="text-3xl font-headline tracking-tight">CineFlow AI</CardTitle>
@@ -57,8 +51,8 @@ export default function Home() {
           <CardContent>
             <div className="grid w-full gap-4">
               <Textarea
-                placeholder="Paste your script here..."
-                className="min-h-[120px] text-base"
+                placeholder="Paste your script here... The first line becomes the title, the rest is the body."
+                className="min-h-[120px] text-base bg-background/70"
                 value={script}
                 onChange={(e) => setScript(e.target.value)}
               />
@@ -74,7 +68,7 @@ export default function Home() {
                   className="hidden"
                   accept=".txt,.md,.rtf"
                 />
-                <Button variant="outline" size="lg" onClick={handleUploadClick}>
+                <Button variant="outline" size="lg" onClick={handleUploadClick} className="bg-transparent hover:bg-white/10 text-white border-white/50 hover:text-white">
                   <Upload className="mr-2 h-4 w-4" />
                   Upload File
                 </Button>
