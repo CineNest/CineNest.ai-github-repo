@@ -116,6 +116,28 @@
         }
       },
       "prompt": "You are an AI assistant specialized in generating legal contracts for film productions.\n  Based on the provided location details, owner information, and production terms, create a comprehensive location contract.\n  Include standard legal clauses and ensure the contract is tailored to the specific details provided.\n  Make sure that both parties, the location owner, and the film company are protected.\n\n  Location Name: {{locationName}}\n  Location Address: {{locationAddress}}\n  Owner Name: {{ownerName}}\n  Owner Contact: {{ownerContact}}\n  Film Company Name: {{filmCompanyName}}\n  Production Dates: {{productionDates}}\n  Specific Terms: {{specificTerms}}\n\n  Contract:\n"
+    },
+    {
+      "name": "processUploadedScript",
+      "description": "Processes an uploaded script via a webhook. This workflow is triggered by an HTTP POST request to a specific URL.",
+      "inputSchema": {
+        "scriptContent": {
+          "type": "string",
+          "description": "The full text content of the uploaded film script."
+        }
+      },
+      "outputSchema": {
+        "status": {
+          "type": "string",
+          "description": "The status of the script processing ('success' or 'failed')."
+        },
+        "summary": {
+          "type
+": "string",
+          "description": "A brief summary of the analyzed script."
+        }
+      },
+      "prompt": "You are an AI assistant for film production. A script has been uploaded. Analyze the following script content and provide a short, one-paragraph summary.\n\nScript Content:\n{{scriptContent}}\n\nRespond with a status of 'success' and the generated summary."
     }
   ]
 }
