@@ -104,11 +104,11 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen w-full bg-hero-pattern">
-      <div className="absolute inset-0 bg-background/60 backdrop-blur-sm -z-0" />
+      <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" />
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
-          <h1 className="relative z-10 text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-pink-400 via-primary to-cyan-400 mb-8">
+          <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-pink-400 via-primary to-cyan-400 mb-8">
               CineNest.ai
           </h1>
 
