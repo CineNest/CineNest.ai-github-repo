@@ -6,6 +6,8 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 interface UserProfile {
   id: string;
@@ -15,11 +17,34 @@ interface UserProfile {
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
 
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.replace('/login');
+    }
+  }, [user, isUserLoading, router]);
+  
   const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
   const isLoading = isUserLoading || isProfileLoading;
+
+  if (!user && !isUserLoading) {
+    return (
+      <div className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Access Denied</CardTitle>
+            <CardDescription>You must be logged in to view your profile.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>Please log in to access this page.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppLogo } from '@/components/icons';
-import { Loader2, Upload, Users } from 'lucide-react';
+import { Loader2, Upload, Users, LogIn } from 'lucide-react';
 import { useScript } from '@/context/script-context';
 import Link from 'next/link';
 import { useUser } from '@/firebase';
@@ -16,17 +16,11 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { user, isUserLoading } = useUser();
-  const [webhookResult, setWebhookResult] = useState('');
+  const { isUserLoading } = useUser();
 
   const handleGetStarted = () => {
     setIsLoading(true);
-    // The script is already managed by the context, which handles localStorage
-    if (user) {
-      router.push('/dashboard');
-    } else {
-      router.push('/signup');
-    }
+    router.push('/dashboard');
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,12 +89,14 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
-               {webhookResult && (
-                <div className="mt-4 p-4 bg-muted rounded-lg">
-                  <h4 className="font-semibold mb-2">Webhook Response:</h4>
-                  <pre className="text-sm whitespace-pre-wrap">{webhookResult}</pre>
-                </div>
-              )}
+               <div className="mt-4 text-center">
+                <Link href="/login" passHref>
+                  <Button variant="link" className="text-white/80 hover:text-white">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Sign In or Sign Up
+                  </Button>
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>

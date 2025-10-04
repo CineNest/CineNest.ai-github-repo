@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useUser } from '@/firebase';
 
 const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -24,15 +25,19 @@ const menuItems = [
   { href: '/dashboard/post-production', label: 'Post-Production', icon: Presentation },
   { href: '/dashboard/legal', label: 'Legal & Contracts', icon: Scale },
   { href: '/dashboard/business', label: 'Business', icon: AreaChart },
-  { href: '/dashboard/profile', label: 'Profile', icon: User },
 ];
+
+const profileMenuItem = { href: '/dashboard/profile', label: 'Profile', icon: User };
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const { user } = useUser();
+
+  const allMenuItems = user ? [...menuItems, profileMenuItem] : menuItems;
 
   return (
     <SidebarMenu>
-      {menuItems.map((item) => (
+      {allMenuItems.map((item) => (
         <SidebarMenuItem key={item.href}>
           <Link href={item.href}>
             <SidebarMenuButton
