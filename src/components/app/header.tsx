@@ -8,9 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { AppLogo } from '../icons';
@@ -39,12 +36,8 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-white/10 bg-transparent px-4 md:px-6">
-      <div className="flex items-center gap-2 md:hidden">
-        <SidebarTrigger />
-      </div>
       <Link href="/" className="flex items-center gap-2 font-semibold">
           <AppLogo className="h-6 w-6 text-white" />
-          <span className="font-headline text-lg text-white">CineFlow AI</span>
       </Link>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <div className="ml-auto flex-1 sm:flex-initial" />
@@ -88,7 +81,7 @@ export function Header() {
           </DropdownMenu>
         ) : (
            <Link href="/login">
-            <Button variant="outline" className="bg-white/90 text-black hover:bg-white">Login</Button>
+            <Button variant="outline" className="bg-transparent text-white hover:bg-white/10">Login</Button>
           </Link>
         )}
       </div>
