@@ -9,17 +9,13 @@ import { automateTaskAction } from '@/app/actions';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
-import Image from 'next/image';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { GenerateContractForm } from '../legal/page';
 
 const crewMembers = [
   { name: 'Alex Ray', role: 'Director', contact: 'alex.ray@cinenest.ai' },
@@ -134,77 +130,36 @@ export default function ProductionPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Production</h1>
         <p className="text-muted-foreground">
-          Manage your crew, locations, and automate production tasks.
+          Manage your crew and automate production tasks.
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Crew Coordination</CardTitle>
-            <CardDescription>An overview of your production crew.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Contact</TableHead>
+      <Card>
+        <CardHeader>
+          <CardTitle>Crew Coordination</CardTitle>
+          <CardDescription>An overview of your production crew.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Contact</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {crewMembers.map((member) => (
+                <TableRow key={member.name}>
+                  <TableCell className="font-medium">{member.name}</TableCell>
+                  <TableCell>{member.role}</TableCell>
+                  <TableCell>{member.contact}</TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {crewMembers.map((member) => (
-                  <TableRow key={member.name}>
-                    <TableCell className="font-medium">{member.name}</TableCell>
-                    <TableCell>{member.role}</TableCell>
-                    <TableCell>{member.contact}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Location Scouting</CardTitle>
-            <CardDescription>Manage and secure filming locations.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {PlaceHolderImages.map((location: ImagePlaceholder) => (
-                <Dialog key={location.id}>
-                  <DialogTrigger asChild>
-                    <div className="group cursor-pointer">
-                      <div className="overflow-hidden rounded-lg">
-                        <Image
-                          src={location.imageUrl}
-                          alt={location.description}
-                          width={600}
-                          height={400}
-                          data-ai-hint={location.imageHint}
-                          className="aspect-video w-full object-cover transition-transform group-hover:scale-105"
-                        />
-                      </div>
-                      <h3 className="mt-2 font-semibold">{location.description}</h3>
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[625px]">
-                    <DialogHeader>
-                      <DialogTitle>Generate Contract for: {location.description}</DialogTitle>
-                      <DialogDescription>
-                        Fill in the details below to generate a location contract.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <GenerateContractForm prefilledLocation={location.description} />
-                  </DialogContent>
-                </Dialog>
               ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
       
       <AutomateTaskForm />
 
