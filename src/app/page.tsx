@@ -4,25 +4,30 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useScript } from '@/context/script-context';
-import { Loader2, ArrowRight, Upload } from 'lucide-react';
-import { Header } from '@/components/app/header';
+import { Loader2, ArrowRight, Upload, FileCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import mammoth from 'mammoth';
+import { automateTaskAction } from './actions';
 
 export default function Home() {
   const { setScript } = useScript();
   const [localScript, setLocalScript] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isAiProcessing, setIsAiProcessing] = useState(false);
+  const [fileName, setFileName] = useState('');
+  const [aiResult, setAiResult] = useState('');
   const router = useRouter();
   const { toast } = useToast();
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFileName(file.name);
+      setAiResult('');
       if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
         const text = await file.text();
         setLocalScript(text);
@@ -36,6 +41,7 @@ export default function Home() {
               setLocalScript(result.value);
             } catch (error) {
               console.error('Error parsing .docx file:', error);
+              setFileName('');
               toast({
                 variant: 'destructive',
                 title: 'Error Reading File',
@@ -46,6 +52,7 @@ export default function Home() {
         };
         reader.readAsArrayBuffer(file);
       } else {
+        setFileName('');
         toast({
           variant: 'destructive',
           title: 'Invalid File Type',
@@ -55,7 +62,7 @@ export default function Home() {
     }
   };
   
-  const handleGetStarted = () => {
+  const handleGetStarted = async () => {
     if (!localScript.trim()) {
        toast({
         variant: 'destructive',
@@ -64,15 +71,45 @@ export default function Home() {
       });
       return;
     }
-    setIsLoading(true);
+    
+    // First, save the script and go to dashboard
     setScript(localScript);
-    router.push('/dashboard');
+
+    // If we already have a result, just navigate
+    if (aiResult) {
+      setIsLoading(true);
+      router.push('/dashboard');
+      return;
+    }
+
+    // Otherwise, run the AI task
+    setIsAiProcessing(true);
+    setAiResult('');
+    const result = await automateTaskAction({
+      task: 'Generate a shot list',
+      scriptSummary: localScript.slice(0, 5000) + (localScript.length > 5000 ? '...' : ''),
+      filmGenre: 'Drama', // Using a default genre for now
+    });
+    setIsAiProcessing(false);
+
+    if (result.success && result.data) {
+      setAiResult(result.data.details);
+      toast({
+        title: 'AI Analysis Complete',
+        description: 'A shot list has been generated from your script.',
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'AI Analysis Failed',
+        description: result.error || 'Could not process the script.',
+      });
+    }
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#0a192f] via-[#123a66] to-[#00c6ff]">
-       <Header/>
-      <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
+       <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
         
       <Card className="w-full max-w-2xl shadow-2xl bg-card/80 backdrop-blur-sm border-white/20">
           <CardHeader>
@@ -84,28 +121,44 @@ export default function Home() {
               placeholder="TITLE: My Awesome Film..."
               className="min-h-[300px] bg-background/50 text-base"
               value={localScript}
-              onChange={(e) => setLocalScript(e.target.value)}
+              onChange={(e) => {
+                setLocalScript(e.target.value);
+                setFileName('');
+                setAiResult('');
+              }}
             />
-            <div className="flex items-center justify-between gap-4">
-               <Label htmlFor="script-file" className="flex-1">
-                <Button asChild variant="outline" className="w-full cursor-pointer">
-                  <span>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload File
-                  </span>
-                </Button>
-                <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-              </Label>
-              <Button size="lg" onClick={handleGetStarted} disabled={isLoading} className="flex-1">
-                {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className='flex items-center space-x-2'>
+                <Label htmlFor="script-file" className="flex-1">
+                  <Button asChild variant="outline" className="w-full cursor-pointer">
+                    <span>
+                      <Upload className="mr-2 h-4 w-4" />
+                      Upload File
+                    </span>
+                  </Button>
+                  <Input id="script-file" type="file" className="sr-only" onChange={handleFileChange} accept=".txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                </Label>
+                {fileName && <FileCheck className="h-5 w-5 text-green-400" />}
+              </div>
+              <Button size="lg" onClick={handleGetStarted} disabled={isLoading || isAiProcessing} className="w-full">
+                {isAiProcessing ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <>
-                    Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                    {aiResult ? 'Go to Dashboard' : 'Get Started'}
+                    {!isAiProcessing && <ArrowRight className="ml-2 h-4 w-4" />}
                   </>
                 )}
               </Button>
             </div>
+             {fileName && <p className="text-sm text-muted-foreground truncate">Uploaded: {fileName}</p>}
+
+             {aiResult && (
+              <div className="mt-6 text-left">
+                <h3 className="font-semibold mb-2 text-foreground">AI Generated Shot List:</h3>
+                <Textarea readOnly value={aiResult} className="min-h-[200px] bg-muted/50 font-mono text-sm" />
+              </div>
+            )}
           </CardContent>
         </Card>
 
