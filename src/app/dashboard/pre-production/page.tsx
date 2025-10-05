@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, CalendarDays, MapPin, Users } from 'lucide-react';
+import { FileText, MapPin, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PreProductionPage() {
@@ -15,7 +15,7 @@ export default function PreProductionPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card className="flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Script Breakdown</CardTitle>
@@ -32,7 +32,7 @@ export default function PreProductionPage() {
         </Card>
         <Card className="flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Location Scouting</CardTitle>
+            <CardTitle className="text-sm font-medium">Location Scouting & Scheduling</CardTitle>
             <MapPin className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="flex flex-col flex-grow">
@@ -41,20 +41,6 @@ export default function PreProductionPage() {
             </p>
             <Link href="/dashboard/pre-production/location-scouting">
               <Button className="w-full">Scout & Schedule</Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="flex flex-col">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Scheduling</CardTitle>
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="flex flex-col flex-grow">
-            <p className="text-xs text-muted-foreground mb-4 mt-auto">
-              Create and manage your shooting schedule based on your breakdown.
-            </p>
-            <Link href="/dashboard/pre-production/location-scouting">
-              <Button className="w-full">Create Schedule</Button>
             </Link>
           </CardContent>
         </Card>
