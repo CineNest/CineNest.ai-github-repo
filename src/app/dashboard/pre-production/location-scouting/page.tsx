@@ -79,6 +79,7 @@ export default function LocationScoutingAndSchedulingPage() {
   const { script, breakdown } = useScript();
   const [isSearching, setIsSearching] = useState(false);
   const [locations, setLocations] = useState<LocationSuggestion[]>([]);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [date, setDate] = useState<DateRange | undefined>();
   const [scheduleDetails, setScheduleDetails] = useState<{ dateRange: string } | null>(null);
 
@@ -241,80 +242,95 @@ export default function LocationScoutingAndSchedulingPage() {
         </CardContent>
       </Card>
       
-      {isSearching && (
-         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map(i => (
-              <Card key={i} className="overflow-hidden">
-                <Skeleton className="h-48 w-full" />
-                <CardHeader>
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-4 w-full mt-2" />
-                    <Skeleton className="h-4 w-5/6 mt-1" />
-                </CardHeader>
-                <CardContent>
-                    <Skeleton className="h-9 w-32" />
-                </CardContent>
-              </Card>
-            ))}
-        </div>
-      )}
-
-      {locations.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Suggested Locations</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {locations.map((location, index) => (
-              <Card key={`${location.name}-${index}`} className="overflow-hidden flex flex-col relative group">
-                <Button variant="destructive" size="icon" className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeLocation(index)}>
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Remove location</span>
-                </Button>
-                <div className="relative h-48 w-full">
-                    <Image src={location.imageUrl} alt={location.name} fill style={{objectFit: "cover"}} className="bg-muted" />
-                </div>
-                <CardHeader>
-                  <CardTitle>{location.name}</CardTitle>
-                  {location.rating && (
-                    <div className="flex items-center gap-2">
-                        <StarRating rating={location.rating} />
-                        <span className="text-sm text-muted-foreground">{location.rating.toFixed(1)}</span>
-                    </div>
-                  )}
-                  <CardDescription>{location.description}</CardDescription>
-                  {location.reviewsSummary && (
-                     <p className="text-xs text-muted-foreground pt-2 italic">"{location.reviewsSummary}"</p>
-                  )}
-                </CardHeader>
-                <CardContent className="mt-auto flex items-center justify-between">
-                   <a href={location.googleMapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex">
-                    <Button variant="outline">
-                        View on Google Maps
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                    </Button>
-                  </a>
-                </CardContent>
-              </Card>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-      
       <Card>
-          <CardHeader>
-              <CardTitle>Add a Location Manually</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Suggested Locations</CardTitle>
+              <CardDescription>Review the AI-suggested locations below.</CardDescription>
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => setIsEditMode(!isEditMode)}>
+              <Pencil className="h-5 w-5" />
+              <span className="sr-only">Toggle Edit Mode</span>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isSearching && (
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
+            </div>
+          )}
+          {!isSearching && locations.length > 0 && (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Place</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Reviews</TableHead>
+                  <TableHead>Location</TableHead>
+                  {isEditMode && <TableHead className="w-[50px]">Actions</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {locations.map((location, index) => (
+                  <TableRow key={`${location.name}-${index}`}>
+                    <TableCell className="font-medium">{location.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{location.description}</TableCell>
+                    <TableCell>
+                      {location.rating ? (
+                        <div className="flex items-center gap-2">
+                          <StarRating rating={location.rating} />
+                          <span className="text-xs text-muted-foreground">({location.rating.toFixed(1)})</span>
+                        </div>
+                      ) : <span className="text-xs text-muted-foreground">No rating</span>}
+                    </TableCell>
+                    <TableCell>
+                      <a href={location.googleMapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex">
+                        <Button variant="link" className="p-0 h-auto">
+                          Google Maps
+                          <ExternalLink className="ml-2 h-3 w-3" />
+                        </Button>
+                      </a>
+                    </TableCell>
+                    {isEditMode && (
+                      <TableCell>
+                        <Button variant="ghost" size="icon" onClick={() => removeLocation(index)}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+          {!isSearching && locations.length === 0 && (
+              <p className="text-sm text-center text-muted-foreground py-8">No locations suggested yet. Use the form above to find some.</p>
+          )}
+
+          {isEditMode && (
+            <div className="mt-6 pt-6 border-t">
+              <h4 className="font-semibold mb-4">Add a Location Manually</h4>
               <Form {...manualLocationForm}>
-                  <form onSubmit={manualLocationForm.handleSubmit(handleAddManualLocation)} className="flex items-end gap-4">
-                      <FormField control={manualLocationForm.control} name="name" render={({ field }) => (
-                          <FormItem className="flex-1"><FormLabel>Location Name</FormLabel><FormControl><Input placeholder="e.g., My Uncle's Farm" {...field} /></FormControl><FormMessage /></FormItem>
-                      )} />
-                      <Button type="submit"><PlusCircle className="mr-2 h-4 w-4" /> Add</Button>
-                  </form>
+                <form onSubmit={manualLocationForm.handleSubmit(handleAddManualLocation)} className="flex items-end gap-4">
+                  <FormField control={manualLocationForm.control} name="name" render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Location Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., My Uncle's Farm" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <Button type="submit"><PlusCircle className="mr-2 h-4 w-4" /> Add</Button>
+                </form>
               </Form>
-          </CardContent>
+            </div>
+          )}
+        </CardContent>
       </Card>
 
 
@@ -464,5 +480,3 @@ export default function LocationScoutingAndSchedulingPage() {
     </div>
   );
 }
-
-    
