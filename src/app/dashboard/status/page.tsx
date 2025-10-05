@@ -68,10 +68,10 @@ export default function StatusPage() {
 
   async function handleConfirmSubmit() {
     const values = form.getValues();
-    if (!user) {
+    if (!user || !firestore) {
       toast({
         variant: 'destructive',
-        title: 'Not Authenticated',
+        title: 'Not Authenticated or Firebase not ready',
         description: 'You must be logged in to log a status.',
       });
       return;
@@ -89,7 +89,7 @@ export default function StatusPage() {
         title: 'Status Logged',
         description: 'Your daily production status has been saved.',
       });
-      form.reset();
+      form.reset({ phase: '', summary: '' });
     } catch (error: any) {
       toast({
         variant: 'destructive',
