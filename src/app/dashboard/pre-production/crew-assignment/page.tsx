@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { suggestCrewAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { ExternalLink, Loader2, PlusCircle } from 'lucide-react';
+import { ExternalLink, Loader2, PlusCircle, Mail } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
@@ -66,6 +66,13 @@ export default function CrewAssignmentPage() {
         description: result.error || 'An unexpected error occurred.',
       });
     }
+  };
+
+  const handleSendSchedule = (crewMemberName: string) => {
+    toast({
+      title: 'Schedule Sent',
+      description: `Daily schedule has been sent to ${crewMemberName}.`,
+    });
   };
 
   return (
@@ -155,9 +162,9 @@ export default function CrewAssignmentPage() {
                   <TableCell>{member.dates}</TableCell>
                   <TableCell>{member.contact}</TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon">
-                        <span className="sr-only">Edit</span>
-                        ...
+                    <Button variant="ghost" size="icon" onClick={() => handleSendSchedule(member.name)}>
+                      <Mail className="h-4 w-4" />
+                      <span className="sr-only">Send schedule to {member.name}</span>
                     </Button>
                   </TableCell>
                 </TableRow>
