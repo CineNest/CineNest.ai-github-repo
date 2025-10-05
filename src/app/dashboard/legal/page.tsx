@@ -4,14 +4,14 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { generateContractAction, checkComplianceAction } from '@/app/actions';
+import { generateContractAction, legalAdvisorAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useScript } from '@/context/script-context';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -172,39 +172,36 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
   );
 }
 
-
-const legalComplianceSchema = z.object({
-  contractText: z.string().min(50, 'Contract text is too short.'),
-  docusignTemplateId: z.string().min(1, 'DocuSign Template ID is required.'),
-  signerName: z.string().min(1, 'Signer name is required.'),
-  signerEmail: z.string().email('Please enter a valid email.'),
+const legalAdviceSchema = z.object({
+  query: z.string().min(10, 'Please enter a more detailed query.'),
 });
 
-function LegalComplianceForm() {
+function LegalAdvisorForm() {
   const { toast } = useToast();
-  const [isChecking, setIsChecking] = useState(false);
-  const [complianceResult, setComplianceResult] = useState<{ summary: string; envelopeId: string } | null>(null);
+  const [isAdvising, setIsAdvising] = useState(false);
+  const [advice, setAdvice] = useState<string | null>(null);
 
-  const form = useForm<z.infer<typeof legalComplianceSchema>>({
-    resolver: zodResolver(legalComplianceSchema),
-    defaultValues: { contractText: '', docusignTemplateId: '', signerName: '', signerEmail: '' },
+  const form = useForm<z.infer<typeof legalAdviceSchema>>({
+    resolver: zodResolver(legalAdviceSchema),
+    defaultValues: { query: '' },
   });
 
-  async function onSubmit(values: z.infer<typeof legalComplianceSchema>) {
-    setIsChecking(true);
-    setComplianceResult(null);
-    const result = await checkComplianceAction(values);
-    setIsChecking(false);
+  async function onSubmit(values: z.infer<typeof legalAdviceSchema>) {
+    setIsAdvising(true);
+    setAdvice(null);
+    const result = await legalAdvisorAction(values);
+    setIsAdvising(false);
 
     if (result.success && result.data) {
-      setComplianceResult({
-        summary: result.data.legalComplianceCheck,
-        envelopeId: result.data.docusignEnvelopeId,
+      setAdvice(result.data.advice);
+      toast({
+        title: "Legal Advice Received",
+        description: "The AI has provided its legal analysis.",
       });
     } else {
       toast({
         variant: 'destructive',
-        title: 'Error Checking Compliance',
+        title: 'Error Getting Advice',
         description: result.error || 'An unexpected error occurred.',
       });
     }
@@ -214,41 +211,37 @@ function LegalComplianceForm() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField control={form.control} name="contractText" render={({ field }) => (
-            <FormItem><FormLabel>Contract Text</FormLabel><FormControl><Textarea placeholder="Paste the full contract text here for analysis..." className="min-h-[200px]" {...field} /></FormControl><FormMessage /></FormItem>
+          <FormField control={form.control} name="query" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Your Legal Question</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Ask a question about Indian film law, e.g., 'What are the key clauses for a co-production agreement?' or 'Outline the process for obtaining a filming permit in Mumbai.'" 
+                  className="min-h-[150px]" 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <FormField control={form.control} name="signerName" render={({ field }) => (
-              <FormItem><FormLabel>Signer Name</FormLabel><FormControl><Input placeholder="Jane Smith" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="signerEmail" render={({ field }) => (
-              <FormItem><FormLabel>Signer Email</FormLabel><FormControl><Input placeholder="jane.smith@email.com" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="docusignTemplateId" render={({ field }) => (
-              <FormItem><FormLabel>DocuSign Template ID</FormLabel><FormControl><Input placeholder="e.g., a1b2c3d4-..." {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-          </div>
-          <Button type="submit" disabled={isChecking}>
-            {isChecking && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Check Compliance & Send
+          <Button type="submit" disabled={isAdvising}>
+            {isAdvising ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+            Get Legal Advice
           </Button>
         </form>
       </Form>
-      {complianceResult && (
+      {advice && (
         <div className="mt-6 space-y-4">
           <div>
-            <h3 className="font-semibold mb-2">Compliance Summary:</h3>
-            <p className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">{complianceResult.summary}</p>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2">DocuSign Status:</h3>
-            <p className="text-sm text-muted-foreground">Envelope created with ID: <code className="font-mono bg-muted p-1 rounded">{complianceResult.envelopeId}</code></p>
+            <h3 className="font-semibold mb-2">AI Legal Advisor's Response:</h3>
+            <div className="p-4 bg-muted rounded-lg text-sm whitespace-pre-wrap">{advice}</div>
           </div>
         </div>
       )}
     </>
   );
 }
+
 
 export default function LegalPage() {
   return (
@@ -262,7 +255,7 @@ export default function LegalPage() {
       <Tabs defaultValue="contract-generation">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="contract-generation">AI Contract Generation</TabsTrigger>
-          <TabsTrigger value="legal-compliance">Legal Compliance & E-Sign</TabsTrigger>
+          <TabsTrigger value="legal-advisor">AI Legal Advisor</TabsTrigger>
         </TabsList>
         <TabsContent value="contract-generation">
           <Card>
@@ -277,16 +270,16 @@ export default function LegalPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="legal-compliance">
+        <TabsContent value="legal-advisor">
           <Card>
             <CardHeader>
-              <CardTitle>Legal Compliance Module</CardTitle>
+              <CardTitle>AI Legal Advisor</CardTitle>
               <CardDescription>
-                Analyze contracts for legal compliance and manage digital signatures with DocuSign.
+                Get expert advice on Indian film industry law based on your questions.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <LegalComplianceForm />
+              <LegalAdvisorForm />
             </CardContent>
           </Card>
         </TabsContent>

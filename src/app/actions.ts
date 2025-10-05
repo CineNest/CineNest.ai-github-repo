@@ -36,6 +36,10 @@ import {
   analyzeBudgetFromScript,
   type AnalyzeBudgetFromScriptInput,
 } from '@/ai/flows/analyze-budget-from-script-flow';
+import { 
+  legalAdvisor,
+  type LegalAdvisorInput 
+} from '@/ai/flows/legal-advisor-flow';
 
 export async function generateContractAction(input: GenerateLocationContractInput) {
   try {
@@ -123,6 +127,16 @@ export async function analyzeBudgetFromScriptAction(input: AnalyzeBudgetFromScri
     return { success: true, data: result };
   } catch (error: any) {
     console.error('Error in analyzeBudgetFromScriptAction:', error);
+    return { success: false, error: error.message || 'An unknown error occurred.' };
+  }
+}
+
+export async function legalAdvisorAction(input: LegalAdvisorInput) {
+  try {
+    const result = await legalAdvisor(input);
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error('Error in legalAdvisorAction:', error);
     return { success: false, error: error.message || 'An unknown error occurred.' };
   }
 }
