@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { DollarSign, Film, Milestone, CheckCircle, Clock, Mail, PlusCircle, Trash2 } from 'lucide-react';
+import { Film, Milestone, CheckCircle, Clock, Mail, PlusCircle, Trash2 } from 'lucide-react';
 import { useScript } from '@/context/script-context';
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
@@ -98,7 +98,7 @@ export default function InvestorsPage() {
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <span className="h-4 w-4 text-muted-foreground">₹</span>
             </CardHeader>
             <CardContent>
                 <div className="text-2xl font-bold">
@@ -110,7 +110,7 @@ export default function InvestorsPage() {
          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Projected ROI</CardTitle>
-                 <DollarSign className="h-4 w-4 text-muted-foreground" />
+                 <span className="h-4 w-4 text-muted-foreground">₹</span>
             </CardHeader>
             <CardContent>
                 <div className={`text-2xl font-bold ${projectedROI >= 0 ? 'text-green-500' : 'text-destructive'}`}>

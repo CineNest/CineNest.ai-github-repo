@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, ToyBrick, Users, Wrench, Loader2, Sparkles, PlusCircle } from 'lucide-react';
+import { ToyBrick, Users, Wrench, Loader2, Sparkles, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const budgetData = [
@@ -245,7 +245,7 @@ export default function BudgetTrackingPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Daily Spend</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <span className="h-4 w-4 text-muted-foreground">₹</span>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹45,000</div>
