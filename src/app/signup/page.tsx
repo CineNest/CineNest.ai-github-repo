@@ -19,10 +19,9 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { initiateEmailSignUp, setDocumentNonBlocking } from '@/firebase';
+import { initiateEmailSignUp } from '@/firebase';
 import { useAuth, useFirestore } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { doc } from 'firebase/firestore';
 
 const formSchema = z.object({
   username: z.string().max(9, {
@@ -60,23 +59,20 @@ export default function SignupPage() {
       if (!auth || !firestore) {
           throw new Error('Firebase services are not available.');
       }
-      const userCredential = await initiateEmailSignUp(auth, values.email, values.password);
-      if (userCredential && userCredential.user) {
-        const user = userCredential.user;
-        // Save username and email to Firestore
-        const userDocRef = doc(firestore, 'users', user.uid);
-        await setDocumentNonBlocking(userDocRef, {
-          id: user.uid,
-          username: values.username,
-          email: values.email,
-        }, { merge: true });
 
-        router.push('/dashboard');
-      } else {
-        throw new Error("Could not create user. Please try again.");
-      }
+      await initiateEmailSignUp(
+        auth, 
+        firestore, 
+        values.email, 
+        values.password, 
+        { username: values.username, email: values.email }
+      );
+      
+      // onAuthStateChanged should handle the redirect
+      router.push('/dashboard');
+
     } catch (error: any) {
-      console.error(error);
+      console.error(error); // Keep this for general errors, not for permission errors
       toast({
         variant: 'destructive',
         title: 'Signup Failed',

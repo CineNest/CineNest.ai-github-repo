@@ -4,10 +4,13 @@ import {
   signInAnonymously,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  User,
   UserCredential,
   // Assume getAuth and app are initialized elsewhere
 } from 'firebase/auth';
-import { Firestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { Firestore, collection, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
+import { errorEmitter } from './error-emitter';
+import { FirestorePermissionError } from './errors';
 
 /** Initiate anonymous sign-in (non-blocking). */
 export function initiateAnonymousSignIn(authInstance: Auth): void {
@@ -17,9 +20,41 @@ export function initiateAnonymousSignIn(authInstance: Auth): void {
 }
 
 /** Initiate email/password sign-up (blocking, returns credential). */
-export function initiateEmailSignUp(authInstance: Auth, email: string, password: string): Promise<UserCredential> {
-  return createUserWithEmailAndPassword(authInstance, email, password);
+export async function initiateEmailSignUp(
+  authInstance: Auth, 
+  db: Firestore, 
+  email: string, 
+  password: string, 
+  profileData: { username: string; email: string }
+): Promise<UserCredential> {
+  const userCredential = await createUserWithEmailAndPassword(authInstance, email, password);
+  const user = userCredential.user;
+
+  if (user) {
+    const userDocRef = doc(db, 'users', user.uid);
+    const dataToSet = {
+        id: user.uid,
+        ...profileData
+    };
+    
+    // Use a non-blocking write with custom error handling
+    setDoc(userDocRef, dataToSet, { merge: true }).catch(error => {
+      // Create a rich, contextual error and emit it globally.
+      const permissionError = new FirestorePermissionError({
+        path: userDocRef.path,
+        operation: 'create', // or 'write'
+        requestResourceData: dataToSet,
+      });
+      errorEmitter.emit('permission-error', permissionError);
+      
+      // We don't re-throw here because the listener will handle it.
+      // We also don't need a console.error.
+    });
+  }
+  
+  return userCredential;
 }
+
 
 /** Initiate email/password sign-in (blocking, returns credential). */
 export function initiateEmailSignIn(authInstance: Auth, email: string, password: string): Promise<UserCredential> {
