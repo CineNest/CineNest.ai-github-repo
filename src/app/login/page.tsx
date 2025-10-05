@@ -18,13 +18,13 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { initiateEmailSignIn } from '@/firebase';
-import { useAuth } from '@/firebase';
+import { signInWithUsername } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: 'Please enter a valid email address.',
+  username: z.string().min(1, {
+    message: 'Please enter your username.',
   }),
   password: z.string().min(6, {
     message: 'Password must be at least 6 characters.',
@@ -35,12 +35,13 @@ export default function LoginPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   });
@@ -48,7 +49,10 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      await initiateEmailSignIn(auth, values.email, values.password);
+      if (!firestore || !auth) {
+        throw new Error('Firebase is not initialized.');
+      }
+      await signInWithUsername(auth, firestore, values.username, values.password);
       // The onAuthStateChanged listener in the provider will handle the redirect
       router.push('/dashboard');
     } catch (error: any) {
@@ -76,12 +80,12 @@ export default function LoginPage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input placeholder="you@example.com" {...field} />
+                        <Input placeholder="Your unique username" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -97,7 +101,7 @@ export default function LoginPage() {
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
+                    </Item>
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={isLoading}>

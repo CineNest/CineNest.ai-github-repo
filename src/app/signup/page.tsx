@@ -64,6 +64,7 @@ export default function SignupPage() {
         await setDocumentNonBlocking(userDocRef, {
           id: user.uid,
           username: values.username,
+          email: values.email,
         }, { merge: true });
 
         router.push('/dashboard');

@@ -3,7 +3,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore, collection, query, where, getDocs, Firestore, Query } from 'firebase/firestore'
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
@@ -40,6 +40,17 @@ export function getSdks(firebaseApp: FirebaseApp) {
   };
 }
 
+export async function getUserByUsername(db: Firestore, username: string) {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    // Assuming usernames are unique, return the first found user.
+    return querySnapshot.docs[0].data();
+}
+
 export * from './provider';
 export * from './client-provider';
 export * from './firestore/use-collection';
@@ -50,4 +61,4 @@ export * from './errors';
 export * from './error-emitter';
 
 // Re-exporting these from non-blocking-login, but providing them here for convenience
-export { initiateEmailSignUp, initiateEmailSignIn } from './non-blocking-login';
+export { initiateEmailSignUp, initiateEmailSignIn, signInWithUsername } from './non-blocking-login';
