@@ -41,14 +41,6 @@ The project is set up for testing, but no tests have been written yet. To run te
 npm test
 ```
 
-# live Demo 
-
-
-
-
-
-
-
 ## Deployment Instructions
 
 This application is configured for deployment on **Firebase App Hosting**.
