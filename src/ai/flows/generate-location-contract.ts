@@ -19,6 +19,7 @@ const GenerateLocationContractInputSchema = z.object({
   ownerContact: z.string().describe('The contact information of the location owner (phone/email).'),
   filmCompanyName: z.string().describe('The name of the film production company.'),
   productionDates: z.string().describe('The start and end dates of the filming production.'),
+  bookingFee: z.number().describe('The agreed-upon booking fee for the location in INR.'),
   specificTerms: z.string().optional().describe('Any specific terms or conditions for the location usage.'),
 });
 
@@ -42,6 +43,7 @@ const generateLocationContractPrompt = ai.definePrompt({
   Based on the provided location details, owner information, and production terms, create a comprehensive location contract.
   Include standard legal clauses and ensure the contract is tailored to the specific details provided.
   Make sure that both parties, the location owner, and the film company are protected.
+  Crucially, include a clause specifying the agreed-upon booking fee.
 
   Location Name: {{{locationName}}}
   Location Address: {{{locationAddress}}}
@@ -49,6 +51,7 @@ const generateLocationContractPrompt = ai.definePrompt({
   Owner Contact: {{{ownerContact}}}
   Film Company Name: {{{filmCompanyName}}}
   Production Dates: {{{productionDates}}}
+  Booking Fee: ₹{{{bookingFee}}}
   Specific Terms: {{{specificTerms}}}
 
   Contract:

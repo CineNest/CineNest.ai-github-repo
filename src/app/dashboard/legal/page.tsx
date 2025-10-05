@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useScript } from '@/context/script-context';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 const generateContractSchema = z.object({
   locationName: z.string().min(1, 'Location name is required.'),
@@ -21,13 +23,17 @@ const generateContractSchema = z.object({
   ownerContact: z.string().min(1, 'Owner contact is required.'),
   filmCompanyName: z.string().min(1, 'Film company name is required.'),
   productionDates: z.string().min(1, 'Production dates are required.'),
+  bookingFee: z.coerce.number().min(1, 'A booking fee is required.'),
   specificTerms: z.string().optional(),
 });
 
 export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?: string }) {
   const { toast } = useToast();
+  const { addTransaction } = useScript();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContract, setGeneratedContract] = useState('');
+  const [bookingDetails, setBookingDetails] = useState<{ fee: number; location: string } | null>(null);
+  const [password, setPassword] = useState('');
 
   const form = useForm<z.infer<typeof generateContractSchema>>({
     resolver: zodResolver(generateContractSchema),
@@ -38,6 +44,7 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
       ownerContact: '',
       filmCompanyName: 'CineNest Productions',
       productionDates: '',
+      bookingFee: 0,
       specificTerms: '',
     },
   });
@@ -45,11 +52,13 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
   async function onSubmit(values: z.infer<typeof generateContractSchema>) {
     setIsGenerating(true);
     setGeneratedContract('');
+    setBookingDetails(null);
     const result = await generateContractAction(values);
     setIsGenerating(false);
 
     if (result.success && result.data) {
       setGeneratedContract(result.data.contractText);
+      setBookingDetails({ fee: values.bookingFee, location: values.locationName });
       toast({
         title: 'Contract Generated',
         description: 'The location contract has been successfully generated.',
@@ -62,6 +71,30 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
       });
     }
   }
+
+  const handlePayment = () => {
+    if (password === 'password') { // Simple password check
+      addTransaction({
+        date: new Date().toISOString().split('T')[0],
+        description: `Booking fee for ${bookingDetails?.location}`,
+        category: 'Locations',
+        amount: -(bookingDetails?.fee || 0),
+      });
+      toast({
+        title: 'Payment Successful',
+        description: `Location ${bookingDetails?.location} booked for ₹${bookingDetails?.fee}.`,
+      });
+      setPassword('');
+      setBookingDetails(null); // Hide button after booking
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Payment Failed',
+        description: 'Incorrect password. Please try again.',
+      });
+    }
+  };
+
 
   return (
     <>
@@ -86,6 +119,9 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
             <FormField control={form.control} name="productionDates" render={({ field }) => (
               <FormItem><FormLabel>Production Dates</FormLabel><FormControl><Input placeholder="Start Date - End Date" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
+            <FormField control={form.control} name="bookingFee" render={({ field }) => (
+                <FormItem><FormLabel>Booking Fee (INR)</FormLabel><FormControl><Input type="number" placeholder="e.g., 50000" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
           </div>
           <FormField control={form.control} name="specificTerms" render={({ field }) => (
             <FormItem><FormLabel>Specific Terms (Optional)</FormLabel><FormControl><Textarea placeholder="Any additional terms..." {...field} /></FormControl><FormMessage /></FormItem>
@@ -97,9 +133,39 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
         </form>
       </Form>
       {generatedContract && (
-        <div className="mt-6">
-          <h3 className="font-semibold mb-2">Generated Contract:</h3>
-          <Textarea readOnly value={generatedContract} className="min-h-[300px] bg-muted font-mono text-sm" />
+        <div className="mt-6 space-y-4">
+          <div>
+            <h3 className="font-semibold mb-2">Generated Contract:</h3>
+            <Textarea readOnly value={generatedContract} className="min-h-[300px] bg-muted font-mono text-sm" />
+          </div>
+
+          {bookingDetails && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button>Book & Pay ₹{bookingDetails.fee.toLocaleString('en-IN')}</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Booking Payment</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You are about to pay a non-refundable booking fee of ₹{bookingDetails.fee.toLocaleString('en-IN')} for {bookingDetails.location}. Please enter your password to authorize this transaction. (Hint: use 'password')
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="py-2">
+                <Input 
+                    type="password" 
+                    placeholder="Enter password to confirm"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setPassword('')}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handlePayment}>Confirm Payment</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          )}
         </div>
       )}
     </>
