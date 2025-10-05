@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format, eachDayOfInterval } from 'date-fns';
-import { Calendar as CalendarIcon, ArrowLeft, ExternalLink, Loader2, Search } from 'lucide-react';
+import { Calendar as CalendarIcon, ArrowLeft, ExternalLink, Loader2, Search, PlusCircle, X } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { suggestLocationsAction } from '@/app/actions';
-import type { SuggestLocationsOutput } from '@/ai/flows/suggest-locations-flow';
+import type { SuggestLocationsOutput, LocationSuggestion } from '@/ai/flows/suggest-locations-flow';
 import { useScript } from '@/context/script-context';
 import { StarRating } from '@/components/app/star-rating';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -26,6 +26,17 @@ import { Calendar } from '@/components/ui/calendar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const locationScoutSchema = z.object({
   country: z.string().optional(),
@@ -33,7 +44,12 @@ const locationScoutSchema = z.object({
   sceneDescription: z.string().min(10, 'Please provide a more detailed scene description.'),
 });
 
-const planSchema = z.object({
+const manualLocationSchema = z.object({
+    name: z.string().min(1, 'Location name is required.'),
+    description: z.string().min(1, 'Description is required.'),
+});
+
+const scheduleGenerationSchema = z.object({
   shootingDates: z.object({
     from: z.date({ required_error: 'A start date is required.' }),
     to: z.date({ required_error: 'An end date is required.' }),
@@ -48,14 +64,22 @@ interface ScheduleItem {
   notes: string;
 }
 
+const scheduleFormSchema = z.object({
+  schedule: z.array(z.object({
+    date: z.string(),
+    location: z.string().min(1, "Location is required"),
+    scenes: z.string().min(1, "Scene is required"),
+    characters: z.string().min(1, "Characters are required"),
+    notes: z.string(),
+  }))
+});
 
 export default function LocationScoutingAndSchedulingPage() {
   const { toast } = useToast();
   const { script, breakdown } = useScript();
   const [isSearching, setIsSearching] = useState(false);
-  const [searchResult, setSearchResult] = useState<SuggestLocationsOutput | null>(null);
+  const [locations, setLocations] = useState<LocationSuggestion[]>([]);
   const [date, setDate] = useState<DateRange | undefined>();
-  const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [scheduleDetails, setScheduleDetails] = useState<{ dateRange: string } | null>(null);
 
   const scoutForm = useForm<z.infer<typeof locationScoutSchema>>({
@@ -66,20 +90,34 @@ export default function LocationScoutingAndSchedulingPage() {
       sceneDescription: script ? `A key scene from the script: ${script.substring(0, 200)}...` : '',
     },
   });
+  
+  const manualLocationForm = useForm<z.infer<typeof manualLocationSchema>>({
+    resolver: zodResolver(manualLocationSchema),
+    defaultValues: { name: '', description: '' },
+  });
 
-  const scheduleForm = useForm<z.infer<typeof planSchema>>({
-    resolver: zodResolver(planSchema),
-    defaultValues: {},
+  const scheduleGenerationForm = useForm<z.infer<typeof scheduleGenerationSchema>>({
+    resolver: zodResolver(scheduleGenerationSchema),
+  });
+
+  const editableScheduleForm = useForm<z.infer<typeof scheduleFormSchema>>({
+    resolver: zodResolver(scheduleFormSchema),
+    defaultValues: { schedule: [] },
+  });
+
+  const { fields: scheduleFields, update: updateScheduleField } = useFieldArray({
+    control: editableScheduleForm.control,
+    name: 'schedule',
   });
 
   async function onScoutSubmit(values: z.infer<typeof locationScoutSchema>) {
     setIsSearching(true);
-    setSearchResult(null);
+    setLocations([]);
     const result = await suggestLocationsAction(values);
     setIsSearching(false);
 
     if (result.success && result.data) {
-      setSearchResult(result.data);
+      setLocations(result.data.locations);
       toast({
         title: 'Locations Found',
         description: `The AI has suggested ${result.data.locations.length} potential locations.`,
@@ -92,41 +130,74 @@ export default function LocationScoutingAndSchedulingPage() {
       });
     }
   }
+
+  function handleAddManualLocation(values: z.infer<typeof manualLocationSchema>) {
+    const newLocation: LocationSuggestion = {
+        name: values.name,
+        description: values.description,
+        imageUrl: `https://picsum.photos/seed/${values.name.replace(/\s/g, '')}/600/400`,
+        googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(values.name)}`,
+    };
+    setLocations(prev => [...prev, newLocation]);
+    toast({
+        title: "Location Added",
+        description: `${values.name} has been added to your list.`
+    });
+    manualLocationForm.reset();
+  }
+
+  const removeLocation = (index: number) => {
+    setLocations(prev => prev.filter((_, i) => i !== index));
+  };
   
   const handleDateChange = (newDate: DateRange | undefined) => {
     setDate(newDate);
     if (newDate?.from && newDate?.to) {
-      scheduleForm.setValue('shootingDates', { from: newDate.from, to: newDate.to });
-      scheduleForm.clearErrors('shootingDates');
+      scheduleGenerationForm.setValue('shootingDates', { from: newDate.from, to: newDate.to });
+      scheduleGenerationForm.clearErrors('shootingDates');
     } else {
-      scheduleForm.setError('shootingDates', { type: 'manual', message: 'Please select a full date range.' });
+      scheduleGenerationForm.setError('shootingDates', { type: 'manual', message: 'Please select a full date range.' });
     }
   };
 
-  function onScheduleSubmit(values: z.infer<typeof planSchema>) {
+  function onScheduleGenerate(values: z.infer<typeof scheduleGenerationSchema>) {
     const { from, to } = values.shootingDates;
     const dayArray = eachDayOfInterval({ start: from, end: to });
     
+    const availableLocations = locations.length > 0 
+      ? locations.map(l => l.name) 
+      : PlaceHolderImages.map(p => p.description);
+
     const characters = breakdown?.characters && breakdown.characters.length > 0
       ? breakdown.characters
       : ['Character 1', 'Character 2'];
     
     const newSchedule = dayArray.map((day, index) => ({
         date: format(day, 'EEE, dd MMM yyyy'),
-        location: PlaceHolderImages[index % PlaceHolderImages.length].description,
+        location: availableLocations[index % availableLocations.length],
         scenes: `Scene ${index * 2 + 1}, ${index * 2 + 2}`,
         characters: `${characters[index % characters.length]}, ${characters[(index + 1) % characters.length]}`, 
         notes: index % 3 === 0 ? 'Exterior day shoot' : 'Interior night shoot, requires generator', 
     }));
 
-    setSchedule(newSchedule);
+    editableScheduleForm.reset({ schedule: newSchedule });
     setScheduleDetails({
         dateRange: `${format(from, 'PPP')} to ${format(to, 'PPP')}`
     });
 
     toast({
         title: "Schedule Generated",
-        description: `Created a schedule from ${format(values.shootingDates.from, 'PPP')} to ${format(values.shootingDates.to, 'PPP')}.`
+        description: `Created a schedule from ${format(values.shootingDates.from, 'PPP')} to ${format(values.shootingDates.to, 'PPP')}. You can now edit the details.`
+    });
+  }
+
+  function handleSaveSchedule(values: z.infer<typeof scheduleFormSchema>) {
+    // In a real app, you'd save this to a database. For now, we just show a toast.
+    // The user mentioned training the AI; this `values.schedule` data would be the input for that process.
+    console.log("Saving schedule:", values.schedule);
+    toast({
+        title: "Schedule Saved",
+        description: "Your changes to the shooting plan have been saved successfully."
     });
   }
 
@@ -136,7 +207,7 @@ export default function LocationScoutingAndSchedulingPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">AI Location Scout & Scheduler</h1>
         <p className="text-muted-foreground">
-          Find the perfect filming location with AI-powered suggestions and create a schedule.
+          Find filming locations with AI and create an editable shooting schedule.
         </p>
       </div>
 
@@ -144,7 +215,7 @@ export default function LocationScoutingAndSchedulingPage() {
         <CardHeader>
           <CardTitle>1. Search for a Location</CardTitle>
           <CardDescription>
-            Describe the scene and specify the geographical area.
+            Describe the scene and let the AI suggest locations, or add your own manually.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -188,16 +259,20 @@ export default function LocationScoutingAndSchedulingPage() {
         </div>
       )}
 
-      {searchResult && (
+      {locations.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Suggested Locations</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {searchResult.locations.map((location, index) => (
-              <Card key={`${location.name}-${index}`} className="overflow-hidden flex flex-col">
+            {locations.map((location, index) => (
+              <Card key={`${location.name}-${index}`} className="overflow-hidden flex flex-col relative group">
+                <Button variant="destructive" size="icon" className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeLocation(index)}>
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Remove location</span>
+                </Button>
                 <div className="relative h-48 w-full">
-                    <Image src={location.imageUrl} alt={location.name} fill objectFit="cover" className="bg-muted" />
+                    <Image src={location.imageUrl} alt={location.name} fill style={{objectFit: "cover"}} className="bg-muted" />
                 </div>
                 <CardHeader>
                   <CardTitle>{location.name}</CardTitle>
@@ -225,6 +300,26 @@ export default function LocationScoutingAndSchedulingPage() {
           </CardContent>
         </Card>
       )}
+      
+      <Card>
+          <CardHeader>
+              <CardTitle>Add a Location Manually</CardTitle>
+          </CardHeader>
+          <CardContent>
+              <Form {...manualLocationForm}>
+                  <form onSubmit={manualLocationForm.handleSubmit(handleAddManualLocation)} className="flex items-end gap-4">
+                      <FormField control={manualLocationForm.control} name="name" render={({ field }) => (
+                          <FormItem className="flex-1"><FormLabel>Location Name</FormLabel><FormControl><Input placeholder="e.g., My Uncle's Farm" {...field} /></FormControl><FormMessage /></FormItem>
+                      )} />
+                      <FormField control={manualLocationForm.control} name="description" render={({ field }) => (
+                           <FormItem className="flex-1"><FormLabel>Description</FormLabel><FormControl><Input placeholder="A rustic barn with a large field" {...field} /></FormControl><FormMessage /></FormItem>
+                      )} />
+                      <Button type="submit"><PlusCircle className="mr-2 h-4 w-4" /> Add</Button>
+                  </form>
+              </Form>
+          </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader>
@@ -232,10 +327,10 @@ export default function LocationScoutingAndSchedulingPage() {
           <CardDescription>Define your shooting dates to generate a plan across available locations.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...scheduleForm}>
-            <form onSubmit={scheduleForm.handleSubmit(onScheduleSubmit)} className="space-y-8">
+          <Form {...scheduleGenerationForm}>
+            <form onSubmit={scheduleGenerationForm.handleSubmit(onScheduleGenerate)} className="space-y-8">
                 <FormField
-                  control={scheduleForm.control}
+                  control={scheduleGenerationForm.control}
                   name="shootingDates"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
@@ -279,51 +374,81 @@ export default function LocationScoutingAndSchedulingPage() {
                     </FormItem>
                   )}
                 />
-              <Button type="submit">
+              <Button type="submit" disabled={locations.length === 0 && !breakdown}>
                 Generate Schedule
               </Button>
+              {locations.length === 0 && !breakdown && <p className="text-sm text-muted-foreground">Please add at least one location to generate a schedule.</p>}
             </form>
           </Form>
         </CardContent>
       </Card>
       
-      {schedule.length > 0 && scheduleDetails && (
+      {scheduleFields.length > 0 && scheduleDetails && (
         <Card>
             <CardHeader>
-                <CardTitle>Daily Shooting Plan</CardTitle>
-                <CardDescription>
-                    Schedule for {scheduleDetails.dateRange}. Fill in the details for each day.
-                </CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>Daily Shooting Plan</CardTitle>
+                        <CardDescription>
+                            Schedule for {scheduleDetails.dateRange}. Edit the details for each day below.
+                        </CardDescription>
+                    </div>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button>Save Schedule</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Confirm Schedule Changes</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Are you sure you want to save the changes to the schedule? This action cannot be undone. In the future, this data can be used to improve AI suggestions.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={editableScheduleForm.handleSubmit(handleSaveSchedule)}>
+                                    Confirm & Save
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
             </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[180px]">Date</TableHead>
-                            <TableHead>Location</TableHead>
-                            <TableHead>Scene(s) to Shoot</TableHead>
-                            <TableHead>Characters Involved</TableHead>
-                            <TableHead>Notes / Equipment</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {schedule.map((day, index) => (
-                            <TableRow key={index}>
-                                <TableCell className="font-medium">{day.date}</TableCell>
-                                <TableCell className="font-medium">{day.location}</TableCell>
-                                <TableCell>
-                                    <Input defaultValue={day.scenes} className="bg-transparent border-0" />
-                                </TableCell>
-                                <TableCell>
-                                    <Input defaultValue={day.characters} className="bg-transparent border-0" />
-                                </TableCell>
-                                <TableCell>
-                                    <Textarea defaultValue={day.notes} className="bg-transparent border-0 min-h-0" />
-                                </TableCell>
+                <Form {...editableScheduleForm}>
+                 <form>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[180px]">Date</TableHead>
+                                <TableHead>Location</TableHead>
+                                <TableHead>Scene(s) to Shoot</TableHead>
+                                <TableHead>Characters Involved</TableHead>
+                                <TableHead>Notes / Equipment</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {scheduleFields.map((field, index) => (
+                                <TableRow key={field.id}>
+                                    <TableCell className="font-medium">{field.date}</TableCell>
+                                    <TableCell>
+                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.location`} render={({ field }) => <Input {...field} className="bg-transparent" />} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.scenes`} render={({ field }) => <Input {...field} className="bg-transparent" />} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.characters`} render={({ field }) => <Input {...field} className="bg-transparent" />} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.notes`} render={({ field }) => <Textarea {...field} className="bg-transparent min-h-0" />} />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </form>
+                </Form>
             </CardContent>
         </Card>
       )}

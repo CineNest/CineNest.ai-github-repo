@@ -27,6 +27,8 @@ const LocationSuggestionSchema = z.object({
   reviewsSummary: z.string().optional().describe('A brief summary of what people are saying in reviews.'),
 });
 
+export type LocationSuggestion = z.infer<typeof LocationSuggestionSchema>;
+
 const SuggestLocationsOutputSchema = z.object({
   locations: z.array(LocationSuggestionSchema).describe('A list of suggested filming locations.'),
 });
