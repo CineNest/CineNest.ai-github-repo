@@ -1,0 +1,30 @@
+{
+  "name": "firebase-project",
+  "version": "1.0.0",
+  "scripts": {
+    // 🚀 Start the local Firebase emulator
+    "start": "firebase emulators:start",
+
+    // 🧪 Seed Firestore database with initial data
+    "seed": "node scripts/seed.js",
+
+    // 🧼 Clear Firestore data (useful during testing)
+    "clear:db": "node scripts/clearDb.js",
+
+    // 🛠 Deploy to Firebase hosting and functions
+    "deploy": "firebase deploy",
+
+    // 🧱 Deploy only functions
+    "deploy:functions": "firebase deploy --only functions",
+
+    // 🌐 Deploy only hosting (frontend)
+    "deploy:hosting": "firebase deploy --only hosting",
+
+    // 🧪 Run tests if you have them
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^4.0.0"
+  }
+}
