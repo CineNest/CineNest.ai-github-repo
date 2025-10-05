@@ -3,11 +3,11 @@
 **Elevator pitch:** CineNest.ai is an ai integrated film production system which aims to Transform film making into a fully automated , transparent  and efficient  Environment
 
 ## Team
- **Adhil Rifayin k s** — Team Lead — 007rifayinadhil@gmail.comm
+- **Adhil Rifayin k s** — Team Lead — 007rifayinadhil@gmail.comm
 - **Deethu p** — Frontend — deethup911@gmail.com
 - **Abhinav p** — Backend — abhinavvkd10@gmail.com
 - **Muhammed Fahad E V** — AI Automation Specialist — fahadman40@gmail.com
-*   **Gemini (AI Coding Partner)** - AI Assistant (Google)
+*   **Gemini**- (AI Coding Partner) - AI Assistant (Google)
 
 ## How to Run Locally
 
