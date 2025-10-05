@@ -11,10 +11,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, Calendar as CalendarIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useScript } from '@/context/script-context';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { DateRange } from 'react-day-picker';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+
 
 const generateContractSchema = z.object({
   locationName: z.string().min(1, 'Location name is required.'),
@@ -34,6 +40,8 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
   const [generatedContract, setGeneratedContract] = useState('');
   const [bookingDetails, setBookingDetails] = useState<{ fee: number; location: string } | null>(null);
   const [password, setPassword] = useState('');
+  const [date, setDate] = useState<DateRange | undefined>();
+
 
   const form = useForm<z.infer<typeof generateContractSchema>>({
     resolver: zodResolver(generateContractSchema),
@@ -48,6 +56,17 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
       specificTerms: '',
     },
   });
+  
+    const handleDateChange = (newDate: DateRange | undefined) => {
+    setDate(newDate);
+    if (newDate?.from && newDate?.to) {
+      const dateString = `${format(newDate.from, 'PPP')} - ${format(newDate.to, 'PPP')}`;
+      form.setValue('productionDates', dateString);
+      form.clearErrors('productionDates');
+    } else {
+      form.setValue('productionDates', '');
+    }
+  };
 
   async function onSubmit(values: z.infer<typeof generateContractSchema>) {
     setIsGenerating(true);
@@ -116,9 +135,54 @@ export function GenerateContractForm({ prefilledLocation }: { prefilledLocation?
             <FormField control={form.control} name="filmCompanyName" render={({ field }) => (
               <FormItem><FormLabel>Film Company Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )} />
-            <FormField control={form.control} name="productionDates" render={({ field }) => (
-              <FormItem><FormLabel>Production Dates</FormLabel><FormControl><Input placeholder="Start Date - End Date" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="productionDates"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Production Dates</FormLabel>
+                   <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          id="date"
+                          variant={'outline'}
+                          className={cn(
+                            'w-full justify-start text-left font-normal',
+                            !date && 'text-muted-foreground'
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {date?.from ? (
+                            date.to ? (
+                              <>
+                                {format(date.from, 'LLL dd, y')} -{' '}
+                                {format(date.to, 'LLL dd, y')}
+                              </>
+                            ) : (
+                              format(date.from, 'LLL dd, y')
+                            )
+                          ) : (
+                            <span>Pick a date range</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        initialFocus
+                        mode="range"
+                        defaultMonth={date?.from}
+                        selected={date}
+                        onSelect={handleDateChange}
+                        numberOfMonths={2}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField control={form.control} name="bookingFee" render={({ field }) => (
                 <FormItem><FormLabel>Booking Fee (INR)</FormLabel><FormControl><Input type="number" placeholder="e.g., 50000" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
