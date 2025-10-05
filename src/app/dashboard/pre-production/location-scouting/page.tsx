@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -46,7 +47,6 @@ const locationScoutSchema = z.object({
 
 const manualLocationSchema = z.object({
     name: z.string().min(1, 'Location name is required.'),
-    description: z.string().min(1, 'Description is required.'),
 });
 
 const scheduleGenerationSchema = z.object({
@@ -93,7 +93,7 @@ export default function LocationScoutingAndSchedulingPage() {
   
   const manualLocationForm = useForm<z.infer<typeof manualLocationSchema>>({
     resolver: zodResolver(manualLocationSchema),
-    defaultValues: { name: '', description: '' },
+    defaultValues: { name: '' },
   });
 
   const scheduleGenerationForm = useForm<z.infer<typeof scheduleGenerationSchema>>({
@@ -134,7 +134,7 @@ export default function LocationScoutingAndSchedulingPage() {
   function handleAddManualLocation(values: z.infer<typeof manualLocationSchema>) {
     const newLocation: LocationSuggestion = {
         name: values.name,
-        description: values.description,
+        description: "Manually added location.",
         imageUrl: `https://picsum.photos/seed/${values.name.replace(/\s/g, '')}/600/400`,
         googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(values.name)}`,
     };
@@ -311,9 +311,6 @@ export default function LocationScoutingAndSchedulingPage() {
                       <FormField control={manualLocationForm.control} name="name" render={({ field }) => (
                           <FormItem className="flex-1"><FormLabel>Location Name</FormLabel><FormControl><Input placeholder="e.g., My Uncle's Farm" {...field} /></FormControl><FormMessage /></FormItem>
                       )} />
-                      <FormField control={manualLocationForm.control} name="description" render={({ field }) => (
-                           <FormItem className="flex-1"><FormLabel>Description</FormLabel><FormControl><Input placeholder="A rustic barn with a large field" {...field} /></FormControl><FormMessage /></FormItem>
-                      )} />
                       <Button type="submit"><PlusCircle className="mr-2 h-4 w-4" /> Add</Button>
                   </form>
               </Form>
@@ -390,7 +387,7 @@ export default function LocationScoutingAndSchedulingPage() {
                     <div>
                         <CardTitle>Daily Shooting Plan</CardTitle>
                         <CardDescription>
-                           Schedule for {scheduleDetails.dateRange}. Edit the details for each day below.
+                           Edit the details for each day below.
                         </CardDescription>
                     </div>
                     <AlertDialog>
@@ -467,3 +464,5 @@ export default function LocationScoutingAndSchedulingPage() {
     </div>
   );
 }
+
+    
