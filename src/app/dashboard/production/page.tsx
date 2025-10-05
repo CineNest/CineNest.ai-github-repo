@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { ToyBrick, Users, Wrench, Loader2, Sparkles, PlusCircle } from 'lucide-react';
+import { ToyBrick, Users, Wrench, Loader2, Sparkles, PlusCircle, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 const budgetData = [
@@ -43,6 +43,14 @@ function AIBudgetAnalyzer() {
     const { script } = useScript();
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<{items: BudgetItem[], summary: string} | null>(null);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [localItems, setLocalItems] = useState<BudgetItem[]>([]);
+
+    useEffect(() => {
+        if (analysisResult) {
+            setLocalItems(analysisResult.items);
+        }
+    }, [analysisResult]);
 
     const handleAnalysis = async () => {
         if (!script || script.trim().length === 0) {
@@ -75,11 +83,53 @@ function AIBudgetAnalyzer() {
         }
     }
 
+    const handleItemChange = (index: number, field: keyof BudgetItem, value: string) => {
+        const updatedItems = [...localItems];
+        updatedItems[index] = { ...updatedItems[index], [field]: value };
+        setLocalItems(updatedItems);
+    };
+
+    const addItem = () => {
+        setLocalItems([...localItems, { item: '', estimatedCost: '' }]);
+    };
+
+    const removeItem = (index: number) => {
+        setLocalItems(localItems.filter((_, i) => i !== index));
+    };
+
+    const saveChanges = () => {
+        if (analysisResult) {
+            setAnalysisResult({ ...analysisResult, items: localItems });
+        }
+        setIsEditMode(false);
+        toast({
+            title: "Budget Items Updated",
+            description: "Your changes have been saved."
+        });
+    };
+
     return (
         <Card>
             <CardHeader>
-                <CardTitle>AI Prop Budget Analyzer</CardTitle>
-                <CardDescription>Automatically analyze your script to estimate costs for props and equipment in INR.</CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>AI Prop Budget Analyzer</CardTitle>
+                        <CardDescription>Automatically analyze your script to estimate costs for props and equipment in INR.</CardDescription>
+                    </div>
+                     {analysisResult && (
+                        <div className="flex items-center gap-2">
+                           {isEditMode && (
+                             <Button onClick={saveChanges} size="sm" variant="outline">
+                                Save Changes
+                            </Button>
+                           )}
+                           <Button variant="ghost" size="icon" onClick={() => setIsEditMode(!isEditMode)}>
+                                <Pencil className="h-5 w-5" />
+                                <span className="sr-only">Toggle Edit Mode</span>
+                           </Button>
+                        </div>
+                     )}
+                </div>
             </CardHeader>
             <CardContent>
                 <Button onClick={handleAnalysis} disabled={isAnalyzing || !script}>
@@ -95,17 +145,44 @@ function AIBudgetAnalyzer() {
                                 <TableRow>
                                     <TableHead>Item</TableHead>
                                     <TableHead className="text-right">Estimated Cost (INR)</TableHead>
+                                    {isEditMode && <TableHead className="w-[50px] text-right">Actions</TableHead>}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {analysisResult.items.map((item, index) => (
+                                {localItems.map((item, index) => (
                                     <TableRow key={index}>
-                                        <TableCell className="font-medium">{item.item}</TableCell>
-                                        <TableCell className="text-right font-mono">{item.estimatedCost}</TableCell>
+                                        <TableCell>
+                                            {isEditMode ? (
+                                                <Input value={item.item} onChange={(e) => handleItemChange(index, 'item', e.target.value)} />
+                                            ) : (
+                                                item.item
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            {isEditMode ? (
+                                                <Input value={item.estimatedCost} onChange={(e) => handleItemChange(index, 'estimatedCost', e.target.value)} className="font-mono text-right" />
+                                            ) : (
+                                                <span className="font-mono">{item.estimatedCost}</span>
+                                            )}
+                                        </TableCell>
+                                        {isEditMode && (
+                                            <TableCell className="text-right">
+                                                <Button variant="ghost" size="icon" onClick={() => removeItem(index)}>
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            </TableCell>
+                                        )}
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
+                         {isEditMode && (
+                            <div className="mt-4">
+                                <Button onClick={addItem} variant="outline" size="sm">
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Item
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 )}
                  {!script && (
@@ -120,6 +197,7 @@ function AIBudgetAnalyzer() {
         </Card>
     );
 }
+
 
 function AddTransactionForm({ onAddTransaction }: { onAddTransaction: (data: Omit<Transaction, 'id'>) => void }) {
   const { toast } = useToast();
@@ -243,14 +321,14 @@ export default function BudgetTrackingPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Daily Spend</CardTitle>
-            <span className="h-4 w-4 text-muted-foreground">₹</span>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹45,000</div>
-            <p className="text-xs text-muted-foreground">Average per shooting day</p>
-          </CardContent>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Daily Spend</CardTitle>
+                <span className="h-4 w-4 text-muted-foreground">₹</span>
+            </CardHeader>
+            <CardContent>
+                <div className="text-2xl font-bold">₹45,000</div>
+                <p className="text-xs text-muted-foreground">Average per shooting day</p>
+            </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
