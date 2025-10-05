@@ -29,9 +29,6 @@ const formSchema = z.object({
   }).min(1, {
     message: 'Username is required.',
   }),
-  email: z.string().email({
-    message: 'Please enter a valid email address.',
-  }),
   password: z.string().min(6, {
     message: 'Password must be at least 6 characters.',
   }),
@@ -48,7 +45,6 @@ export default function SignupPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: '',
-      email: '',
       password: '',
     },
   });
@@ -59,13 +55,15 @@ export default function SignupPage() {
       if (!auth || !firestore) {
           throw new Error('Firebase services are not available.');
       }
+      
+      const email = `${values.username.toLowerCase()}@cinenest.ai`;
 
       await initiateEmailSignUp(
         auth, 
         firestore, 
-        values.email, 
+        email, 
         values.password, 
-        { username: values.username, email: values.email }
+        { username: values.username, email: email }
       );
       
       // onAuthStateChanged should handle the redirect
@@ -77,7 +75,7 @@ export default function SignupPage() {
         variant: 'destructive',
         title: 'Signup Failed',
         description: error.code === 'auth/email-already-in-use' 
-          ? 'This email is already associated with an account.' 
+          ? 'This username is already taken. Please choose another.' 
           : error.message || 'An unknown error occurred.',
       });
     } finally {
@@ -104,19 +102,6 @@ export default function SignupPage() {
                       <FormLabel>Username</FormLabel>
                       <FormControl>
                         <Input placeholder="Your unique username" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="you@example.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
