@@ -77,7 +77,6 @@ export default function ProfilePage() {
               </Avatar>
               <div>
                 <p className="text-xl font-semibold">{userProfile.username}</p>
-                <p className="text-muted-foreground">{user.email}</p>
               </div>
             </div>
           ) : (

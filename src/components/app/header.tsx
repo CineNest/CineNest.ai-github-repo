@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '../ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import Link from 'next/link';
 import { LogOut, Moon, Sun, User as UserIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -55,10 +54,7 @@ export function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
-                <Avatar>
-                  <AvatarImage src={user.photoURL || "https://picsum.photos/seed/avatar/32/32"} />
-                  <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
-                </Avatar>
+                <UserIcon />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
