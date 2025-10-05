@@ -102,7 +102,7 @@ export default function LoginPage() {
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </Item>
+                    </FormItem>
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={isLoading}>
