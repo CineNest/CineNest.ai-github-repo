@@ -7,7 +7,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format, eachDayOfInterval } from 'date-fns';
-import { Calendar as CalendarIcon, ArrowLeft, ExternalLink, Loader2, Search, PlusCircle, X } from 'lucide-react';
+import { Calendar as CalendarIcon, ArrowLeft, ExternalLink, Loader2, Search, PlusCircle, X, Pencil } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -390,12 +390,15 @@ export default function LocationScoutingAndSchedulingPage() {
                     <div>
                         <CardTitle>Daily Shooting Plan</CardTitle>
                         <CardDescription>
-                            Schedule for {scheduleDetails.dateRange}. Edit the details for each day below.
+                           Schedule for {scheduleDetails.dateRange}. Edit the details for each day below.
                         </CardDescription>
                     </div>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button>Save Schedule</Button>
+                            <Button>
+                               <Pencil className="mr-2 h-4 w-4" />
+                                Save Schedule
+                            </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>
@@ -432,16 +435,16 @@ export default function LocationScoutingAndSchedulingPage() {
                                 <TableRow key={field.id}>
                                     <TableCell className="font-medium">{field.date}</TableCell>
                                     <TableCell>
-                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.location`} render={({ field }) => <Input {...field} className="bg-transparent" />} />
+                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.location`} render={({ field }) => <Input {...field} className="bg-muted/50 border-border" />} />
                                     </TableCell>
                                     <TableCell>
-                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.scenes`} render={({ field }) => <Input {...field} className="bg-transparent" />} />
+                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.scenes`} render={({ field }) => <Input {...field} className="bg-muted/50 border-border" />} />
                                     </TableCell>
                                     <TableCell>
-                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.characters`} render={({ field }) => <Input {...field} className="bg-transparent" />} />
+                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.characters`} render={({ field }) => <Input {...field} className="bg-muted/50 border-border" />} />
                                     </TableCell>
                                     <TableCell>
-                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.notes`} render={({ field }) => <Textarea {...field} className="bg-transparent min-h-0" />} />
+                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.notes`} render={({ field }) => <Textarea {...field} className="bg-muted/50 border-border min-h-0" />} />
                                     </TableCell>
                                 </TableRow>
                             ))}
