@@ -57,7 +57,7 @@ export default function CrewAssignmentPage() {
       setCrewMembers(prev => [...prev, ...newCrewMembers]);
       toast({
         title: 'Crew Suggested',
-        description: 'AI has suggested new crew members.',
+        description: 'AI has suggested new crew members for the vacant positions.',
       });
     } else {
       toast({
@@ -80,14 +80,16 @@ export default function CrewAssignmentPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Crew Assignment & Coordination</h1>
         <p className="text-muted-foreground">
-          Build and manage your production crew. Get AI suggestions or add artists manually.
+          Post vacant positions, get AI suggestions, and manage your production crew.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>AI Crew Suggestion</CardTitle>
-          <CardDescription>Need inspiration? Get AI-powered suggestions for roles you need to fill.</CardDescription>
+          <CardTitle>Post Vacant Positions</CardTitle>
+          <CardDescription>
+            List the vacant roles for actors, crew, or artists. The AI will suggest candidates for you.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -97,9 +99,9 @@ export default function CrewAssignmentPage() {
                 name="roles"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Roles to Fill (comma-separated)</FormLabel>
+                    <FormLabel>Vacant Positions (comma-separated)</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Gaffer, Best Boy, Key Grip" {...field} />
+                      <Input placeholder="e.g., Lead Actor, Gaffer, Concept Artist" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -107,7 +109,7 @@ export default function CrewAssignmentPage() {
               />
               <Button type="submit" disabled={isSuggesting}>
                 {isSuggesting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Suggest Crew
+                Find Talent
               </Button>
             </form>
           </Form>
@@ -126,7 +128,7 @@ export default function CrewAssignmentPage() {
                 <a href={crewFormUrl} target="_blank" rel="noopener noreferrer">
                   <Button>
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Crew via Form
+                    Add Crew Manually
                     <ExternalLink className="ml-2 h-4 w-4" />
                   </Button>
                 </a>
