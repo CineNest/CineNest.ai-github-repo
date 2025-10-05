@@ -8,7 +8,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format, eachDayOfInterval } from 'date-fns';
-import { Calendar as CalendarIcon, ArrowLeft, ExternalLink, Loader2, Search, PlusCircle, X, Pencil } from 'lucide-react';
+import { Calendar as CalendarIcon, ArrowLeft, ExternalLink, Loader2, Search, PlusCircle, X, Pencil, Trash2 } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -79,7 +79,8 @@ export default function LocationScoutingAndSchedulingPage() {
   const { script, breakdown } = useScript();
   const [isSearching, setIsSearching] = useState(false);
   const [locations, setLocations] = useState<LocationSuggestion[]>([]);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [isLocationEditMode, setIsLocationEditMode] = useState(false);
+  const [isScheduleEditMode, setIsScheduleEditMode] = useState(false);
   const [date, setDate] = useState<DateRange | undefined>();
   const [scheduleDetails, setScheduleDetails] = useState<{ dateRange: string } | null>(null);
 
@@ -106,7 +107,7 @@ export default function LocationScoutingAndSchedulingPage() {
     defaultValues: { schedule: [] },
   });
 
-  const { fields: scheduleFields, update: updateScheduleField } = useFieldArray({
+  const { fields: scheduleFields, update: updateScheduleField, remove: removeScheduleRow, append: appendScheduleRow } = useFieldArray({
     control: editableScheduleForm.control,
     name: 'schedule',
   });
@@ -196,6 +197,7 @@ export default function LocationScoutingAndSchedulingPage() {
     // In a real app, you'd save this to a database. For now, we just show a toast.
     // The user mentioned training the AI; this `values.schedule` data would be the input for that process.
     console.log("Saving schedule:", values.schedule);
+    setIsScheduleEditMode(false);
     toast({
         title: "Schedule Saved",
         description: "Your changes to the shooting plan have been saved successfully."
@@ -249,9 +251,9 @@ export default function LocationScoutingAndSchedulingPage() {
               <CardTitle>Suggested Locations</CardTitle>
               <CardDescription>Review the AI-suggested locations below.</CardDescription>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => setIsEditMode(!isEditMode)}>
+            <Button variant="ghost" size="icon" onClick={() => setIsLocationEditMode(!isLocationEditMode)}>
               <Pencil className="h-5 w-5" />
-              <span className="sr-only">Toggle Edit Mode</span>
+              <span className="sr-only">Toggle Location Edit Mode</span>
             </Button>
           </div>
         </CardHeader>
@@ -271,7 +273,7 @@ export default function LocationScoutingAndSchedulingPage() {
                   <TableHead>Description</TableHead>
                   <TableHead>Reviews</TableHead>
                   <TableHead>Location</TableHead>
-                  {isEditMode && <TableHead className="w-[50px]">Actions</TableHead>}
+                  {isLocationEditMode && <TableHead className="w-[50px] text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -295,10 +297,10 @@ export default function LocationScoutingAndSchedulingPage() {
                         </Button>
                       </a>
                     </TableCell>
-                    {isEditMode && (
-                      <TableCell>
+                    {isLocationEditMode && (
+                      <TableCell className="text-right">
                         <Button variant="ghost" size="icon" onClick={() => removeLocation(index)}>
-                          <X className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     )}
@@ -311,7 +313,7 @@ export default function LocationScoutingAndSchedulingPage() {
               <p className="text-sm text-center text-muted-foreground py-8">No locations suggested yet. Use the form above to find some.</p>
           )}
 
-          {isEditMode && (
+          {isLocationEditMode && (
             <div className="mt-6 pt-6 border-t">
               <h4 className="font-semibold mb-4">Add a Location Manually</h4>
               <Form {...manualLocationForm}>
@@ -403,31 +405,37 @@ export default function LocationScoutingAndSchedulingPage() {
                     <div>
                         <CardTitle>Daily Shooting Plan</CardTitle>
                         <CardDescription>
-                           Edit the details for each day below.
+                           {isScheduleEditMode ? "Edit the details for each day below." : "Review your daily shooting plan."}
                         </CardDescription>
                     </div>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button>
-                               <Pencil className="mr-2 h-4 w-4" />
-                                Save Schedule
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Confirm Schedule Changes</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Are you sure you want to save the changes to the schedule? This action cannot be undone. In the future, this data can be used to improve AI suggestions.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={editableScheduleForm.handleSubmit(handleSaveSchedule)}>
-                                    Confirm & Save
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                    {isScheduleEditMode ? (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button>
+                                   Save Changes
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Confirm Schedule Changes</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Are you sure you want to save the changes to the schedule? This action cannot be undone. In the future, this data can be used to improve AI suggestions.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={editableScheduleForm.handleSubmit(handleSaveSchedule)}>
+                                        Confirm & Save
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    ) : (
+                        <Button variant="ghost" size="icon" onClick={() => setIsScheduleEditMode(true)}>
+                            <Pencil className="h-5 w-5" />
+                            <span className="sr-only">Edit Schedule</span>
+                        </Button>
+                    )}
                 </div>
             </CardHeader>
             <CardContent>
@@ -441,30 +449,46 @@ export default function LocationScoutingAndSchedulingPage() {
                                 <TableHead>Scene(s) to Shoot</TableHead>
                                 <TableHead>Characters Involved</TableHead>
                                 <TableHead>Notes / Equipment</TableHead>
+                                {isScheduleEditMode && <TableHead className="w-[50px]"></TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {scheduleFields.map((field, index) => (
                                 <TableRow key={field.id}>
                                     <TableCell>
-                                      <FormField control={editableScheduleForm.control} name={`schedule.${index}.date`} render={({ field }) => <Input {...field} className="bg-muted/50 border-border font-medium" />} />
+                                      {isScheduleEditMode ? <FormField control={editableScheduleForm.control} name={`schedule.${index}.date`} render={({ field }) => <Input {...field} />} /> : field.date }
                                     </TableCell>
                                     <TableCell>
-                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.location`} render={({ field }) => <Input {...field} className="bg-muted/50 border-border" />} />
+                                      {isScheduleEditMode ? <FormField control={editableScheduleForm.control} name={`schedule.${index}.location`} render={({ field }) => <Input {...field} />} /> : field.location }
                                     </TableCell>
                                     <TableCell>
-                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.scenes`} render={({ field }) => <Input {...field} className="bg-muted/50 border-border" />} />
+                                      {isScheduleEditMode ? <FormField control={editableScheduleForm.control} name={`schedule.${index}.scenes`} render={({ field }) => <Input {...field} />} /> : field.scenes }
                                     </TableCell>
                                     <TableCell>
-                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.characters`} render={({ field }) => <Input {...field} className="bg-muted/50 border-border" />} />
+                                      {isScheduleEditMode ? <FormField control={editableScheduleForm.control} name={`schedule.${index}.characters`} render={({ field }) => <Input {...field} />} /> : field.characters }
                                     </TableCell>
                                     <TableCell>
-                                        <FormField control={editableScheduleForm.control} name={`schedule.${index}.notes`} render={({ field }) => <Textarea {...field} className="bg-muted/50 border-border min-h-0" />} />
+                                      {isScheduleEditMode ? <FormField control={editableScheduleForm.control} name={`schedule.${index}.notes`} render={({ field }) => <Textarea {...field} className="min-h-0" />} /> : field.notes }
                                     </TableCell>
+                                    {isScheduleEditMode && (
+                                        <TableCell>
+                                            <Button variant="ghost" size="icon" onClick={() => removeScheduleRow(index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
+                     {isScheduleEditMode && (
+                        <div className="mt-4">
+                            <Button variant="outline" size="sm" onClick={() => appendScheduleRow({ date: '', location: '', scenes: '', characters: '', notes: '' })}>
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Add Day
+                            </Button>
+                        </div>
+                    )}
                 </form>
                 </Form>
             </CardContent>
@@ -482,3 +506,5 @@ export default function LocationScoutingAndSchedulingPage() {
     </div>
   );
 }
+
+    
