@@ -1,10 +1,12 @@
-# CineFlow AI
+#CineNest.ai
 
-An AI-powered platform to streamline your entire filmmaking workflow, from script to screen.
+**Elevator pitch:** CineNest.ai is an ai integrated film production system which aims to Transform film making into a fully automated , transparent  and efficient  Environment
 
 ## Team
-
-*   **[Your Name]** - Filmmaker / Producer ([your-email@example.com](mailto:your-email@example.com) / [your-github-handle](https://github.com/your-github-handle))
+ **Adhil Rifayin k s** — Team Lead (AI resources specialist) — 007rifayinadhil@gmail.comm
+- **Deethu p** — Frontend — deethup911@gmail.com
+- **Abhinav p** — Backend — abhinavvkd10@gmail.com
+- **Muhammed Fahad E V** — AI Automation Specialist — fahadman40@gmail.com
 *   **Gemini (AI Coding Partner)** - AI Assistant (Google)
 
 ## How to Run Locally
@@ -56,6 +58,8 @@ This application is configured for deployment on **Firebase App Hosting**.
     The deployment configuration is managed by the `apphosting.yaml` file in the root directory.
 
 The live demo URL will be provided by Firebase after a successful deployment.
+
+alternatively we can deploy and host from verscel from 
 
 ## Environment Variables
 
