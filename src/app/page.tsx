@@ -94,7 +94,7 @@ export default function Home() {
       
       <header className="absolute top-0 left-0 right-0 z-20 flex justify-end p-4">
           <Link href="/dashboard">
-            <Button variant="outline" className="bg-transparent text-white hover:bg-white/10 border-white/20">
+            <Button variant="ghost" className="text-white hover:bg-white/10 border-transparent hover:border-white/20">
               Dashboard
             </Button>
           </Link>
