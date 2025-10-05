@@ -33,6 +33,7 @@ export default function Home() {
         if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
           const text = await file.text();
           setLocalScript(text);
+          setIsProcessingFile(false);
         } else if (file.name.endsWith('.docx')) {
           const reader = new FileReader();
           reader.onload = async (e) => {
@@ -62,8 +63,8 @@ export default function Home() {
             title: 'Invalid File Type',
             description: 'Please upload a .txt, .md, or .docx file.',
           });
+          setIsProcessingFile(false);
         }
-        setIsProcessingFile(false);
       }, 50); // Small delay to show "Processing..."
     }
   };
