@@ -23,7 +23,6 @@ import { useScript } from '@/context/script-context';
 import { StarRating } from '@/components/app/star-rating';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -39,11 +38,11 @@ const planSchema = z.object({
     from: z.date({ required_error: 'A start date is required.' }),
     to: z.date({ required_error: 'An end date is required.' }),
   }),
-  location: z.string().min(1, 'Please select a location.'),
 });
 
 interface ScheduleItem {
   date: string;
+  location: string;
   scenes: string;
   characters: string;
   notes: string;
@@ -57,7 +56,7 @@ export default function LocationScoutingAndSchedulingPage() {
   const [searchResult, setSearchResult] = useState<SuggestLocationsOutput | null>(null);
   const [date, setDate] = useState<DateRange | undefined>();
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
-  const [scheduleDetails, setScheduleDetails] = useState<{ location: string; dateRange: string } | null>(null);
+  const [scheduleDetails, setScheduleDetails] = useState<{ dateRange: string } | null>(null);
 
   const scoutForm = useForm<z.infer<typeof locationScoutSchema>>({
     resolver: zodResolver(locationScoutSchema),
@@ -70,7 +69,7 @@ export default function LocationScoutingAndSchedulingPage() {
 
   const scheduleForm = useForm<z.infer<typeof planSchema>>({
     resolver: zodResolver(planSchema),
-    defaultValues: { location: '' },
+    defaultValues: {},
   });
 
   async function onScoutSubmit(values: z.infer<typeof locationScoutSchema>) {
@@ -108,8 +107,9 @@ export default function LocationScoutingAndSchedulingPage() {
     const { from, to } = values.shootingDates;
     const dayArray = eachDayOfInterval({ start: from, end: to });
     
-    const newSchedule = dayArray.map(day => ({
+    const newSchedule = dayArray.map((day, index) => ({
         date: format(day, 'EEE, dd MMM yyyy'),
+        location: PlaceHolderImages[index % PlaceHolderImages.length].description, // Cycle through locations
         scenes: '', 
         characters: '', 
         notes: '', 
@@ -117,13 +117,12 @@ export default function LocationScoutingAndSchedulingPage() {
 
     setSchedule(newSchedule);
     setScheduleDetails({
-        location: values.location,
         dateRange: `${format(from, 'PPP')} to ${format(to, 'PPP')}`
     });
 
     toast({
         title: "Schedule Generated",
-        description: `Created a schedule for ${values.location} from ${format(values.shootingDates.from, 'PPP')} to ${format(values.shootingDates.to, 'PPP')}.`
+        description: `Created a schedule from ${format(values.shootingDates.from, 'PPP')} to ${format(values.shootingDates.to, 'PPP')}.`
     });
   }
 
@@ -226,12 +225,11 @@ export default function LocationScoutingAndSchedulingPage() {
       <Card>
         <CardHeader>
           <CardTitle>2. Create Shooting Schedule</CardTitle>
-          <CardDescription>Select one of the scouted locations and define your shooting dates.</CardDescription>
+          <CardDescription>Define your shooting dates to generate a plan across available locations.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...scheduleForm}>
             <form onSubmit={scheduleForm.handleSubmit(onScheduleSubmit)} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <FormField
                   control={scheduleForm.control}
                   name="shootingDates"
@@ -243,7 +241,7 @@ export default function LocationScoutingAndSchedulingPage() {
                           <Button
                             id="date"
                             variant={'outline'}
-                            className={cn('justify-start text-left font-normal', !date && 'text-muted-foreground')}
+                            className={cn('w-[300px] justify-start text-left font-normal', !date && 'text-muted-foreground')}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {date?.from ? (
@@ -277,31 +275,6 @@ export default function LocationScoutingAndSchedulingPage() {
                     </FormItem>
                   )}
                 />
-                
-                <FormField
-                  control={scheduleForm.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Location</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a scouted location..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {PlaceHolderImages.map(loc => (
-                            <SelectItem key={loc.id} value={loc.description}>{loc.description}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
               <Button type="submit">
                 Generate Schedule
               </Button>
@@ -313,7 +286,7 @@ export default function LocationScoutingAndSchedulingPage() {
       {schedule.length > 0 && scheduleDetails && (
         <Card>
             <CardHeader>
-                <CardTitle>Daily Shooting Plan: {scheduleDetails.location}</CardTitle>
+                <CardTitle>Daily Shooting Plan</CardTitle>
                 <CardDescription>
                     Schedule for {scheduleDetails.dateRange}. Fill in the details for each day.
                 </CardDescription>
@@ -323,6 +296,7 @@ export default function LocationScoutingAndSchedulingPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[180px]">Date</TableHead>
+                            <TableHead>Location</TableHead>
                             <TableHead>Scene(s) to Shoot</TableHead>
                             <TableHead>Characters Involved</TableHead>
                             <TableHead>Notes / Equipment</TableHead>
@@ -332,6 +306,7 @@ export default function LocationScoutingAndSchedulingPage() {
                         {schedule.map((day, index) => (
                             <TableRow key={index}>
                                 <TableCell className="font-medium">{day.date}</TableCell>
+                                <TableCell className="font-medium">{day.location}</TableCell>
                                 <TableCell>{/* Add Textarea/Input here if needed */}</TableCell>
                                 <TableCell>{/* Add Textarea/Input here if needed */}</TableCell>
                                 <TableCell>{/* Add Textarea/Input here if needed */}</TableCell>
