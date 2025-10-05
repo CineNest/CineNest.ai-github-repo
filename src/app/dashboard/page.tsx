@@ -12,10 +12,11 @@ import Link from 'next/link';
 
 export default function DashboardPage() {
   const { script: contextScript, isLoading, setScript: setContextScript } = useScript();
-  const [localScript, setLocalScript] = useState(contextScript);
+  const [localScript, setLocalScript] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
+    // Sync local state with context state whenever it changes
     setLocalScript(contextScript);
   }, [contextScript]);
 
@@ -28,6 +29,7 @@ export default function DashboardPage() {
   };
 
   const isScriptChanged = localScript !== contextScript;
+  const showEmptyState = !isLoading && !localScript;
 
   return (
     <div className="container mx-auto">
@@ -60,7 +62,7 @@ export default function DashboardPage() {
                 onChange={(e) => setLocalScript(e.target.value)}
                 placeholder="No script loaded. Go to the landing page to enter one, or start typing here."
               />
-               {!localScript && (
+               {showEmptyState && (
                     <div className="text-center text-muted-foreground py-4">
                         <p>No script has been provided yet.</p>
                         <Link href="/">

@@ -75,8 +75,15 @@ export function ScriptProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      // We are intentionally not loading the script or breakdown from localStorage
-      // to ensure a fresh state on each page load.
+      const savedScript = localStorage.getItem('cineflow-script');
+      if (savedScript) {
+        setScriptState(savedScript);
+      }
+      
+      const savedBreakdown = localStorage.getItem('cineflow-breakdown');
+      if (savedBreakdown) {
+        setBreakdownState(JSON.parse(savedBreakdown));
+      }
 
       const savedSalaries = localStorage.getItem('cineflow-salaries');
       if (savedSalaries) {
@@ -95,6 +102,8 @@ export function ScriptProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Failed to read from localStorage', error);
       // Set defaults if localStorage fails
+      setScriptState('');
+      setBreakdownState(null);
       setCrewSalariesState(initialCrewAndCast);
       setTransactionsState(initialTransactions);
     } finally {
