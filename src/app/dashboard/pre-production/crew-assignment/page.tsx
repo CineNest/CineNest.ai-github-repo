@@ -19,14 +19,15 @@ interface CrewMember {
   role: string;
   status: string;
   contact: string;
+  dates: string;
 }
 
 const initialCrewMembers: CrewMember[] = [
-  { name: 'Alex Ray', role: 'Director', status: 'Confirmed', contact: 'alex.ray@cinenest.ai' },
-  { name: 'Sam Jones', role: 'Director of Photography', status: 'Confirmed', contact: 'sam.jones@cinenest.ai' },
-  { name: 'Casey Smith', role: 'Production Designer', status: 'Pending', contact: 'casey.smith@cinenest.ai' },
-  { name: 'Jordan Lee', role: 'Sound Mixer', status: 'Offer Sent', contact: 'jordan.lee@cinenest.ai' },
-  { name: 'Taylor Kim', role: 'Editor', status: 'Confirmed', contact: 'taylor.kim@cinenest.ai' },
+  { name: 'Alex Ray', role: 'Director', status: 'Confirmed', contact: 'alex.ray@cinenest.ai', dates: 'Aug 1 - Aug 30' },
+  { name: 'Sam Jones', role: 'Director of Photography', status: 'Confirmed', contact: 'sam.jones@cinenest.ai', dates: 'Aug 1 - Aug 30' },
+  { name: 'Casey Smith', role: 'Production Designer', status: 'Pending', contact: 'casey.smith@cinenest.ai', dates: 'July 25 - Aug 30' },
+  { name: 'Jordan Lee', role: 'Sound Mixer', status: 'Offer Sent', contact: 'jordan.lee@cinenest.ai', dates: 'Aug 1 - Aug 30' },
+  { name: 'Taylor Kim', role: 'Editor', status: 'Confirmed', contact: 'taylor.kim@cinenest.ai', dates: 'Sep 1 - Oct 15' },
 ];
 
 const suggestCrewSchema = z.object({
@@ -52,7 +53,7 @@ export default function CrewAssignmentPage() {
     setIsSuggesting(false);
 
     if (result.success && result.data) {
-      const newCrewMembers = result.data.crew.map(member => ({ ...member, status: 'Suggested' }));
+      const newCrewMembers = result.data.crew.map(member => ({ ...member, status: 'Suggested', dates: 'TBD' }));
       setCrewMembers(prev => [...prev, ...newCrewMembers]);
       toast({
         title: 'Crew Suggested',
@@ -131,6 +132,7 @@ export default function CrewAssignmentPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Required Dates</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -150,6 +152,7 @@ export default function CrewAssignmentPage() {
                         {member.status}
                     </span>
                   </TableCell>
+                  <TableCell>{member.dates}</TableCell>
                   <TableCell>{member.contact}</TableCell>
                   <TableCell>
                     <Button variant="ghost" size="icon">
