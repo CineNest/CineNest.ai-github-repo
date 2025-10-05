@@ -57,12 +57,12 @@ This application is configured for deployment on **Firebase App Hosting**.
     ```
     The deployment configuration is managed by the `apphosting.yaml` file in the root directory.
 
-    firebase url  - https://9000-firebase-studio-1759482926083.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev
+    firebase url  - https://9000-firebase-studio-1759482926083.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev for local hosting 
 
 The live demo URL will be provided by Firebase after a successful deployment.
 
 alternatively we can deploy and host from verscel from 
-http://cine-nest-ai-github-repo.vercel.app
+cine-nest-ai-github-repo-lc0claoij-cinenestais-projects.vercel.app
 
 
 
