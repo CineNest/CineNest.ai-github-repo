@@ -1,4 +1,4 @@
-# **App Name**: CineFlow AI
+# **App Name**: CineNest.ai
 
 ## Core Features:
 
