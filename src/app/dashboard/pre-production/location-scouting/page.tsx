@@ -51,7 +51,7 @@ interface ScheduleItem {
 
 export default function LocationScoutingAndSchedulingPage() {
   const { toast } = useToast();
-  const { script } = useScript();
+  const { script, breakdown } = useScript();
   const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState<SuggestLocationsOutput | null>(null);
   const [date, setDate] = useState<DateRange | undefined>();
@@ -107,12 +107,16 @@ export default function LocationScoutingAndSchedulingPage() {
     const { from, to } = values.shootingDates;
     const dayArray = eachDayOfInterval({ start: from, end: to });
     
+    const characters = breakdown?.characters && breakdown.characters.length > 0
+      ? breakdown.characters
+      : ['Character 1', 'Character 2'];
+    
     const newSchedule = dayArray.map((day, index) => ({
         date: format(day, 'EEE, dd MMM yyyy'),
-        location: PlaceHolderImages[index % PlaceHolderImages.length].description, // Cycle through locations
-        scenes: '', 
-        characters: '', 
-        notes: '', 
+        location: PlaceHolderImages[index % PlaceHolderImages.length].description,
+        scenes: `Scene ${index * 2 + 1}, ${index * 2 + 2}`,
+        characters: `${characters[index % characters.length]}, ${characters[(index + 1) % characters.length]}`, 
+        notes: index % 3 === 0 ? 'Exterior day shoot' : 'Interior night shoot, requires generator', 
     }));
 
     setSchedule(newSchedule);
@@ -148,10 +152,10 @@ export default function LocationScoutingAndSchedulingPage() {
             <form onSubmit={scoutForm.handleSubmit(onScoutSubmit)} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField control={scoutForm.control} name="country" render={({ field }) => (
-                  <FormItem><FormLabel>Country (Optional)</FormLabel><FormControl><Input placeholder="e.g., USA" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>Country (Optional)</FormLabel><FormControl><Input placeholder="e.g., India" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={scoutForm.control} name="state" render={({ field }) => (
-                  <FormItem><FormLabel>State / Province (Optional)</FormLabel><FormControl><Input placeholder="e.g., California" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>State / Province (Optional)</FormLabel><FormControl><Input placeholder="e.g., Maharashtra" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
               </div>
               <FormField control={scoutForm.control} name="sceneDescription" render={({ field }) => (
@@ -307,9 +311,15 @@ export default function LocationScoutingAndSchedulingPage() {
                             <TableRow key={index}>
                                 <TableCell className="font-medium">{day.date}</TableCell>
                                 <TableCell className="font-medium">{day.location}</TableCell>
-                                <TableCell>{/* Add Textarea/Input here if needed */}</TableCell>
-                                <TableCell>{/* Add Textarea/Input here if needed */}</TableCell>
-                                <TableCell>{/* Add Textarea/Input here if needed */}</TableCell>
+                                <TableCell>
+                                    <Input defaultValue={day.scenes} className="bg-transparent border-0" />
+                                </TableCell>
+                                <TableCell>
+                                    <Input defaultValue={day.characters} className="bg-transparent border-0" />
+                                </TableCell>
+                                <TableCell>
+                                    <Textarea defaultValue={day.notes} className="bg-transparent border-0 min-h-0" />
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
