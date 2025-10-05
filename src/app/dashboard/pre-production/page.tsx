@@ -23,7 +23,7 @@ export default function PreProductionPage() {
           </CardHeader>
           <CardContent className="flex flex-col flex-grow">
             <p className="text-xs text-muted-foreground mb-4 mt-auto">
-              Analyze your script for scenes, characters, props, and locations.
+              Analyze your script for scenes and characters.
             </p>
             <Link href="/dashboard/pre-production/script-breakdown">
               <Button className="w-full">Breakdown Script</Button>

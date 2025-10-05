@@ -84,7 +84,7 @@ export default function ScriptBreakdownPage() {
         <CardHeader>
           <CardTitle>Automated Script Analysis</CardTitle>
           <CardDescription>
-            Use AI to automatically tag characters and locations from your script. Props will be available on the Budget Tracking page after analysis.
+            Use AI to automatically tag characters and scenes from your script.
           </CardDescription>
         </CardHeader>
         <CardContent>
