@@ -57,15 +57,21 @@ This application is configured for deployment on **Firebase App Hosting**.
     ```
     The deployment configuration is managed by the `apphosting.yaml` file in the root directory.
 
+    firebase url  - https://9000-firebase-studio-1759482926083.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev
+
 The live demo URL will be provided by Firebase after a successful deployment.
 
 alternatively we can deploy and host from verscel from 
+http://cine-nest-ai-github-repo.vercel.app
+
+
 
 ## Environment Variables
 
 This project uses an `.env` file for environment variables. While Firebase App Hosting injects service configurations automatically, you may need to add API keys for external services here during local development.
 
 *   `GEMINI_API_KEY`: Your API key for the Google AI (Gemini) models.
+which we shouldnt be showing in a public  repo 
 
 ## Known Limitations and TODOs
 
