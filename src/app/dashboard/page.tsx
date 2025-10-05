@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Save } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const { script: contextScript, isLoading, setScript: setContextScript } = useScript();
@@ -59,6 +60,14 @@ export default function DashboardPage() {
                 onChange={(e) => setLocalScript(e.target.value)}
                 placeholder="No script loaded. Go to the landing page to enter one, or start typing here."
               />
+               {!localScript && (
+                    <div className="text-center text-muted-foreground py-4">
+                        <p>No script has been provided yet.</p>
+                        <Link href="/">
+                           <Button variant="link">Go to Homepage to add a script</Button>
+                        </Link>
+                    </div>
+                )}
               <Button onClick={handleSave} disabled={!isScriptChanged}>
                 <Save className="mr-2 h-4 w-4" />
                 Save Script
