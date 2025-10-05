@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import mammoth from 'mammoth';
 import Link from 'next/link';
+import { useUser } from '@/firebase';
 
 export default function Home() {
   const { setScript } = useScript();
@@ -21,6 +22,7 @@ export default function Home() {
   const [fileName, setFileName] = useState('');
   const router = useRouter();
   const { toast } = useToast();
+  const { user, isUserLoading } = useUser();
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -91,9 +93,9 @@ export default function Home() {
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
       
       <header className="absolute top-0 left-0 right-0 z-20 flex justify-end p-4">
-          <Link href="/login">
+          <Link href="/dashboard">
             <Button variant="outline" className="bg-transparent text-white hover:bg-white/10 border-white/20">
-              Login
+              Dashboard
             </Button>
           </Link>
       </header>
@@ -149,7 +151,7 @@ export default function Home() {
                     disabled={!isInputPresent || isLoading || isProcessingFile}
                     className="animated-button"
                   >
-                    {isLoading ? (
+                    {isLoading || isUserLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         <span>Loading...</span>

@@ -28,7 +28,13 @@ export function Header() {
   }, [])
 
   const handleLogout = async () => {
-    await auth.signOut();
+    if (user?.isAnonymous) {
+      // For anonymous users, you might want to delete the user account
+      // or just sign them out. For this demo, we'll just sign out.
+      await auth.signOut();
+    } else {
+      await auth.signOut();
+    }
     router.push('/');
   };
 
@@ -58,7 +64,7 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>{user.isAnonymous ? "Guest Account" : "My Account"}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem disabled>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -69,9 +75,7 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-           <Link href="/login">
-            <Button variant="outline" className="bg-transparent text-white hover:bg-white/10">Login</Button>
-          </Link>
+           <div className="h-10 w-10" /> // Placeholder for user button while loading
         )}
       </div>
     </header>
