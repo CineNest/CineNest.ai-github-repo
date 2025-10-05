@@ -16,7 +16,6 @@ import {
   PieChart,
   Landmark,
   BarChart,
-  Layers,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -35,7 +34,6 @@ const menuItems = [
   { href: '/dashboard/status', label: 'Status Logs', icon: Rss },
   { href: '/dashboard/legal', label: 'Legal & Contracts', icon: Scale },
   { href: '/dashboard/investors', label: 'Investors', icon: Landmark },
-  { href: '/dashboard/tech-stack', label: 'Tech Stack', icon: Layers },
 ];
 
 const profileMenuItem = { href: '/dashboard/profile', label: 'Profile', icon: User };
