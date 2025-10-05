@@ -10,9 +10,10 @@ import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { suggestCrewAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { ExternalLink, Loader2, PlusCircle, Mail } from 'lucide-react';
+import { ExternalLink, Loader2, PlusCircle, Mail, Pencil, Trash2 } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface CrewMember {
   name: string;
@@ -37,8 +38,8 @@ const suggestCrewSchema = z.object({
 export default function CrewAssignmentPage() {
   const [crewMembers, setCrewMembers] = useState<CrewMember[]>(initialCrewMembers);
   const [isSuggesting, setIsSuggesting] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const { toast } = useToast();
-  const crewFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSc14Mw1q1LThn5HAP1JUMiuJ89wrFpeVNp-v55Sklwe0cDr6w/viewform?usp=header';
 
   const form = useForm<z.infer<typeof suggestCrewSchema>>({
     resolver: zodResolver(suggestCrewSchema),
@@ -72,6 +73,29 @@ export default function CrewAssignmentPage() {
     toast({
       title: 'Schedule Sent',
       description: `Daily schedule has been sent to ${crewMemberName}.`,
+    });
+  };
+  
+  const handleInputChange = (index: number, field: keyof CrewMember, value: string) => {
+    const updatedCrew = [...crewMembers];
+    updatedCrew[index] = { ...updatedCrew[index], [field]: value };
+    setCrewMembers(updatedCrew);
+  };
+  
+  const addCrewMember = () => {
+    setCrewMembers([...crewMembers, { name: '', role: '', status: 'Pending', contact: '', dates: '' }]);
+  };
+
+  const removeCrewMember = (index: number) => {
+    setCrewMembers(crewMembers.filter((_, i) => i !== index));
+  };
+  
+  const saveChanges = () => {
+    // In a real app, this would save to a DB. Here we just update state and exit edit mode.
+    setIsEditMode(false);
+    toast({
+      title: "Crew Roster Updated",
+      description: "Your changes have been saved locally."
     });
   };
 
@@ -125,13 +149,22 @@ export default function CrewAssignmentPage() {
                         Track the status of all artists and crew members for your project.
                     </CardDescription>
                 </div>
-                <a href={crewFormUrl} target="_blank" rel="noopener noreferrer">
-                  <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Crew Manually
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </Button>
-                </a>
+                <div className="flex items-center gap-2">
+                    {isEditMode && (
+                        <>
+                        <Button onClick={addCrewMember} size="sm">
+                            <PlusCircle className="mr-2 h-4 w-4" /> Add Manually
+                        </Button>
+                        <Button onClick={saveChanges} size="sm" variant="outline">
+                            Save Changes
+                        </Button>
+                        </>
+                    )}
+                    <Button variant="ghost" size="icon" onClick={() => setIsEditMode(!isEditMode)}>
+                        <Pencil className="h-5 w-5" />
+                        <span className="sr-only">Toggle Edit Mode</span>
+                    </Button>
+                </div>
             </div>
         </CardHeader>
         <CardContent>
@@ -143,31 +176,59 @@ export default function CrewAssignmentPage() {
                 <TableHead>Status</TableHead>
                 <TableHead>Required Dates</TableHead>
                 <TableHead>Contact</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {crewMembers.map((member, index) => (
                 <TableRow key={`${member.name}-${index}`}>
-                  <TableCell className="font-medium">{member.name}</TableCell>
-                  <TableCell>{member.role}</TableCell>
                   <TableCell>
-                     <span className={`px-2 py-1 text-xs rounded-full ${
-                        member.status === 'Confirmed' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
-                        member.status === 'Suggested' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' :
-                        member.status === 'Pending' || member.status === 'Offer Sent' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                        'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-                     }`}>
-                        {member.status}
-                    </span>
+                    {isEditMode ? <Input value={member.name} onChange={e => handleInputChange(index, 'name', e.target.value)} /> : member.name}
                   </TableCell>
-                  <TableCell>{member.dates}</TableCell>
-                  <TableCell>{member.contact}</TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" onClick={() => handleSendSchedule(member.name)}>
-                      <Mail className="h-4 w-4" />
-                      <span className="sr-only">Send schedule to {member.name}</span>
-                    </Button>
+                    {isEditMode ? <Input value={member.role} onChange={e => handleInputChange(index, 'role', e.target.value)} /> : member.role}
+                  </TableCell>
+                  <TableCell>
+                     {isEditMode ? (
+                        <Select value={member.status} onValueChange={value => handleInputChange(index, 'status', value)}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Suggested">Suggested</SelectItem>
+                                <SelectItem value="Offer Sent">Offer Sent</SelectItem>
+                                <SelectItem value="Pending">Pending</SelectItem>
+                                <SelectItem value="Confirmed">Confirmed</SelectItem>
+                                <SelectItem value="Declined">Declined</SelectItem>
+                            </SelectContent>
+                        </Select>
+                     ) : (
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                            member.status === 'Confirmed' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+                            member.status === 'Suggested' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' :
+                            member.status === 'Pending' || member.status === 'Offer Sent' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                            'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+                        }`}>
+                            {member.status}
+                        </span>
+                     )}
+                  </TableCell>
+                  <TableCell>
+                    {isEditMode ? <Input value={member.dates} onChange={e => handleInputChange(index, 'dates', e.target.value)} /> : member.dates}
+                  </TableCell>
+                  <TableCell>
+                    {isEditMode ? <Input value={member.contact} onChange={e => handleInputChange(index, 'contact', e.target.value)} /> : member.contact}
+                  </TableCell>
+                  <TableCell className="text-right">
+                     {isEditMode ? (
+                        <Button variant="ghost" size="icon" onClick={() => removeCrewMember(index)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                            <span className="sr-only">Remove {member.name}</span>
+                        </Button>
+                     ) : (
+                        <Button variant="ghost" size="icon" onClick={() => handleSendSchedule(member.name)}>
+                          <Mail className="h-4 w-4" />
+                          <span className="sr-only">Send schedule to {member.name}</span>
+                        </Button>
+                     )}
                   </TableCell>
                 </TableRow>
               ))}
