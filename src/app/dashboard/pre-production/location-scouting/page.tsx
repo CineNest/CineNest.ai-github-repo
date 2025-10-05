@@ -66,7 +66,7 @@ interface ScheduleItem {
 
 const scheduleFormSchema = z.object({
   schedule: z.array(z.object({
-    date: z.string(),
+    date: z.string().min(1, "Date is required"),
     location: z.string().min(1, "Location is required"),
     scenes: z.string().min(1, "Scene is required"),
     characters: z.string().min(1, "Characters are required"),
@@ -446,7 +446,9 @@ export default function LocationScoutingAndSchedulingPage() {
                         <TableBody>
                             {scheduleFields.map((field, index) => (
                                 <TableRow key={field.id}>
-                                    <TableCell className="font-medium">{field.date}</TableCell>
+                                    <TableCell>
+                                      <FormField control={editableScheduleForm.control} name={`schedule.${index}.date`} render={({ field }) => <Input {...field} className="bg-muted/50 border-border font-medium" />} />
+                                    </TableCell>
                                     <TableCell>
                                         <FormField control={editableScheduleForm.control} name={`schedule.${index}.location`} render={({ field }) => <Input {...field} className="bg-muted/50 border-border" />} />
                                     </TableCell>
