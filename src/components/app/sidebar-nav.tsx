@@ -9,10 +9,8 @@ import {
   LayoutDashboard,
   ClipboardList,
   Presentation,
-  AreaChart,
   Scale,
   User,
-  FileText as DocumentationIcon,
   Rss,
   DollarSign,
   PieChart,
@@ -33,7 +31,6 @@ const menuItems = [
    { href: '/dashboard/production/budget-analysis', label: 'Budget Analysis', icon: PieChart },
   { href: '/dashboard/post-production', label: 'Post-Production', icon: Presentation },
   { href: '/dashboard/status', label: 'Status Logs', icon: Rss },
-  { href: '/dashboard/documentation', label: 'Documentation', icon: DocumentationIcon },
   { href: '/dashboard/legal', label: 'Legal & Contracts', icon: Scale },
   { href: '/dashboard/investors', label: 'Investors', icon: Landmark },
 ];

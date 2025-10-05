@@ -27,10 +27,10 @@ const sampleSalesData = [
 ];
 
 const distributionTransactions = [
-  { id: 'TRN001', distributor: 'Global Films', amount: '$50,000', status: 'Paid', date: '2024-07-15' },
-  { id: 'TRN002', distributor: 'Indie Streamers', amount: '$15,000', status: 'Pending', date: '2024-07-20' },
-  { id: 'TRN003', distributor: 'EU Cinema Group', amount: '$125,000', status: 'Paid', date: '2024-07-10' },
-  { id: 'TRN004', distributor: 'Asia Pacific VOD', amount: '$30,000', status: 'Paid', date: '2024-06-28' },
+  { id: 'TRN001', distributor: 'Global Films', amount: '₹40,00,000', status: 'Paid', date: '2024-07-15' },
+  { id: 'TRN002', distributor: 'Indie Streamers', amount: '₹12,00,000', status: 'Pending', date: '2024-07-20' },
+  { id: 'TRN003', distributor: 'EU Cinema Group', amount: '₹1,00,00,000', status: 'Paid', date: '2024-07-10' },
+  { id: 'TRN004', distributor: 'Asia Pacific VOD', amount: '₹25,00,000', status: 'Paid', date: '2024-06-28' },
 ];
 
 const distributionStages = [
