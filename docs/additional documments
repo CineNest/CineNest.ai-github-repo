@@ -1,0 +1,51 @@
+The application is a modern web app built on a robust and scalable tech stack:
+
+    Framework: Next.js 15 with the App Router. This provides server-side rendering (SSR), static site generation (SSG), and a file-system-based routing system.
+    Language: TypeScript. This adds static typing to JavaScript, which helps prevent bugs and improves code quality.
+    UI Library: React with Server and Client Components. This allows for optimal performance by rendering components on the server where possible.
+    Styling: Tailwind CSS for utility-first styling, combined with ShadCN UI for a pre-built, accessible, and themeable component library.
+    AI Integration: Genkit (Google's Generative AI toolkit) is used to create and manage all AI-powered features.
+    Backend & Database: Firebase is used for backend services, specifically:
+        Firebase Authentication: For managing user sessions (currently set to automatic anonymous sign-in for the demo).
+        Firestore: A NoSQL database used to persist data, such as daily production status logs.
+
+The application follows a logical structure that separates concerns, making it easier to manage.
+
+src/app/ - Routing and Pages This is the heart of the Next.js application.
+
+    layout.tsx: The root layout that wraps the entire application. It sets up the global CSS, the main AppProviders, and the Toaster for notifications.
+    page.tsx (Homepage): The landing page where a user can enter or upload their film script. When the user clicks "Get Started," the script text is saved into the ScriptContext.
+    dashboard/: This directory contains all the main application pages.
+        dashboard/layout.tsx: A nested layout specific to the dashboard. It sets up the main navigation (Sidebar) and the Header.
+        dashboard/page.tsx: The main dashboard page, which displays the currently loaded script.
+        dashboard/pre-production/, dashboard/production/, etc.: These folders contain the specific feature pages like Script Breakdown, Budget Tracking, and Location Scouting. Each page is a self-contained React component that reads and writes data relevant to its function.
+
+src/context/script-context.tsx - Global State Management This is the application's "brain" for client-side state.
+
+    ScriptProvider: A React Context Provider that holds the application's shared state.
+    State Managed:
+        script: The full text of the user's film script.
+        breakdown: The AI-generated list of characters and locations from the script.
+        transactions: A log of all financial expenses.
+        crewSalaries: A list of crew members and their payment details.
+    Data Flow: When a user enters a script on the homepage, it's saved to this context. When they navigate to the dashboard, other pages can then read this script from the context to perform actions (like AI analysis). Any updates (e.g., adding a transaction, editing a breakdown) are also saved back to this central context.
+    Persistence: For the demo, this context uses the browser's localStorage to save the state, so data isn't lost when you refresh the page.
+
+src/ai/flows/ - Artificial Intelligence Logic This directory contains all the Genkit "Flows" that power the AI features.
+
+    Structure of a Flow: Each file (e.g., script-breakdown-flow.ts) defines a single, specific AI task.
+        Input Schema (Zod): Defines the exact data structure the flow expects (e.g., { script: string }).
+        Output Schema (Zod): Defines the exact data structure the AI model is instructed to return (e.g., { characters: string[], locations: string[] }).
+        Prompt: A detailed instruction template given to the AI model (Gemini). It tells the model what its role is, what task to perform, and how to format the output.
+        Flow Function: The actual function that takes the input, calls the AI with the prompt, and returns the structured output.
+
+    Data Flow: A React component on a page (e.g., the Script Breakdown page) calls a server action from src/app/actions.ts. This action then invokes the corresponding AI flow. The flow sends the prompt and user data to the Google AI backend, receives the result, and passes it back to the component to be displayed.
+
+src/firebase/ - Backend Services This directory manages the connection to Firebase.
+
+    config.ts: Contains the Firebase project credentials.
+    provider.tsx: A crucial component that initializes Firebase and handles user authentication. It currently uses signInAnonymously() to automatically log in a "guest" user, creating a seamless demo experience. It also provides the Firestore and Auth instances to the rest of the app via React Context.
+    firestore/use-collection.tsx: A custom React hook that subscribes to a Firestore collection in real-time. This is used on the "Status" page to listen for and display new status updates as they are added to the database.
+    Security (firestore.rules): This file, located in the project root, defines the security rules for the database. It specifies who can read or write to different data collections. For example, it's configured to allow any authenticated user to write to the /statuses collection.
+
+This architecture creates a powerful, decoupled system where the frontend (React/Next.js) is responsible for the user interface, a central context (ScriptContext) manages the application's state, and specialized AI and Firebase modules handle complex backend tasks.
