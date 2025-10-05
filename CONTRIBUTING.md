@@ -1,4 +1,4 @@
-# Contributing to CineFlow AI
+# Contributing to CineNest AI
 
 Thank you for your interest in contributing to CineFlow AI! We welcome all contributions, from bug reports to new features.
 
