@@ -1,0 +1,13 @@
+#Make sure Firebase CLI is installed
+npm install -g firebase-tools
+
+##Then log in:
+firebase login
+
+
+##Initialize your Firebase project (if not already)
+firebase init
+
+##Firebase Emulator Suite
+##This allows you to test your project locally, including Firestore, Functions, and Hosting:
+firebase emulators:start
