@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useScript } from '@/context/script-context';
 import { scriptBreakdownAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Film, MapPin, PlusCircle, Trash2 } from 'lucide-react';
+import { Loader2, Film, MapPin, PlusCircle, Trash2, Pencil } from 'lucide-react';
 import type { ScriptBreakdownOutput } from '@/ai/flows/script-breakdown-flow';
 import { Input } from '@/components/ui/input';
 
@@ -17,12 +17,11 @@ function AnalysisResults({ results }: { results: ScriptBreakdownOutput }) {
   
   const [localCharacters, setLocalCharacters] = useState(results.characters);
   const [localLocations, setLocalLocations] = useState(results.locations);
-  const [localProps, setLocalProps] = useState(results.props);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     setLocalCharacters(results.characters);
     setLocalLocations(results.locations);
-    setLocalProps(results.props);
   }, [results]);
 
   const handleCharacterChange = (index: number, value: string) => {
@@ -37,19 +36,20 @@ function AnalysisResults({ results }: { results: ScriptBreakdownOutput }) {
     setLocalLocations(newLocations);
   };
   
-  const addCharacter = () => setLocalCharacters([...localCharacters, 'New Character']);
+  const addCharacter = () => setLocalCharacters([...localCharacters, '']);
   const removeCharacter = (index: number) => setLocalCharacters(localCharacters.filter((_, i) => i !== index));
 
-  const addLocation = () => setLocalLocations([...localLocations, 'New Location']);
+  const addLocation = () => setLocalLocations([...localLocations, '']);
   const removeLocation = (index: number) => setLocalLocations(localLocations.filter((_, i) => i !== index));
 
   const handleSaveChanges = () => {
     const updatedBreakdown = {
       characters: localCharacters.filter(c => c.trim() !== ''),
       locations: localLocations.filter(l => l.trim() !== ''),
-      props: localProps // Props are not editable in this UI for now
+      props: results.props // Props are not editable in this UI
     };
     setBreakdown(updatedBreakdown);
+    setIsEditMode(false);
     toast({
       title: 'Changes Saved',
       description: 'Your updates to the script breakdown have been saved.'
@@ -63,19 +63,33 @@ function AnalysisResults({ results }: { results: ScriptBreakdownOutput }) {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span className="flex items-center gap-2"><Film /> Characters</span>
-              <Button variant="ghost" size="sm" onClick={addCharacter}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add
-              </Button>
+              <div className="flex items-center gap-2">
+                {isEditMode && (
+                  <Button variant="ghost" size="sm" onClick={addCharacter}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add
+                  </Button>
+                )}
+                 <Button variant="ghost" size="icon" onClick={() => setIsEditMode(!isEditMode)}>
+                    <Pencil className="h-5 w-5" />
+                    <span className="sr-only">Toggle Edit Mode</span>
+                </Button>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm">
               {localCharacters.map((char, i) => (
                 <li key={i} className="flex items-center gap-2">
-                  <Input value={char} onChange={(e) => handleCharacterChange(i, e.target.value)} />
-                  <Button variant="ghost" size="icon" onClick={() => removeCharacter(i)}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
+                  {isEditMode ? (
+                    <>
+                      <Input value={char} onChange={(e) => handleCharacterChange(i, e.target.value)} />
+                      <Button variant="ghost" size="icon" onClick={() => removeCharacter(i)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </>
+                  ) : (
+                    <span className="p-2 w-full">{char}</span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -85,28 +99,44 @@ function AnalysisResults({ results }: { results: ScriptBreakdownOutput }) {
           <CardHeader>
              <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center gap-2"><MapPin /> Locations</span>
-                <Button variant="ghost" size="sm" onClick={addLocation}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add
-                </Button>
+                 <div className="flex items-center gap-2">
+                    {isEditMode && (
+                    <Button variant="ghost" size="sm" onClick={addLocation}>
+                        <PlusCircle className="mr-2 h-4 w-4" /> Add
+                    </Button>
+                    )}
+                    <Button variant="ghost" size="icon" onClick={() => setIsEditMode(!isEditMode)}>
+                        <Pencil className="h-5 w-5" />
+                        <span className="sr-only">Toggle Edit Mode</span>
+                    </Button>
+                </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm">
               {localLocations.map((loc, i) => (
                 <li key={i} className="flex items-center gap-2">
-                  <Input value={loc} onChange={(e) => handleLocationChange(i, e.target.value)} />
-                   <Button variant="ghost" size="icon" onClick={() => removeLocation(i)}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
+                  {isEditMode ? (
+                    <>
+                      <Input value={loc} onChange={(e) => handleLocationChange(i, e.target.value)} />
+                      <Button variant="ghost" size="icon" onClick={() => removeLocation(i)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </>
+                  ) : (
+                     <span className="p-2 w-full">{loc}</span>
+                  )}
                 </li>
               ))}
             </ul>
           </CardContent>
         </Card>
       </div>
-      <div className="mt-4 flex justify-end">
-        <Button onClick={handleSaveChanges}>Save Changes</Button>
-      </div>
+      {isEditMode && (
+        <div className="mt-4 flex justify-end">
+          <Button onClick={handleSaveChanges}>Save Changes</Button>
+        </div>
+      )}
     </>
   );
 }
@@ -150,7 +180,7 @@ export default function ScriptBreakdownPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Script Breakdown</h1>
         <p className="text-muted-foreground">
-          Analyze your script to identify all production elements.
+          Analyze your script to identify production elements. Use the pencil icon to edit the results.
         </p>
       </div>
 
@@ -158,7 +188,7 @@ export default function ScriptBreakdownPage() {
         <CardHeader>
           <CardTitle>Automated Script Analysis</CardTitle>
           <CardDescription>
-            Use AI to automatically tag characters from your script.
+            Use AI to automatically tag characters and locations from your script.
           </CardDescription>
         </CardHeader>
         <CardContent>
