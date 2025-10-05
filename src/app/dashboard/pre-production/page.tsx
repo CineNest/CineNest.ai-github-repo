@@ -16,59 +16,59 @@ export default function PreProductionPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Script Breakdown</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground mb-4">
+          <CardContent className="flex flex-col flex-grow">
+            <p className="text-xs text-muted-foreground mb-4 mt-auto">
               Analyze your script for scenes, characters, props, and locations.
             </p>
             <Link href="/dashboard/pre-production/script-breakdown">
-              <Button>Breakdown Script</Button>
+              <Button className="w-full">Breakdown Script</Button>
             </Link>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Scheduling</CardTitle>
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground mb-4">
-              Create and manage your shooting schedule based on your breakdown.
-            </p>
-            <Link href="/dashboard/pre-production/scheduling">
-              <Button>Create Schedule</Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card>
+        <Card className="flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Location Scouting</CardTitle>
             <MapPin className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground mb-4">
+          <CardContent className="flex flex-col flex-grow">
+            <p className="text-xs text-muted-foreground mb-4 mt-auto">
               Manage potential filming locations and permits.
             </p>
             <Link href="/dashboard/pre-production/location-scouting">
-              <Button>Manage Locations</Button>
+              <Button className="w-full">Manage Locations</Button>
             </Link>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="flex flex-col">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Scheduling</CardTitle>
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="flex flex-col flex-grow">
+            <p className="text-xs text-muted-foreground mb-4 mt-auto">
+              Create and manage your shooting schedule based on your breakdown.
+            </p>
+            <Link href="/dashboard/pre-production/scheduling">
+              <Button className="w-full">Create Schedule</Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card className="flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Crew Assignment</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground mb-4">
+          <CardContent className="flex flex-col flex-grow">
+            <p className="text-xs text-muted-foreground mb-4 mt-auto">
               Assign roles and manage your production crew.
             </p>
             <Link href="/dashboard/pre-production/crew-assignment">
-             <Button>Assign Crew</Button>
+             <Button className="w-full">Assign Crew</Button>
             </Link>
           </CardContent>
         </Card>
