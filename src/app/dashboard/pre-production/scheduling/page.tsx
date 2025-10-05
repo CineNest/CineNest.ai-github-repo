@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Cloud, DollarSign, Loader2 } from 'lucide-react';
+import { format, eachDayOfInterval } from 'date-fns';
+import { Calendar as CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -27,9 +28,18 @@ const planSchema = z.object({
   location: z.string().min(1, 'Please select a location.'),
 });
 
+interface ScheduleItem {
+  date: string;
+  scenes: string;
+  characters: string;
+  notes: string;
+}
+
 export default function ProductionPlanPage() {
   const { toast } = useToast();
   const [date, setDate] = useState<DateRange | undefined>();
+  const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+  const [scheduleDetails, setScheduleDetails] = useState<{ location: string; dateRange: string } | null>(null);
 
   const form = useForm<z.infer<typeof planSchema>>({
     resolver: zodResolver(planSchema),
@@ -47,19 +57,33 @@ export default function ProductionPlanPage() {
   };
 
   function onSubmit(values: z.infer<typeof planSchema>) {
-    // This is where you would handle the form submission, e.g., saving the schedule.
-    toast({
-        title: "Schedule Saved",
-        description: `Scheduled shoot at ${values.location} from ${format(values.shootingDates.from, 'PPP')} to ${format(values.shootingDates.to, 'PPP')}.`
+    const { from, to } = values.shootingDates;
+    const dayArray = eachDayOfInterval({ start: from, end: to });
+    
+    const newSchedule = dayArray.map(day => ({
+        date: format(day, 'EEE, dd MMM yyyy'),
+        scenes: '', // Placeholder for user input
+        characters: '', // Placeholder for user input
+        notes: '', // Placeholder for user input
+    }));
+
+    setSchedule(newSchedule);
+    setScheduleDetails({
+        location: values.location,
+        dateRange: `${format(from, 'PPP')} to ${format(to, 'PPP')}`
     });
-    console.log(values);
+
+    toast({
+        title: "Schedule Generated",
+        description: `Created a schedule for ${values.location} from ${format(values.shootingDates.from, 'PPP')} to ${format(values.shootingDates.to, 'PPP')}.`
+    });
   }
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Shooting Schedule & Plan</h1>
-        <p className="text-muted-foreground">Define your shooting schedule and location.</p>
+        <p className="text-muted-foreground">Define your shooting schedule, location, and daily plan.</p>
       </div>
 
       <Card>
@@ -70,53 +94,53 @@ export default function ProductionPlanPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="shootingDates"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Shooting Dates</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          id="date"
-                          variant={'outline'}
-                          className={cn('justify-start text-left font-normal', !date && 'text-muted-foreground')}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date?.from ? (
-                            date.to ? (
-                              <>
-                                {format(date.from, 'LLL dd, y')} - {format(date.to, 'LLL dd, y')}
-                              </>
-                            ) : (
-                              format(date.from, 'LLL dd, y')
-                            )
-                          ) : (
-                            <span>Pick a date range</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          initialFocus
-                          mode="range"
-                          defaultMonth={date?.from}
-                          selected={date}
-                          onSelect={handleDateChange}
-                          numberOfMonths={2}
-                          captionLayout="dropdown-nav"
-                          fromYear={new Date().getFullYear() - 5}
-                          toYear={new Date().getFullYear() + 5}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <FormField
+                  control={form.control}
+                  name="shootingDates"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Shooting Dates</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id="date"
+                            variant={'outline'}
+                            className={cn('justify-start text-left font-normal', !date && 'text-muted-foreground')}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date?.from ? (
+                              date.to ? (
+                                <>
+                                  {format(date.from, 'LLL dd, y')} - {format(date.to, 'LLL dd, y')}
+                                </>
+                              ) : (
+                                format(date.from, 'LLL dd, y')
+                              )
+                            ) : (
+                              <span>Pick a date range</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={date?.from}
+                            selected={date}
+                            onSelect={handleDateChange}
+                            numberOfMonths={2}
+                            captionLayout="dropdown-nav"
+                            fromYear={new Date().getFullYear() - 5}
+                            toYear={new Date().getFullYear() + 5}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
                 <FormField
                   control={form.control}
                   name="location"
@@ -139,25 +163,48 @@ export default function ProductionPlanPage() {
                     </FormItem>
                   )}
                 />
-                
-                <Card className="bg-muted/50">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Cloud/> Weather Forecast</CardTitle>
-                        <CardDescription>Real-time weather data for the selected location and dates (placeholder).</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-center text-muted-foreground py-8">Weather data will appear here.</p>
-                    </CardContent>
-                </Card>
               </div>
 
               <Button type="submit">
-                Save Schedule
+                Generate Schedule
               </Button>
             </form>
           </Form>
         </CardContent>
       </Card>
+      
+      {schedule.length > 0 && scheduleDetails && (
+        <Card>
+            <CardHeader>
+                <CardTitle>Daily Shooting Plan: {scheduleDetails.location}</CardTitle>
+                <CardDescription>
+                    Schedule for {scheduleDetails.dateRange}. Fill in the details for each day.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[180px]">Date</TableHead>
+                            <TableHead>Scene(s) to Shoot</TableHead>
+                            <TableHead>Characters Involved</TableHead>
+                            <TableHead>Notes / Equipment</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {schedule.map((day, index) => (
+                            <TableRow key={index}>
+                                <TableCell className="font-medium">{day.date}</TableCell>
+                                <TableCell>{/* Add Textarea/Input here if needed */}</TableCell>
+                                <TableCell>{/* Add Textarea/Input here if needed */}</TableCell>
+                                <TableCell>{/* Add Textarea/Input here if needed */}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
