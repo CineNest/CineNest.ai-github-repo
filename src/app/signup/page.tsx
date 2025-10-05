@@ -56,10 +56,13 @@ export default function SignupPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
+      if (!auth || !firestore) {
+          throw new Error('Firebase services are not available.');
+      }
       const userCredential = await initiateEmailSignUp(auth, values.email, values.password);
       if (userCredential && userCredential.user) {
         const user = userCredential.user;
-        // Save username to Firestore
+        // Save username and email to Firestore
         const userDocRef = doc(firestore, 'users', user.uid);
         await setDocumentNonBlocking(userDocRef, {
           id: user.uid,
