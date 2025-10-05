@@ -119,7 +119,7 @@ export default function StatusPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(() => {})} className="space-y-4">
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
               <FormField
                 control={form.control}
                 name="phase"
