@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { User as UserIcon } from 'lucide-react';
 
 interface UserProfile {
   id: string;
@@ -25,7 +26,11 @@ export default function ProfilePage() {
     }
   }, [user, isUserLoading, router]);
   
-  const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user?.uid) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user?.uid]);
+
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
   const isLoading = isUserLoading || isProfileLoading;
@@ -71,12 +76,11 @@ export default function ProfilePage() {
             </div>
           ) : user && userProfile ? (
             <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={user.photoURL || `https://picsum.photos/seed/${user.uid}/64/64`} />
-                <AvatarFallback>{userProfile.username.charAt(0).toUpperCase()}</AvatarFallback>
-              </Avatar>
+              <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+                <UserIcon className="h-8 w-8 text-muted-foreground" />
+              </div>
               <div>
-                <p className="text-xl font-semibold">{userProfile.username}</p>
+                <p className="text-2xl font-semibold">{userProfile.username}</p>
               </div>
             </div>
           ) : (
