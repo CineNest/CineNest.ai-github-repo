@@ -37,10 +37,10 @@ export default function PreProductionPage() {
           </CardHeader>
           <CardContent className="flex flex-col flex-grow">
             <p className="text-xs text-muted-foreground mb-4 mt-auto">
-              Manage potential filming locations and permits.
+              Find and schedule potential filming locations.
             </p>
             <Link href="/dashboard/pre-production/location-scouting">
-              <Button className="w-full">Manage Locations</Button>
+              <Button className="w-full">Scout & Schedule</Button>
             </Link>
           </CardContent>
         </Card>
@@ -53,7 +53,7 @@ export default function PreProductionPage() {
             <p className="text-xs text-muted-foreground mb-4 mt-auto">
               Create and manage your shooting schedule based on your breakdown.
             </p>
-            <Link href="/dashboard/pre-production/scheduling">
+            <Link href="/dashboard/pre-production/location-scouting">
               <Button className="w-full">Create Schedule</Button>
             </Link>
           </CardContent>
