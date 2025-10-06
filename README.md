@@ -12,7 +12,8 @@
 
 # Live URL 
 
-link - cine-nest-ai-github-repo-9feu-23bwp6mwj-cinenestais-projects.vercel.app
+link - [hcine-nest-ai-github-repo-9feu-23bwp6mwj-cinenestais-projects.vercel.app](https://cine-nest-ai-github-repo-9feu.vercel.app/)
+
 
 
 
