@@ -9,6 +9,14 @@
 - **Muhammed Fahad E V** — AI Automation Specialist — fahadman40@gmail.com
 *   **Gemini**- (AI Coding Partner) - AI Assistant (Google)
 
+
+# Live URL 
+
+link - cine-nest-ai-github-repo-9feu-23bwp6mwj-cinenestais-projects.vercel.app
+
+
+
+
 ## How to Run Locally
 
 Follow these steps to get the development environment running:
